@@ -1,0 +1,14 @@
+{
+  "name": "my-devis-carreleur",
+  "version": "1.0.0",
+  "description": "Génération de devis pour un carreleur",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marion",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^38.0.0"
+  }
+}
