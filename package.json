@@ -15,6 +15,6 @@
   "dependencies": {
     "bootstrap": "^5.3.8",
     "pdfkit": "^0.17.2",
-    "sqlite3": "^5.1.7"
+    "sqlite-electron": "^3.3.5"
   }
 }

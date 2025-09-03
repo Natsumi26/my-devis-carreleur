@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devis Carreleur</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <title>Bonjour depuis le rendu d'Electron !</title>
+  </head>
+  <body>
+    <h1>Bonjour depuis le rendu d'Electron !</h1>
+    <p>👋</p>
+    <p id="info"></p>
+  </body>
+  <script src="./renderer.js"></script>
 </html>
