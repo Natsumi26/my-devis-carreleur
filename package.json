@@ -4,11 +4,17 @@
   "description": "Génération de devis pour un carreleur",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "author": "Marion",
   "license": "ISC",
   "devDependencies": {
     "electron": "^38.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "pdfkit": "^0.17.2",
+    "sqlite3": "^5.1.7"
   }
 }
