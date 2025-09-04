@@ -1,9 +1,4 @@
 window.addEventListener('DOMContentLoaded', async () => {
-    //Gestion du bouton ACCUEIL
-    document.getElementById('accueil').addEventListener('click', function() {
-        window.location.href = 'index.html';
-    })
-
     document.getElementById('NewDevis').addEventListener('click', () => {
         addDevisForm.reset();
         document.getElementById('prestationsContainer').innerHTML = "";

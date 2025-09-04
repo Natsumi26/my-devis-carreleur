@@ -1,12 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-document.getElementById('accueil').addEventListener('click', function() {
-    window.location.href = 'index.html';
-})
 document.getElementById('addClientModal').addEventListener('show.bs.modal', () => {
     addClientForm.reset();
-  });
-
+});
 
 async function getClients() {
     const clients = await window.api.fetchAll("SELECT * FROM clients");

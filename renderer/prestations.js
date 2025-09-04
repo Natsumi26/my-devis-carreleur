@@ -1,8 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
 
-    document.getElementById('accueil').addEventListener('click', function() {
-        window.location.href = 'index.html';
-    })
     document.getElementById('addPrestationModal').addEventListener('show.bs.modal', () => {
         addPrestationForm.reset();
       });

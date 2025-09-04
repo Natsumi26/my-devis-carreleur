@@ -14,6 +14,7 @@
   <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
     <h4 class="mb-4">Tableau de bord</h4>
     <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link text-white" href="index.html">🏠 Accueil</a></li>
       <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
       <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
       <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
@@ -23,15 +24,29 @@
 
   <!-- Contenu -->
 <div class="flex-grow-1 p-4 container mt-4">
-<h2 class="mb-4">Tableau de bord</h2>
-    <button id="accueil">Accueil</button>
-
-          <h2>Prestations</h2>
-          <button id="NewPrestation" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-4">Prestations</h2>
+          <button id="NewPrestation" class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
             Ajouter une prestation
           </button>
-        </div>    
+  </div>
 
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Prix unitaire</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="prestationsTable">
+
+            </tbody>
+        </table>
+    </div>
+    
     <!-- Modal de creation -->
     <div class="modal fade" id="addPrestationModal" tabindex="-1" aria-labelledby="addPrestationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -56,22 +71,6 @@
           </div>
         </div>
       </div>
-
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Nom</th>
-                    <th>Prix unitaire</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="prestationsTable">
-
-            </tbody>
-        </table>
-    </div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./prestations.js"></script>

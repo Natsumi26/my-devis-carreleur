@@ -9,17 +9,27 @@
 
 </head>
 <body">
-    
-    <button id="accueil">Accueil</button>
-    <!-- <button id="annuler">Annuler</button> -->
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
+        <h4 class="mb-4">Tableau de bord</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link text-white" href="index.html">🏠 Accueil</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="#">⚙ Paramètres</a></li>
+        </ul>
+    </div>
 
-    <div class="container mt-4">
+    <!-- Contenu -->
+    <div class="flex-grow-1 p-4 container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Devis</h2>
             <button id="NewDevis" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDevisModal">
                 Ajouter un devis
             </button>
-    </div>
+        </div>
 
     <!-- Modal de creation -->
     <div class="modal fade" id="addDevisModal" tabindex="-1" aria-labelledby="addDevisModalLabel" aria-hidden="true">
@@ -49,7 +59,7 @@
                         <!-- Select clients -->
                         <select name="clientListe" id="clientListe"></select>
                     </div>
-                         
+
                     <div class="mb-3">
                         <!-- Template caché pour prestations -->
                         <select id="prestationsListeTemplate" style="display:none;"></select>
@@ -82,6 +92,7 @@
             </tbody>
         </table>
     </div>
+</div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./devis.js"></script>
