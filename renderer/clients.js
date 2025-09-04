@@ -18,8 +18,8 @@ async function getClients() {
                 <td><input id="email-${client.id}" value="${client.email}" disabled></td>
                 <td><input id="adresse-${client.id}" value="${client.adresse}" disabled></td>
                 <td>
-                    <button class="btn btn-sm btn-primary me-1" onclick="updateClient(${client.id}, this)">Modifier</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.id})">Supprimer</button>
+                    <button class="btn btn-sm btn-primary me-1" onclick="updateClient(${client.id}, this)"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.id})"><i class="bi bi-trash3"></i></button>
                 </td>
             </tr>
         `;

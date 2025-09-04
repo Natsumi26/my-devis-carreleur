@@ -113,7 +113,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <label for="sousTotal" class="form-label">Sous-Total</label>
                 <input type="number" class="form-control sousTotal" id="sousTotal" placeholder="Sous-Total" value='0' disabled> 
             </div>
-            <button type="button" class="removeLine btn btn-danger mb-2" >Supprimer</button>
+            <button type="button" class="removeLine btn btn-danger mb-2" ><i class="bi bi-trash3"></i></button>
         `;
         container.appendChild(line);
 
@@ -145,8 +145,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                     <td><input id="date-${d.id}" value="${d.date_devis}" disabled></td>
                     <td><input id="client-${d.id}" value="${d.client_nom}" disabled></td>
                     <td>
-                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)">Modifier</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})">Supprimer</button>
+                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
             `;

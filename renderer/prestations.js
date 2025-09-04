@@ -16,8 +16,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     <td><input id="nom-${prestation.id}" value="${prestation.name}" disabled></td>
                     <td><input id="pu-${prestation.id}" value="${prestation.pu}" disabled></td>
                     <td>
-                        <button class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)">Modifier</button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePrestation(${prestation.id})">Supprimer</button>
+                        <button class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
             `;
