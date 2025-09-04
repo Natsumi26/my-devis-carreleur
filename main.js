@@ -2,17 +2,19 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 const path = require('node:path')
 const sqlite = require("sqlite-electron");
 
+let tray
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1200,
     height: 1000,
     webPreferences: {
-        preload: path.join(__dirname, 'preload.js')
+        preload: path.join(__dirname, 'preload.js'),
       }
   })
 
   win.loadFile('./renderer/index.html')
 }
+//dark mode-------------
 ipcMain.handle('dark-mode:toggle', () => {
   if (nativeTheme.shouldUseDarkColors) {
     nativeTheme.themeSource = 'light'
@@ -25,9 +27,9 @@ ipcMain.handle('dark-mode:toggle', () => {
 ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system'
 })
+//-----------------------
 app.whenReady().then(() => {
-
-    
+  
     createWindow()
   
     app.on('activate', () => {
