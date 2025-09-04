@@ -3,11 +3,10 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById('accueil').addEventListener('click', function() {
     window.location.href = 'index.html';
 })
-    
-document.getElementById('NewClient').addEventListener('click', () => {
-    document.getElementById('formNew').style.display= "block";
-    document.getElementById('NewClient').style.display="none";
-})
+document.getElementById('addClientModal').addEventListener('show.bs.modal', () => {
+    addClientForm.reset();
+  });
+
 
 async function getClients() {
     const clients = await window.api.fetchAll("SELECT * FROM clients");
@@ -23,16 +22,18 @@ async function getClients() {
                 <td><input id="email-${client.id}" value="${client.email}" disabled></td>
                 <td><input id="adresse-${client.id}" value="${client.adresse}" disabled></td>
                 <td>
-                    <button onclick="updateClient(${client.id}, this)">Modifier</button>
-                    <button onclick="deleteClient(${client.id})">Supprimer</button>
+                    <button class="btn btn-sm btn-primary me-1" onclick="updateClient(${client.id}, this)">Modifier</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.id})">Supprimer</button>
                 </td>
             </tr>
         `;
     });
 }
 getClients();
+
 //ajouter un client
-document.getElementById('addClient').addEventListener('click', async function addClient() {
+const addClientForm = document.getElementById('addClientForm');
+addClientForm.addEventListener('submit', async function addClient() {
     const client = {
         nom: document.getElementById('nom').value,
         telephone: document.getElementById('telephone').value,
@@ -44,13 +45,12 @@ document.getElementById('addClient').addEventListener('click', async function ad
     await window.api.eQuery("INSERT INTO clients (nom, telephone, email, adresse) VALUES (?, ?, ?, ?)", values);
     getClients();
 
-    // Réinitialiser et cacher le formulaire
-    document.getElementById('formNew').style.display = "none";
-    document.getElementById('NewClient').style.display = "block";
-    document.getElementById('nom').value = "";
-    document.getElementById('telephone').value = "";
-    document.getElementById('email').value = "";
-    document.getElementById('adresse').value = "";
+    // Fermer la modale
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addClientModal'));
+    modal.hide();
+
+    // Réinitialiser le formulaire
+    addClientForm.reset();
 })
 //supprimer un clients
 window.deleteClient = async function(id) {

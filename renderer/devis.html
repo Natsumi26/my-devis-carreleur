@@ -11,42 +11,77 @@
 <body">
     
     <button id="accueil">Accueil</button>
-    <button id="annuler">Annuler</button>
-    <button id="NewDevis" class="btn btn-warning" type="button" style="display: block;">Nouveau devis</button>
-    <section id="formNew" style="display: none;">
-            <input type="hidden" id="devisId">
-            <input type="hidden" id='typeForm'>
-            <input type="text" id="number" disabled>
-            <input type="text" id="total" placeholder="Total du devis" disabled>
-            <input type="text" id="date" disabled >
-            <!-- Select clients -->
-            <select name="clientListe" id="clientListe"></select>
-            <!-- Template caché pour prestations -->
-            <select id="prestationsListeTemplate" style="display:none;"></select>            
-            <!-- Container pour ajouter les prestations-->
-            <section id="prestationsContainer"></section>
-            <button type="button" id="addPrestaLine">Ajouter un prestation</button>
+    <!-- <button id="annuler">Annuler</button> -->
 
-            <!-- --------------------------- -->
-            <hr>
-            <button id="addDevis" type="button">Ajouter</button>
-    </section>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Devis</h2>
+            <button id="NewDevis" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDevisModal">
+                Ajouter un devis
+            </button>
+    </div>
 
-    <table class="table table-dark table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Numéro</th>
-                <th>Total</th>
-                <th>Date du devis</th>
-                <th>Client</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="devisTable">
+    <!-- Modal de creation -->
+    <div class="modal fade" id="addDevisModal" tabindex="-1" aria-labelledby="addDevisModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="addDevisModalLabel">Ajouter un devis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                <form id="addDevisForm">
+                        <input type="hidden" id="devisId">
+                        <input type="hidden" id='typeForm'>
+                    <div class="mb-3">
+                        <label for="number" class="form-label">Numéro</label>
+                        <input type="text" class="form-control" id="number" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total</label>
+                        <input type="number" class="form-control" id="total" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="text" class="form-control" id="date" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <!-- Select clients -->
+                        <select name="clientListe" id="clientListe"></select>
+                    </div>
+                         
+                    <div class="mb-3">
+                        <!-- Template caché pour prestations -->
+                        <select id="prestationsListeTemplate" style="display:none;"></select>
+                        <!-- Container pour ajouter les prestations-->
+                        <section id="prestationsContainer"></section>
+                        <button type="button" id="addPrestaLine">Ajouter un prestation</button>
+                    </div>
+                        
+                    <button type="submit" id="addDevis" class="btn btn-success">Ajouter</button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tableau de Devis -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Numéro</th>
+                    <th>Total</th>
+                    <th>Date du devis</th>
+                    <th>Client</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="devisTable">
 
-        </tbody>
-      </table>
+            </tbody>
+        </table>
+    </div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./devis.js"></script>

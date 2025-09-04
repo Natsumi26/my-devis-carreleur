@@ -9,27 +9,69 @@
 
 </head>
 <body">
+<div class="d-flex">
+  <!-- Sidebar -->
+  <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
+    <h4 class="mb-4">Tableau de bord</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="#">⚙ Paramètres</a></li>
+    </ul>
+  </div>
+
+  <!-- Contenu -->
+<div class="flex-grow-1 p-4 container mt-4">
+<h2 class="mb-4">Tableau de bord</h2>
     <button id="accueil">Accueil</button>
-    <button id="NewPrestation" class="btn btn-warning" type="button" style="display: block;">Nouveau prestation</button>
-    <section id="formNew" style="display: none;">
-            <input type="text" id="nom" placeholder="nom">
-            <input type="text" id="pu" placeholder="Prix unitaire">
-            <button id="addPrestation" type="button">Ajouter</button>
-    </section>
 
-    <table class="table table-dark table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nom</th>
-                <th>Prix unitaire</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="prestationsTable">
+          <h2>Prestations</h2>
+          <button id="NewPrestation" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
+            Ajouter une prestation
+          </button>
+        </div>    
 
-        </tbody>
-      </table>
+    <!-- Modal de creation -->
+    <div class="modal fade" id="addPrestationModal" tabindex="-1" aria-labelledby="addPrestationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addPrestationModalLabel">Ajouter un prestation</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addPrestationForm">
+                <div class="mb-3">
+                  <label for="nom" class="form-label">Nom</label>
+                  <input type="text" class="form-control" id="nom" required>
+                </div>
+                <div class="mb-3">
+                  <label for="pu" class="form-label">Prix unitaire</label>
+                  <input type="number" class="form-control" id="pu" required>
+                </div>
+                <button type="submit" id="addPrestation" class="btn btn-success">Ajouter</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Prix unitaire</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="prestationsTable">
+
+            </tbody>
+        </table>
+    </div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./prestations.js"></script>

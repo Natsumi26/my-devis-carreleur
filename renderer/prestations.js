@@ -3,11 +3,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('accueil').addEventListener('click', function() {
         window.location.href = 'index.html';
     })
-        
-    document.getElementById('NewPrestation').addEventListener('click', () => {
-        document.getElementById('formNew').style.display= "block";
-        document.getElementById('NewPrestation').style.display="none";
-    })
+    document.getElementById('addPrestationModal').addEventListener('show.bs.modal', () => {
+        addPrestationForm.reset();
+      });
     
     async function getPrestation() {
         const prestations = await window.api.fetchAll("SELECT * FROM prestation");
@@ -21,8 +19,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     <td><input id="nom-${prestation.id}" value="${prestation.name}" disabled></td>
                     <td><input id="pu-${prestation.id}" value="${prestation.pu}" disabled></td>
                     <td>
-                        <button onclick="updatePrestation(${prestation.id}, this)">Modifier</button>
-                        <button onclick="deletePrestation(${prestation.id})">Supprimer</button>
+                        <button class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePrestation(${prestation.id})">Supprimer</button>
                     </td>
                 </tr>
             `;
@@ -30,7 +28,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     getPrestation();
     //ajouter un prestation
-    document.getElementById('addPrestation').addEventListener('click', async function addPrestation() {
+    const addPrestationForm = document.getElementById('addPrestationForm');
+    addPrestationForm.addEventListener('submit', async function addPrestation() {
         const prestation = {
             name: document.getElementById('nom').value,
             pu: document.getElementById('pu').value,
@@ -40,11 +39,12 @@ window.addEventListener('DOMContentLoaded', () => {
         await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", values);
         getPrestation();
     
-        // Réinitialiser et cacher le formulaire
-        document.getElementById('formNew').style.display = "none";
-        document.getElementById('NewPrestation').style.display = "block";
-        document.getElementById('nom').value = "";
-        document.getElementById('pu').value = "";
+        // Fermer la modale
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addPrestationModal'));
+        modal.hide();
+    
+        // Réinitialiser le formulaire
+        addPrestationForm.reset();
     })
     //supprimer un prestation
     window.deletePrestation = async function(id) {

@@ -12,12 +12,79 @@
         <button id="toggle-dark-mode" >Dark Mode</button>
     <button id="reset-to-system">System Theme</button>
 
-    <hr>
-    <button id="clients" type="button" class="btn btn-success">Les clients</button>
-    <button id="prestations" type="button" class="btn btn-warning">Les prestations</button>
-    <button id="devis" type="button" class="btn btn-danger">Les devis</button>
-    <hr>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
+        <h4 class="mb-4">Tableau de bord</h4>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">📋 Devis</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">⚙ Paramètres</a></li>
+        </ul>
+      </div>
+
+      <!-- Contenu -->
+  <div class="flex-grow-1 p-4 container mt-4">
+    <h2 class="mb-4">Tableau de bord</h2>
+    
+      <!-- Cartes statistiques -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="card text-white bg-primary">
+            <div class="card-body">
+              <h5 class="card-title">Devis en cours</h5>
+              <h3 id="devis-en-cours">12</h3>
+              <hr>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-3">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <h5 class="card-title">Clients</h5>
+              <h3 id="clients-actifs">35</h3>
+              <hr>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-3">
+          <div class="card text-white bg-warning">
+            <div class="card-body">
+              <h5 class="card-title">Montant facturé ce mois</h5>
+              <h3 id="montant-facture">12 500€</h3>
+              <hr>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-3">
+          <div class="card text-white bg-danger">
+            <div class="card-body">
+              <h5 class="card-title">Devis en attente</h5>
+              <h3 id="devis-attente">4</h3>
+              <hr>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Graphique -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Chiffre d'affaires mensuel</h5>
+            <canvas id="chartCA" height="100"></canvas>
+        </div>
+      </div>
+  </div>
+</div>
+    
+    
   </body>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../node_modules/chart.js/dist/chart.umd.min.js"></script>
   <script src="./index.js"></script>
 </html>

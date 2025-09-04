@@ -10,30 +10,63 @@
 </head>
 <body">
     <button id="accueil">Accueil</button>
-    <button id="NewClient" class="btn btn-warning" type="button" style="display: block;">Nouveau client</button>
-    <section id="formNew" style="display: none;">
-            <input type="text" id="nom" placeholder="nom">
-            <input type="text" id="telephone" placeholder="telephone">
-            <input type="text" id="email" placeholder="email">
-            <input type="text" id="adresse" placeholder="adresse">
-            <button id="addClient" type="button">Ajouter</button>
-    </section>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Clients</h2>
+          <button id="NewClient" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            Ajouter un client
+          </button>
+        </div>
+    
+    <!-- Modal de creation -->
+    <div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addClientModalLabel">Ajouter un client</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addClientForm">
+                <div class="mb-3">
+                  <label for="nom" class="form-label">Nom</label>
+                  <input type="text" class="form-control" id="nom" required>
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                  <label for="telephone" class="form-label">Téléphone</label>
+                  <input type="tel" class="form-control" id="telephone" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adresse" class="form-label">Adresse</label>
+                    <input type="text" class="form-control" id="adresse" required>
+                  </div>
+                <button type="submit" id="addClient" class="btn btn-success">Ajouter</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nom du client</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Adresse</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="clientsTable">
 
-    <table class="table table-dark table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nom du client</th>
-                <th>Téléphone</th>
-                <th>Email</th>
-                <th>Adresse</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="clientsTable">
-
-        </tbody>
-      </table>
+            </tbody>
+        </table>
+    </div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./clients.js"></script>

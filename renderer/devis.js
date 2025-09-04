@@ -3,26 +3,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('accueil').addEventListener('click', function() {
         window.location.href = 'index.html';
     })
-    //Gestion du bouton ANNULER
-    document.getElementById('annuler').addEventListener('click', function() {
-        document.getElementById('formNew').style.display= "none";
-        document.getElementById('NewDevis').style.display="block";
-        document.getElementById('number').value = "";
-        document.getElementById('total').value = "";
-        document.getElementById('date').value = "";
-        document.getElementById('clientListe').value = "";
+
+    document.getElementById('NewDevis').addEventListener('click', () => {
+        addDevisForm.reset();
         document.getElementById('prestationsContainer').innerHTML = "";
-    }) 
-    //Gestion du bouton NOUVEAU DEVIS
-    document.getElementById('NewDevis').addEventListener('click', async () => {
-        document.getElementById('formNew').style.display= "block";
-        document.getElementById('NewDevis').style.display="none";
-        await generateDevisNumber();
-        //Set le type de formulaire
-        document.getElementById('typeForm').value = 'add';
-        // date du jour pour le devis
-        document.getElementById('date').value = new Date().toLocaleDateString('fr-FR');
-    })
+    });
+
+    
 
 
     // Remplir le select CLIENTS -----------------------------
@@ -37,7 +24,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             `
         })
     }
-    await getClients();
+    
+
     //rempli le select PRESTATIONS -----------------------------
     async function getPrestations() {
         const prestations = await window.api.fetchAll("SELECT * FROM prestation");
@@ -50,7 +38,18 @@ window.addEventListener('DOMContentLoaded', async () => {
             `
         })
     }
-    await getPrestations();
+    
+
+//Gestion du bouton NOUVEAU DEVIS
+    document.getElementById('NewDevis').addEventListener('click', async () => {
+        await generateDevisNumber();
+        await getClients();
+        await getPrestations();
+        //Set le type de formulaire
+        document.getElementById('typeForm').value = 'add';
+        // date du jour pour le devis
+        document.getElementById('date').value = new Date().toLocaleDateString('fr-FR');
+    })
 
     //Creation du NUMERO de devis
     async function generateDevisNumber() {
@@ -71,6 +70,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
         document.getElementById('number').value = newNumber;
     }
+
     //Calcul du TOTAL DEVIS
     function calculateTotal() {
         let total = 0;
@@ -106,10 +106,19 @@ window.addEventListener('DOMContentLoaded', async () => {
             <option value=''>Choisir la prestation</option>
                 ${document.getElementById('prestationsListeTemplate').innerHTML}
             </select>
-            <input type="number" class="quantity" placeholder="Quantité">
-            <input type="number" class="pu" disabled>
-            <input type="number" class="sousTotal" value='0' disabled>
-            <button type="button" class="removeLine" >Supprimer</button>
+            <div class="mb-3">
+                <label for="quantite" class="form-label">Quantité</label>
+                <input type="number" class="form-control quantity" id="quantite" placeholder="Quantité">
+            </div>
+            <div class="mb-3">
+                <label for="pu" class="form-label">Prix unitaire</label>
+                <input type="number" class="form-control pu" id="pu" placeholder="Prix unitaire" disabled> 
+            </div>
+            <div class="mb-3">
+                <label for="sousTotal" class="form-label">Sous-Total</label>
+                <input type="number" class="form-control sousTotal" id="sousTotal" placeholder="Sous-Total" value='0' disabled> 
+            </div>
+            <button type="button" class="removeLine btn btn-danger mb-2" >Supprimer</button>
         `;
         container.appendChild(line);
 
@@ -141,8 +150,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                     <td><input id="date-${d.id}" value="${d.date_devis}" disabled></td>
                     <td><input id="client-${d.id}" value="${d.client_nom}" disabled></td>
                     <td>
-                        <button onclick="updateDevis(${d.id}, this)">Modifier</button>
-                        <button onclick="deleteDevis(${d.id})">Supprimer</button>
+                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)">Modifier</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})">Supprimer</button>
                     </td>
                 </tr>
             `;
@@ -184,9 +193,7 @@ async function addDevis() {
         await getDevis();
     
         // REINITIALISATION et cacher le FORMULAIRE
-        document.getElementById('formNew').style.display = "none";
-        document.getElementById('NewDevis').style.display = "block";
-        document.getElementById('typeForm').value = "";
+        document.getElementById('typeForm').value = "add";
         document.getElementById('number').value = "";
         document.getElementById('total').value = "";
         document.getElementById('date').value = "";
@@ -206,6 +213,8 @@ window.deleteDevis = async function(id) {
 window.updateDevis = async function(id) {
     document.getElementById('typeForm').value = "update"; 
     document.getElementById('devisId').value = id;
+    await getClients();
+    await getPrestations();
     const devis = await window.api.fetchAll(
         "SELECT * FROM devis WHERE id=?", [id]
     );
@@ -217,10 +226,6 @@ window.updateDevis = async function(id) {
         "FROM devis_prestation dp JOIN prestation p ON dp.prestation_id = p.id WHERE dp.devis_id=?",
         [id]
     );
-
-    // Afficher le formulaire
-    document.getElementById('formNew').style.display = "block";
-    document.getElementById('NewDevis').style.display = "none";
 
     // Remplir les champs devis
     document.getElementById('number').value = d.number;
@@ -240,10 +245,19 @@ window.updateDevis = async function(id) {
             <select class="prestationsListe">
                 ${document.getElementById('prestationsListeTemplate').innerHTML}
             </select>
-            <input type="number" class="quantity" value="${prestation.quantity}">
-            <input type="number" class="pu" value="${prestation.pu}" disabled>
-            <input type="number" class="sousTotal" value="${prestation.sous_total}" disabled>
-            <button type="button" class="removeLine">Supprimer</button>
+            <div class="mb-3">
+                        <label for="quantite" class="form-label">Quantité</label>
+                        <input type="number" id="quantite"  class="form-control quantity" value="${prestation.quantity}">
+            </div>
+            <div class="mb-3">
+                        <label for="pu" class="form-label">Prix Unitaire</label>
+                        <input type="number" id="pu" class="form-control pu" value="${prestation.pu}" disabled>
+            </div>
+            <div class="mb-3">
+                        <label for="sousTotal" class="form-label">Sous-total</label>
+                        <input type="number" id="sousTotal" class="form-control sousTotal" value="${prestation.sous_total}" disabled>
+            </div>
+            <button type="button" class="removeLine btn btn-danger">Supprimer</button>
         `;
         container.appendChild(line);
 
@@ -299,8 +313,6 @@ async function updateDevisSubmit(id) {
         await getDevis();
 
         // Réinitialiser le formulaire
-        document.getElementById('formNew').style.display = "none";
-        document.getElementById('NewDevis').style.display = "block";
         document.getElementById('typeForm').value = "add";
         const addBtn = document.getElementById('addDevis');
         addBtn.textContent = "Ajouter";
