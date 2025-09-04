@@ -3,11 +3,9 @@
   }
   
   @media (prefers-color-scheme: dark) {
-    body { background: #333; color: white; }
+    body { background: #333 !important; color: white !important;  }
   }
   
   @media (prefers-color-scheme: light) {
-    body { background: #ddd; color: black; }
+    body { background: #ddd !important; color: black !important; }
   }
-
-  

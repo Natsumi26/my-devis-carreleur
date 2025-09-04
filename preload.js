@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('versions', {
   electron: () => process.versions.electron
   //Nous pouvons exposer des variables en plus des fonctions
 })
-//Gestion du dark mode
+//Gestion du dark
 contextBridge.exposeInMainWorld('darkMode', {
   toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
   system: () => ipcRenderer.invoke('dark-mode:system')
