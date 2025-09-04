@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron');
 
 
 contextBridge.exposeInMainWorld('versions', {
@@ -7,4 +7,17 @@ contextBridge.exposeInMainWorld('versions', {
   electron: () => process.versions.electron
   //Nous pouvons exposer des variables en plus des fonctions
 })
+//Gestion du dark mode
+contextBridge.exposeInMainWorld('darkMode', {
+  toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
+  system: () => ipcRenderer.invoke('dark-mode:system')
+})
 
+//CRUD pour les Clients
+contextBridge.exposeInMainWorld('api', {
+    // Ajouter un client
+    eQuery: (query, values) => ipcRenderer.invoke('executeQuery', query, values),
+  
+    // Récupérer tous les clients
+    fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
+  });

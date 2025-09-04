@@ -1,11 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme } = require('electron')
 const path = require('node:path')
 const sqlite = require("sqlite-electron");
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 1000,
     webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
@@ -13,7 +13,18 @@ const createWindow = () => {
 
   win.loadFile('./renderer/index.html')
 }
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light'
+  } else {
+    nativeTheme.themeSource = 'dark'
+  }
+  return nativeTheme.shouldUseDarkColors
+})
 
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system'
+})
 app.whenReady().then(() => {
 
     
@@ -72,6 +83,21 @@ const createTables = () => {
 
 createTables();
 
-// --- Communication avec le renderer
-ipcMain.handle("run-query", (event, query, params = []) => sqlite.run(query, params));
-ipcMain.handle("get-all", (event, query, params = []) => sqlite.all(query, params));
+// GET clients
+ipcMain . handle ( "fetchAll" ,  async  ( event ,  query ,  values  = [])  =>  { 
+    return  await  sqlite . fetchAll ( query ,  values) ; 
+  } ) ;
+// faire un POST/UPDATE/DELETE
+ipcMain . handle ( "executeQuery" ,  async  ( event ,  query ,  values)  =>  { 
+    return  await  sqlite . executeQuery ( query ,  values) ; 
+  } ) ;
+
+// //UPDATE CLients
+// ipcMain.handle("update-client", (event, client) => sqlite.executeQuery(
+//     "UPDATE clients set nom=? , telephone=? , email=? , adresse=? WHERE id=? ;",
+//     [ client.nom ,  client.telephone ,  client.email ,  client.adresse , client.id ]
+// ))
+// //DELETE Clients
+// ipcMain.handle("delete-client", (event, id)=> sqlite.executeQuery(
+//     "DELETE FROM clients WHERE id=?", [id]
+// ))

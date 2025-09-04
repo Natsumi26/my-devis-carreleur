@@ -5,7 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devis</title>
 </head>
-<body>
+<body">
     
+    <button id="accueil">Accueil</button>
+    <button id="annuler">Annuler</button>
+    <button id="NewDevis" class="btn btn-warning" type="button" style="display: block;">Nouveau devis</button>
+    <section id="formNew" style="display: none;">
+            <input type="hidden" id="devisId">
+            <input type="hidden" id='typeForm'>
+            <input type="text" id="number" disabled>
+            <input type="text" id="total" placeholder="Total du devis" disabled>
+            <input type="text" id="date" disabled >
+            <!-- Select clients -->
+            <select name="clientListe" id="clientListe"></select>
+            <!-- Template caché pour prestations -->
+            <select id="prestationsListeTemplate" style="display:none;"></select>            
+            <!-- Container pour ajouter les prestations-->
+            <section id="prestationsContainer"></section>
+            <button type="button" id="addPrestaLine">Ajouter un prestation</button>
+
+            <!-- --------------------------- -->
+            <hr>
+            <button id="addDevis" type="button">Ajouter</button>
+    </section>
+
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Numéro</th>
+                <th>Total</th>
+                <th>Date du devis</th>
+                <th>Client</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="devisTable">
+
+        </tbody>
+      </table>
 </body>
+<script src="./devis.js"></script>
 </html>

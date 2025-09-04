@@ -5,7 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clients</title>
 </head>
-<body>
-    
+<body">
+    <button id="accueil">Accueil</button>
+    <button id="NewClient" class="btn btn-warning" type="button" style="display: block;">Nouveau client</button>
+    <section id="formNew" style="display: none;">
+            <input type="text" id="nom" placeholder="nom">
+            <input type="text" id="telephone" placeholder="telephone">
+            <input type="text" id="email" placeholder="email">
+            <input type="text" id="adresse" placeholder="adresse">
+            <button id="addClient" type="button">Ajouter</button>
+    </section>
+
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom du client</th>
+                <th>Téléphone</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="clientsTable">
+
+        </tbody>
+      </table>
 </body>
+<script src="./clients.js"></script>
 </html>

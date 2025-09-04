@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les prestations</title>
+</head>
+<body">
+    <button id="accueil">Accueil</button>
+    <button id="NewPrestation" class="btn btn-warning" type="button" style="display: block;">Nouveau prestation</button>
+    <section id="formNew" style="display: none;">
+            <input type="text" id="nom" placeholder="nom">
+            <input type="text" id="pu" placeholder="Prix unitaire">
+            <button id="addPrestation" type="button">Ajouter</button>
+    </section>
+
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Prix unitaire</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="prestationsTable">
+
+        </tbody>
+      </table>
+</body>
+<script src="./prestations.js"></script>
+</html>
