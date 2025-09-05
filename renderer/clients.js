@@ -1,5 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
 
+
+    
 document.getElementById('addClientModal').addEventListener('show.bs.modal', () => {
     addClientForm.reset();
 });

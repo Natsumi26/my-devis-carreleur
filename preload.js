@@ -13,6 +13,10 @@ contextBridge.exposeInMainWorld('darkMode', {
   system: () => ipcRenderer.invoke('dark-mode:system')
 })
 
+ipcRenderer.on('clear-localstorage', () => {
+  localStorage.clear();
+  console.log("LocalStorage vidé !");
+});
 //CRUD pour les Clients
 contextBridge.exposeInMainWorld('api', {
     // Ajouter un client

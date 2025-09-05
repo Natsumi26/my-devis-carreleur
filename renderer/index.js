@@ -1,13 +1,3 @@
-// GEstion des boutons pour le DArk Mode
-document.getElementById('toggle-dark-mode').addEventListener('click', async () => {
-    const isDarkMode = await window.darkMode.toggle()
-    document.getElementById('theme-source').innerHTML = isDarkMode ? 'Dark' : 'Light'
-  })
-  
-  document.getElementById('reset-to-system').addEventListener('click', async () => {
-    await window.darkMode.system()
-    document.getElementById('theme-source').innerHTML = 'System'
-  })
 
 // gestion des données se trouvant sur le dashbord
 //fetch du total facturer par mois

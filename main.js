@@ -31,6 +31,7 @@ ipcMain.handle('dark-mode:toggle', () => {
 
 ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system'
+  return nativeTheme.shouldUseDarkColors
 })
 //-----------------------
 app.whenReady().then(() => {
@@ -44,7 +45,14 @@ app.whenReady().then(() => {
     })
   })
 
+  app.on('before-quit', () => {
+    if (mainWindow) {
+      mainWindow.webContents.send('clear-localstorage');
+    }
+  })
+
   app.on('window-all-closed', () => {
+  
     if (process.platform !== 'darwin') {
       app.quit()
     }

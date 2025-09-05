@@ -1,4 +1,5 @@
 window.addEventListener('DOMContentLoaded', async () => {
+//-------------------
     document.getElementById('NewDevis').addEventListener('click', () => {
         addDevisForm.reset();
         document.getElementById('prestationsContainer').innerHTML = "";

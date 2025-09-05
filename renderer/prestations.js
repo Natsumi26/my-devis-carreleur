@@ -1,5 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
 
+//---------------------------
+
     document.getElementById('addPrestationModal').addEventListener('show.bs.modal', () => {
         addPrestationForm.reset();
       });

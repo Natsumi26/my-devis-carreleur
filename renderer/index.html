@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-bs-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +8,8 @@
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
   </head>
-  <body>
-        <button id="toggle-dark-mode" >Dark Mode</button>
-    <button id="reset-to-system">System Theme</button>
+  <body >
+        
 
     <div class="d-flex">
       <!-- Sidebar -->
@@ -21,7 +20,17 @@
           <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="#">⚙ Paramètres</a></li>
+          <li class="nav-item">
+            <!-- Default dropend button -->
+            <div class="btn-group dropend">
+              <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">⚙ Paramètres</a>
+              
+              <ul class="dropdown-menu">
+                <!-- Dropdown menu links -->
+                <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </div>
 
@@ -86,5 +95,6 @@
   </body>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/chart.js/dist/chart.umd.min.js"></script>
+  <script src="./renderer.js"></script>
   <script src="./index.js"></script>
 </html>
