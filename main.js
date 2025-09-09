@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem   } = require('electron')
 const path = require('node:path')
-const sqlite = require("better-sqlite3");
+const sqlite3 = require('sqlite3').verbose();
 let win;
 
 
@@ -157,18 +157,22 @@ app.whenReady().then(() => {
   // Définir le chemin de la base (synchronique)
   const db = require('./db');
 
-// GET 
-ipcMain . handle ( "fetchAll" ,  async  ( event ,  query ,  values  = [])  =>  { 
-  console.log("Valeurs reçues :", values);
-  const stmt = db.prepare(query);
-  return stmt.all(...values);
-  } ) ;
-// faire un POST/UPDATE/DELETE
-ipcMain . handle ( "executeQuery" ,  async  ( event ,  query ,  values)  =>  { 
-  //   const utf8Values = values.map(v => 
-  //     typeof v === 'string' ? Buffer.from(v, 'utf8').toString() : v
-  // );
-  const stmt = db.prepare(query);
-  const result = stmt.run(...values);
-  return result;
-  } ) ;
+  // SELECT
+  ipcMain.handle('fetchAll', (event, query, values = []) => {
+    return new Promise((resolve, reject) => {
+      db.all(query, values, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  });
+  
+  // INSERT / UPDATE / DELETE
+  ipcMain.handle('executeQuery', (event, query, values = []) => {
+    return new Promise((resolve, reject) => {
+      db.run(query, values, function (err) {
+        if (err) reject(err);
+        else resolve({ changes: this.changes, lastID: this.lastID });
+      });
+    });
+  });
