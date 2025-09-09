@@ -133,7 +133,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // GET tous les DEVIS -------------------------------
     async function getDevis() {
-        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
+        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
         console.log(devis)
         const tbody = document.getElementById('devisTable')
         tbody.innerHTML='';
@@ -144,6 +144,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     <td><input id="number-${d.id}" value="${d.number}" disabled></td>
                     <td><input id="total-${d.id}" value="${d.total}" disabled></td>
                     <td><input id="date-${d.id}" value="${d.date_devis}" disabled></td>
+                    <td><input id="date-${d.id}" value="${d.statue}" disabled></td>
                     <td><input id="client-${d.id}" value="${d.client_nom}" disabled></td>
                     <td>
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
@@ -162,9 +163,10 @@ async function addDevis() {
             total: document.getElementById('total').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
+            statue: document.getElementById('statue').value,
         };
-        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id];
-        await window.api.eQuery("INSERT INTO devis (number, total, date_devis, client_id) VALUES (?, ?, ?, ?)", valuesDevis);
+        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.statue];
+        await window.api.eQuery("INSERT INTO devis (number, total, date_devis, client_id, statue) VALUES (?, ?, ?, ?)", valuesDevis);
 
         const result = await window.api.fetchAll("SELECT id FROM devis ORDER BY id DESC LIMIT 1");
         if (!result || result.length === 0) {
@@ -193,6 +195,7 @@ async function addDevis() {
         document.getElementById('number').value = "";
         document.getElementById('total').value = "";
         document.getElementById('date').value = "";
+        document.getElementById('statue').value = "";
         document.getElementById('clientListe').value = "";
         document.getElementById('prestationsContainer').innerHTML = "";
     }
@@ -227,6 +230,7 @@ window.updateDevis = async function(id) {
     document.getElementById('number').value = d.number;
     document.getElementById('total').value = d.total;
     document.getElementById('date').value = d.date_devis;
+    document.getElementById('statue').value = d.statue;
     document.getElementById('clientListe').value = d.client_id;
 
     // Nettoyer le container prestations
@@ -280,13 +284,14 @@ async function updateDevisSubmit(id) {
             total: document.getElementById('total').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
+            statue: document.getElementById('statue').value,
             id: id
         };
-        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.id]
+        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.id, devis.statue]
         console.log(devis);
         console.log(valuesDevis)
         await window.api.eQuery(
-            "UPDATE devis SET number=?, total=?, date_devis=?, client_id=? WHERE id=?",
+            "UPDATE devis SET number=?, total=?, date_devis=?, client_id=?, statue=? WHERE id=?",
             valuesDevis
         );
 

@@ -13,15 +13,12 @@ contextBridge.exposeInMainWorld('darkMode', {
   system: () => ipcRenderer.invoke('dark-mode:system')
 })
 
-ipcRenderer.on('clear-localstorage', () => {
-  localStorage.clear();
-  console.log("LocalStorage vidé !");
-});
-//CRUD pour les Clients
+
+//CRUD
 contextBridge.exposeInMainWorld('api', {
-    // Ajouter un client
+    // Ajouter
     eQuery: (query, values) => ipcRenderer.invoke('executeQuery', query, values),
   
-    // Récupérer tous les clients
+    // Récupérer tout
     fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
   });

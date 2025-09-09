@@ -1,5 +1,4 @@
 window.addEventListener('DOMContentLoaded', () => {
-
 //---------------------------
 
     document.getElementById('addPrestationModal').addEventListener('show.bs.modal', () => {
@@ -26,16 +25,15 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     getPrestation();
+
     //ajouter un prestation
     const addPrestationForm = document.getElementById('addPrestationForm');
     addPrestationForm.addEventListener('submit', async function addPrestation() {
-        const prestation = {
-            name: document.getElementById('nom').value,
-            pu: document.getElementById('pu').value,
-        };
+            const name = document.getElementById('nom').value;
+            const pu= document.getElementById('pu').value;
+        console.log('name')
         // Convertir l'objet en tableau dans le bon ordre
-        const values = [prestation.name, prestation.pu];
-        await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", values);
+        await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", [name, pu]);
         getPrestation();
     
         // Fermer la modale
@@ -45,6 +43,8 @@ window.addEventListener('DOMContentLoaded', () => {
         // Réinitialiser le formulaire
         addPrestationForm.reset();
     })
+
+    
     //supprimer un prestation
     window.deletePrestation = async function(id) {
         await window.api.eQuery("DELETE FROM prestation WHERE id=?", [id]);

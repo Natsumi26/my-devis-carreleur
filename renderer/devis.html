@@ -11,8 +11,8 @@
 <body>
 <div class="d-flex">
     <!-- Sidebar -->
-    <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
-        <h4 class="mb-4">Tableau de bord</h4>
+    <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
+        <h4 class="mb-4 text-center">Tableau de bord</h4>
         <ul class="nav flex-column">
           <li class="nav-item"><a class="nav-link text-white" href="index.html">🏠 Accueil</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
@@ -25,7 +25,7 @@
               
               <ul class="dropdown-menu">
                 <!-- Dropdown menu links -->
-                <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="firstCheckboxStretched">Dark mode</button></li>
+                <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
             </ul>
             </div>
           </li>
@@ -66,6 +66,14 @@
                         <input type="text" class="form-control" id="date" disabled>
                     </div>
                     <div class="mb-3">
+                        <label for="statue" class="form-label">Statue</label>
+                        <select name="statue" id="statue">
+                            <option value="0">En attente</option>
+                            <option value="1">Accepter</option>
+                            <option value="2">Refuser</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <!-- Select clients -->
                         <select name="clientListe" id="clientListe"></select>
                     </div>
@@ -93,6 +101,7 @@
                     <th>Numéro</th>
                     <th>Total</th>
                     <th>Date du devis</th>
+                    <th>Statue</th>
                     <th>Client</th>
                     <th></th>
                 </tr>

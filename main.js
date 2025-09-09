@@ -1,12 +1,13 @@
 const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem   } = require('electron')
 const path = require('node:path')
-const sqlite = require("sqlite-electron");
-
+const sqlite = require("better-sqlite3");
 let win;
+
+
 const createWindow = () => {
     win = new BrowserWindow({
-    width: 1200,
-    height: 1000,
+    width: 1000,
+    height: 800,
     icon: path.join(__dirname, 'build/icons/icon.ico'),
     webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
@@ -46,10 +47,10 @@ app.whenReady().then(() => {
   })
 
   app.on('before-quit', () => {
-    if (mainWindow) {
-      mainWindow.webContents.send('clear-localstorage');
+    if (mainWindow && !mainWindow.webContents.isDestroyed()) {
+      mainWindow.webContents.executeJavaScript(`localStorage.removeItem('theme');`);
     }
-  })
+  });
 
   app.on('window-all-closed', () => {
   
@@ -154,50 +155,20 @@ app.whenReady().then(() => {
 
 
   // Définir le chemin de la base (synchronique)
-  sqlite.setdbPath(path.join(__dirname, "db.sqlite"));
+  const db = require('./db');
 
-  // --- Création des tables (exécuté une seule fois au démarrage)
-const createTables = () => {
-  sqlite.executeScript(`
-    CREATE TABLE IF NOT EXISTS clients (
-      id INTEGER PRIMARY KEY,
-      nom TEXT NOT NULL,
-      telephone TEXT,
-      email TEXT,
-      adresse TEXT
-    );
-    CREATE TABLE IF NOT EXISTS devis (
-      id INTEGER PRIMARY KEY,
-      number INTEGER NOT NULL,
-      date_devis DATE,
-      total REAL NOT NULL,
-      client_id INTEGER,
-      FOREIGN KEY(client_id) REFERENCES clients(id)
-    );
-    CREATE TABLE IF NOT EXISTS prestation (
-      id INTEGER PRIMARY KEY,
-      name TEXT NOT NULL,
-      pu REAL NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS devis_prestation (
-      id INTEGER PRIMARY KEY,
-      prestation_id INTEGER,
-      devis_id INTEGER,
-      quantity INTEGER NOT NULL,
-      sous_total REAL NOT NULL,
-      FOREIGN KEY(prestation_id) REFERENCES prestation(id),
-      FOREIGN KEY(devis_id) REFERENCES devis(id)
-    );
-  `);
-}
-
-createTables();
-
-// GET clients
+// GET 
 ipcMain . handle ( "fetchAll" ,  async  ( event ,  query ,  values  = [])  =>  { 
-    return  await  sqlite . fetchAll ( query ,  values) ; 
+  console.log("Valeurs reçues :", values);
+  const stmt = db.prepare(query);
+  return stmt.all(...values);
   } ) ;
 // faire un POST/UPDATE/DELETE
 ipcMain . handle ( "executeQuery" ,  async  ( event ,  query ,  values)  =>  { 
-    return  await  sqlite . executeQuery ( query ,  values) ; 
+  //   const utf8Values = values.map(v => 
+  //     typeof v === 'string' ? Buffer.from(v, 'utf8').toString() : v
+  // );
+  const stmt = db.prepare(query);
+  const result = stmt.run(...values);
+  return result;
   } ) ;

@@ -10,13 +10,13 @@
   "author": "Marion",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^38.0.0"
+    "electron": "^38.0.0",
+    "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
-    "pdfkit": "^0.17.2",
-    "sqlite-electron": "^3.3.5"
+    "pdfkit": "^0.17.2"
   }
 }
