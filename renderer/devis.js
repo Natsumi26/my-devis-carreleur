@@ -6,6 +6,57 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
 
     
+//Recuperation des données pour la génération des PDF
+
+    async function getDataDevis(id) {
+        const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+        return result;
+    }
+
+    async function generateDevisFromId(id) {
+        const result = await getDataDevis(id);
+        if(!result || result.length === 0) {
+            console.error("aucun devis trouvé");
+            return;
+        }
+
+        // Construction des données
+        const devisData = {
+            devis: {
+              id: result[0].id,
+              number: result[0].number,
+              date_devis: result[0].date_devis,
+              total: result[0].total,
+              statue: result[0].statue
+            },
+            clients: {
+              nom: result[0].nom,
+              adresse: result[0].adresse,
+              telephone: result[0].telephone
+            },
+            devis_prestation: result
+            .filter(r => r.dp_id !== null)
+            .map(r => ({
+                id: r.dp_id,
+                prestation_id: r.prestation_id,
+                prestation: {
+                    name: r.name,
+                    pu: r.pu
+                },
+              quantity: r.quantity,
+              sous_total: r.sous_total
+            }))
+        };
+        console.log(devisData);
+
+        const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
+    if(response.success) {
+        console.log(`Devis sauvegardé : ${response.path}`);
+    }
+
+    }
+    
+
 
 
     // Remplir le select CLIENTS -----------------------------
@@ -103,21 +154,17 @@ window.addEventListener('DOMContentLoaded', async () => {
                 ${document.getElementById('prestationsListeTemplate').innerHTML}
             </select>
             <div class="mb-3">
-                <label for="quantite" class="form-label">Quantité</label>
-                <input type="number" class="form-control quantity" id="quantite" placeholder="Quantité">
+                <input type="number" class="form-control quantity" placeholder="Quantité">
             </div>
             <div class="mb-3">
-                <label for="pu" class="form-label">Prix unitaire</label>
-                <input type="number" class="form-control pu" id="pu" placeholder="Prix unitaire" disabled> 
+                <input type="number" class="form-control pu"  placeholder="Prix unitaire" disabled> 
             </div>
             <div class="mb-3">
-                <label for="sousTotal" class="form-label">Sous-Total</label>
-                <input type="number" class="form-control sousTotal" id="sousTotal" placeholder="Sous-Total" value='0' disabled> 
+                <input type="number" class="form-control sousTotal"  placeholder="Sous-Total" value='0' disabled> 
             </div>
             <button type="button" class="removeLine btn btn-danger mb-2" ><i class="bi bi-trash3"></i></button>
         `;
         container.appendChild(line);
-
         //Recupere et update le pu de chaque prestation
         const select = line.querySelector('.prestationsListe');
         select.addEventListener('change', () => {
@@ -126,6 +173,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             calculateTotal();
         });
 
+        // Supprimer la ligne
         line.querySelector('.removeLine').addEventListener('click', () => {
             container.removeChild(line);
         });
@@ -134,7 +182,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // GET tous les DEVIS -------------------------------
     async function getDevis() {
         const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
-        console.log(devis)
+        
         const tbody = document.getElementById('devisTable')
         tbody.innerHTML='';
         devis.forEach(d => {
@@ -147,11 +195,13 @@ window.addEventListener('DOMContentLoaded', async () => {
                     <td><input id="date-${d.id}" value="${d.statue}" disabled></td>
                     <td><input id="client-${d.id}" value="${d.client_nom}" disabled></td>
                     <td>
+                        <button class="btn btn-sm btn-success me-1"><i class="bi bi-eye"></i></button>
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
             `;
+            tbody.querySelector('.btn-success').addEventListener('click', () => generateDevisFromId(d.id));
         });
     }
     await getDevis();
@@ -166,7 +216,7 @@ async function addDevis() {
             statue: document.getElementById('statue').value,
         };
         const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.statue];
-        await window.api.eQuery("INSERT INTO devis (number, total, date_devis, client_id, statue) VALUES (?, ?, ?, ?)", valuesDevis);
+        await window.api.eQuery("INSERT INTO devis (number, total, date_devis, client_id, statue) VALUES (?, ?, ?, ?, ?)", valuesDevis);
 
         const result = await window.api.fetchAll("SELECT id FROM devis ORDER BY id DESC LIMIT 1");
         if (!result || result.length === 0) {
@@ -174,20 +224,31 @@ async function addDevis() {
             return;
         }
         const devis_id = result[0].id;
-
+        console.log(devis_id)
 
         //recuperer les données de toutes les lignes prestations
         const lines = document.querySelectorAll('.presta-line');
-        for(let line of lines) {
+        console.log("➡️ Lignes prestations détectées:", lines.length);
+        
+        for (let line of lines) {
             const prestation_id = line.querySelector('.prestationsListe').value;
-            const quantity = parseFloat(line.querySelector('.quantity').value);
-            // const pu = line.querySelector('.pu').value;
-            const sous_total = line.querySelector('.sousTotal').value;
+            const quantity = parseFloat(line.querySelector('.quantity').value)|| 0;
+            const sous_total = parseFloat(line.querySelector('.sousTotal').value) || 0;
 
-        // Convertir l'objet en tableau
-        const valuesDevisPresta = [prestation_id, devis_id, quantity, sous_total];
-        await window.api.eQuery("INSERT INTO devis_prestation (prestation_id, devis_id, quantity, sous_total) VALUES (?, ?, ?, ?)", valuesDevisPresta);
+            console.log("👉 Insertion prestation:", {
+                devis_id,
+                prestation_id,
+                quantity,
+                sous_total
+            });
+
+            await window.api.eQuery(
+                "INSERT INTO devis_prestation (prestation_id, devis_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
+                [prestation_id, devis_id, quantity, sous_total]
+            );
+
         }
+        console.log("✅ Toutes les prestations ont été insérées.");
         await getDevis();
     
         // REINITIALISATION et cacher le FORMULAIRE
@@ -287,7 +348,7 @@ async function updateDevisSubmit(id) {
             statue: document.getElementById('statue').value,
             id: id
         };
-        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.id, devis.statue]
+        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.statue, devis.id]
         console.log(devis);
         console.log(valuesDevis)
         await window.api.eQuery(
@@ -320,7 +381,8 @@ async function updateDevisSubmit(id) {
     };
 
 //CHOISIR entre add ou update
-document.getElementById('addDevis').onclick = async function() {
+document.getElementById('addDevis').onclick = async function(event) {
+    event.preventDefault()
     const mode = document.getElementById('typeForm').value;
 
     if(mode === "add") {
@@ -329,5 +391,11 @@ document.getElementById('addDevis').onclick = async function() {
         const id = document.getElementById('devisId').value;
         await updateDevisSubmit(id);  // fonction qui gère la mise à jour
     }
+    //Fermer la modale après succès
+    const modalEl = document.getElementById('addDevisModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) 
+        || new bootstrap.Modal(modalEl);
+    modalInstance.hide();
 }
+
 });

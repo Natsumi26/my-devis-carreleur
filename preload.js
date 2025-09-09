@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const { generateDevis } = require('./renderer/devisPdf.js');
 
 
 contextBridge.exposeInMainWorld('versions', {
@@ -13,7 +14,6 @@ contextBridge.exposeInMainWorld('darkMode', {
   system: () => ipcRenderer.invoke('dark-mode:system')
 })
 
-
 //CRUD
 contextBridge.exposeInMainWorld('api', {
     // Ajouter
@@ -22,3 +22,8 @@ contextBridge.exposeInMainWorld('api', {
     // Récupérer tout
     fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
   });
+
+//export function generateDevis()
+  contextBridge.exposeInMainWorld('pdfAPI', {
+    generateDevis: (data, defaultFileName) => ipcRenderer.invoke('generate-devis', data, defaultFileName)
+});

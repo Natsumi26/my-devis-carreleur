@@ -4,6 +4,7 @@ const path = require('node:path');
 
 const dbPath = path.join(__dirname, 'db.sqlite');
 const db = new sqlite3.Database(dbPath);
+db.run("PRAGMA foreign_keys = ON");
 
 // Création des tables
 db.serialize(() => {
@@ -38,7 +39,7 @@ db.serialize(() => {
     quantity INTEGER NOT NULL,
     sous_total REAL NOT NULL,
     FOREIGN KEY(prestation_id) REFERENCES prestation(id),
-    FOREIGN KEY(devis_id) REFERENCES devis(id)
+    FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
   )`);
 });
 

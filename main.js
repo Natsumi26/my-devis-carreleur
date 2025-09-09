@@ -1,7 +1,24 @@
-const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem   } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, dialog } = require('electron')
 const path = require('node:path')
+const { generateDevis } = require('./renderer/devisPdf.js');
 const sqlite3 = require('sqlite3').verbose();
 let win;
+
+ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
+  // Ouvre une boîte de dialogue pour choisir où sauvegarder
+  const { filePath, canceled } = await dialog.showSaveDialog({
+      title: "Enregistrer le devis",
+      defaultPath: defaultFileName,
+      filters: [{ name: "PDF", extensions: ["pdf"] }]
+  });
+
+  if (canceled || !filePath) return { success: false };
+
+  // Appelle ta fonction de génération en passant le chemin choisi
+  generateDevis(devisData, filePath);
+
+  return { success: true, path: filePath };
+});
 
 
 const createWindow = () => {
@@ -10,6 +27,7 @@ const createWindow = () => {
     height: 800,
     icon: path.join(__dirname, 'build/icons/icon.ico'),
     webPreferences: {
+        nodeIntegration: true,
         preload: path.join(__dirname, 'preload.js'),
       }
     
@@ -45,12 +63,6 @@ app.whenReady().then(() => {
       }
     })
   })
-
-  app.on('before-quit', () => {
-    if (mainWindow && !mainWindow.webContents.isDestroyed()) {
-      mainWindow.webContents.executeJavaScript(`localStorage.removeItem('theme');`);
-    }
-  });
 
   app.on('window-all-closed', () => {
   
