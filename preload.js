@@ -25,5 +25,6 @@ contextBridge.exposeInMainWorld('api', {
 
 //export function generateDevis()
   contextBridge.exposeInMainWorld('pdfAPI', {
-    generateDevis: (data, defaultFileName) => ipcRenderer.invoke('generate-devis', data, defaultFileName)
+    generateDevis: (data, defaultFileName) => ipcRenderer.invoke('generate-devis', data, defaultFileName),
+    generateFacture: (data, defaultFileName) => ipcRenderer.invoke('generate-facture', data, defaultFileName)
 });

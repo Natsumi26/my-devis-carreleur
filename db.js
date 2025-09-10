@@ -26,7 +26,9 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     number INTEGER NOT NULL,
     date_devis DATE,
-    total REAL NOT NULL,
+    total_HT REAL NOT NULL,
+    taux_tva REAL NOT NULL,
+    total_TTC REAL NOT NULL,
     statue TEXT,
     client_id INTEGER,
     FOREIGN KEY(client_id) REFERENCES clients(id)
@@ -40,6 +42,29 @@ db.serialize(() => {
     sous_total REAL NOT NULL,
     FOREIGN KEY(prestation_id) REFERENCES prestation(id),
     FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS factures (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    number TEXT NOT NULL,
+    date_facture DATE,
+    total_HT REAL NOT NULL,
+    taux_tva REAL NOT NULL,
+    total_TTC REAL NOT NULL,
+    devis_id INTEGER,
+    client_id INTEGER,
+    FOREIGN KEY(devis_id) REFERENCES devis(id),
+    FOREIGN KEY(client_id) REFERENCES clients(id)
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prestation_id INTEGER,
+    facture_id INTEGER,
+    quantity INTEGER NOT NULL,
+    sous_total REAL NOT NULL,
+    FOREIGN KEY(prestation_id) REFERENCES prestation(id),
+    FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
   )`);
 });
 

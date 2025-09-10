@@ -18,6 +18,7 @@
           <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="factures.html">🧾 Factures</a></li>
           <li class="nav-item">
             <!-- Default dropend button -->
             <div class="btn-group dropend">
@@ -58,9 +59,14 @@
                         <input type="text" class="form-control" id="number" disabled>
                     </div>
                     <div class="mb-3">
-                        <label for="total" class="form-label">Total</label>
+                        <label for="total" class="form-label">Total HT</label>
                         <input type="number" class="form-control" id="total" disabled>
                     </div>
+                    <div class="mb-3">
+                        <label for="tva" class="form-label">Taux TVA (%)</label>
+                        <input type="number" class="form-control" id="tva">
+                    </div>
+                    <input type="hidden" id="totalTTC" >
                     <div class="mb-3">
                         <label for="date" class="form-label">Date</label>
                         <input type="text" class="form-control" id="date" disabled>
@@ -69,8 +75,8 @@
                         <label for="statue" class="form-label">Statue</label>
                         <select name="statue" id="statue">
                             <option value="En attente">En attente</option>
-                            <option value="Accepter">Accepter</option>
-                            <option value="Refuser">Refuser</option>
+                            <option value="Accepté">Accepté</option>
+                            <option value="Refusé">Refusé</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -99,7 +105,7 @@
                 <tr>
                     <th>#</th>
                     <th>Numéro</th>
-                    <th>Total</th>
+                    <th>Total TTC</th>
                     <th>Date du devis</th>
                     <th>Statue</th>
                     <th>Client</th>

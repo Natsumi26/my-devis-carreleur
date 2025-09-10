@@ -1,15 +1,54 @@
 window.addEventListener('DOMContentLoaded', async () => {
 //-------------------
     document.getElementById('NewDevis').addEventListener('click', () => {
-        addDevisForm.reset();
         document.getElementById('prestationsContainer').innerHTML = "";
     });
 
+    //Créer un facture pour un devis -----------------------
+async function createFactureFromDevis(devis_id) {
+    // copier le devis dans facture
+    const devis = await window.api.fetchAll(
+        "SELECT * FROM `devis` WHERE devis.id=?",
+        [devis_id]
+    )
+    const date_facture = new Date().toISOString().split("T")[0];
+    const number = `FAC-${date_facture.replace(/-/g, '')}-${devis_id}`;
+    const totalHT = devis[0].total_HT;
+    const totalTTC = devis[0].total_TTC;
+    const tva = devis[0].taux_tva;
+    const client = devis[0].client_id
+
+    const values = [number, date_facture, totalHT, totalTTC, tva, devis_id, client]
+    await window.api.eQuery(
+        "INSERT INTO factures (number, date_facture, total_HT, total_TTC, taux_tva, devis_id, client_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        values
+    );
+
+    // Récupérer l'ID de la facture créée
+    const facture = await window.api.fetchAll("SELECT id FROM factures ORDER BY id DESC LIMIT 1");
+    const facture_id = facture[0].id;
     
+    console.log("Facture créée :", number);
+
+    // Copier les devis_prestation dans facture_prestation
+    const prestations = await window.api.fetchAll(
+  "SELECT prestation_id, quantity, sous_total FROM devis_prestation WHERE devis_id = ?",
+  [devis_id]
+);
+
+for (const p of prestations) {
+  await window.api.eQuery(
+    "INSERT INTO facture_prestation (prestation_id, facture_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
+    [p.prestation_id, facture_id, p.quantity, p.sous_total]
+  );
+}
+
+}
+    //-------------------------------------
 //Recuperation des données pour la génération des PDF
 
     async function getDataDevis(id) {
-        const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+        const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
         return result;
     }
 
@@ -26,7 +65,9 @@ window.addEventListener('DOMContentLoaded', async () => {
               id: result[0].id,
               number: result[0].number,
               date_devis: result[0].date_devis,
-              total: result[0].total,
+              total_HT: result[0].total_HT,
+              total_TTC: result[0].total_TTC,
+              taux_tva: result[0].taux_tva,
               statue: result[0].statue
             },
             clients: {
@@ -56,8 +97,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     }
     
-
-
 
     // Remplir le select CLIENTS -----------------------------
     async function getClients() {
@@ -118,9 +157,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('number').value = newNumber;
     }
 
-    //Calcul du TOTAL DEVIS
+    //Calcul du TOTAL HT DEVIS
     function calculateTotal() {
-        let total = 0;
+        let total_HT = 0;
         const lines = document.querySelectorAll('#prestationsContainer .presta-line');
     
         lines.forEach(line => {
@@ -134,13 +173,22 @@ window.addEventListener('DOMContentLoaded', async () => {
             const sousTotal = pu * quantity;
             sousTotalInput.value = sousTotal.toFixed(2);
     
-            total += sousTotal;
+            total_HT += sousTotal;
         });
     
-        document.getElementById('total').value = total.toFixed(2);
+        document.getElementById('total').value = total_HT.toFixed(2);
+        calculateTotalTTC(total_HT);
     }
     document.getElementById('prestationsContainer').addEventListener('input', calculateTotal);
     document.getElementById('prestationsContainer').addEventListener('change', calculateTotal);
+
+    //Calcul du TOTAl TTC devis
+    function calculateTotalTTC(total_HT) {
+        const taux_tva = document.getElementById('tva').value ;
+        const tva = total_HT * (taux_tva/100) ;
+        const total_TTC = total_HT + tva;
+        document.getElementById('totalTTC').value = total_TTC.toFixed(2);
+    }
 
 //AJOUTER des inputs pour les PRESTATIONS 
     document.getElementById("addPrestaLine").addEventListener("click", (sousTotal) => {
@@ -181,7 +229,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // GET tous les DEVIS -------------------------------
     async function getDevis() {
-        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
+        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
         
         const tbody = document.getElementById('devisTable')
         tbody.innerHTML='';
@@ -189,13 +237,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             tbody.innerHTML +=`
                 <tr>
                     <td>${d.id}</td>
-                    <td><input id="number-${d.id}" value="${d.number}" disabled></td>
-                    <td><input id="total-${d.id}" value="${d.total}" disabled></td>
-                    <td><input id="date-${d.id}" value="${d.date_devis}" disabled></td>
-                    <td><input id="date-${d.id}" value="${d.statue}" disabled></td>
-                    <td><input id="client-${d.id}" value="${d.client_nom}" disabled></td>
+                    <td>${d.number}</td>
+                    <td>${d.total_TTC} €</td>
+                    <td>${d.date_devis}</td>
+                    <td>${d.statue}</td>
+                    <td>${d.client_nom}</td>
                     <td>
-                        <button class="btn btn-sm btn-success me-1"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-success me-1"><i class="bi bi-download"></i></button>
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
                     </td>
@@ -210,13 +258,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 async function addDevis() {
         const devis = {
             number: document.getElementById('number').value,
-            total: document.getElementById('total').value,
+            total_HT: document.getElementById('total').value,
+            taux_tva: document.getElementById('tva').value,
+            total_TTC: document.getElementById('totalTTC').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
             statue: document.getElementById('statue').value,
         };
-        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.statue];
-        await window.api.eQuery("INSERT INTO devis (number, total, date_devis, client_id, statue) VALUES (?, ?, ?, ?, ?)", valuesDevis);
+        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statue];
+        await window.api.eQuery("INSERT INTO devis (number, total_HT, taux_tva, total_TTC, date_devis, client_id, statue) VALUES (?, ?, ?, ?, ?, ?, ?)", valuesDevis);
 
         const result = await window.api.fetchAll("SELECT id FROM devis ORDER BY id DESC LIMIT 1");
         if (!result || result.length === 0) {
@@ -255,6 +305,8 @@ async function addDevis() {
         document.getElementById('typeForm').value = "add";
         document.getElementById('number').value = "";
         document.getElementById('total').value = "";
+        document.getElementById('totalTTC').value = "";
+        document.getElementById('tva').value = "";
         document.getElementById('date').value = "";
         document.getElementById('statue').value = "";
         document.getElementById('clientListe').value = "";
@@ -289,7 +341,9 @@ window.updateDevis = async function(id) {
 
     // Remplir les champs devis
     document.getElementById('number').value = d.number;
-    document.getElementById('total').value = d.total;
+    document.getElementById('total').value = d.total_HT;
+    document.getElementById('totalTTC').value = d.total_TTC;
+    document.getElementById('tva').value = d.taux_tva;
     document.getElementById('date').value = d.date_devis;
     document.getElementById('statue').value = d.statue;
     document.getElementById('clientListe').value = d.client_id;
@@ -342,20 +396,23 @@ async function updateDevisSubmit(id) {
         // Update du devis
         const devis = {
             number: document.getElementById('number').value,
-            total: document.getElementById('total').value,
+            total_HT: document.getElementById('total').value,
+            taux_tva: document.getElementById('tva').value,
+            total_TTC: document.getElementById('totalTTC').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
             statue: document.getElementById('statue').value,
             id: id
         };
-        const valuesDevis = [devis.number, devis.total, devis.date_devis, devis.client_id, devis.statue, devis.id]
-        console.log(devis);
-        console.log(valuesDevis)
+        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statue, devis.id]
+
         await window.api.eQuery(
-            "UPDATE devis SET number=?, total=?, date_devis=?, client_id=?, statue=? WHERE id=?",
+            "UPDATE devis SET number=?, total_HT=?, taux_tva=?, total_TTC=?, date_devis=?, client_id=?, statue=? WHERE id=?",
             valuesDevis
         );
-
+        if (devis.statue === "Accepté") {
+            await createFactureFromDevis(devis.id);
+        }
         // Supprimer les anciennes prestations du devis
         await window.api.eQuery("DELETE FROM devis_prestation WHERE devis_id=?", [id]);
 

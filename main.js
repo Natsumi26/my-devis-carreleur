@@ -23,8 +23,8 @@ ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
 
 const createWindow = () => {
     win = new BrowserWindow({
-    width: 1000,
-    height: 800,
+    width: 1500,
+    height: 1000,
     icon: path.join(__dirname, 'build/icons/icon.ico'),
     webPreferences: {
         nodeIntegration: true,

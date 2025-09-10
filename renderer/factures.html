@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="light">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factures</title>
+    <link rel="stylesheet" type="text/css" href="./index.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
+        <h4 class="mb-4 text-center">Tableau de bord</h4>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">🏠 Accueil</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="factures.html">🧾 Factures</a></li>
+          <li class="nav-item">
+            <!-- Default dropend button -->
+            <div class="btn-group dropend">
+              <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">⚙ Paramètres</a>
+              
+              <ul class="dropdown-menu">
+                <!-- Dropdown menu links -->
+                <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
+            </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    <!-- Contenu -->
+    <div class="flex-grow-1 p-4 container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Factures</h2>
+        </div>
+
+    <!-- Tableau de factures -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Numéro</th>
+                    <th>Total TTC</th>
+                    <th>Date de la facture</th>
+                    <th>Client</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="factureTable">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./renderer.js"></script>
+<script type="module" src="./factures.js"></script>
+</html>

@@ -18,6 +18,7 @@
       <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
       <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
       <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="factures.html">🧾 Factures</a></li>
       <li class="nav-item">
         <!-- Default dropend button -->
         <div class="btn-group dropend">
@@ -67,6 +68,8 @@
             </div>
             <div class="modal-body">
               <form id="addPrestationForm">
+                <input type="hidden" id="prestationId">
+                <input type="hidden" id='typeForm'>
                 <div class="mb-3">
                   <label for="nom" class="form-label">Nom</label>
                   <input type="text" class="form-control" id="nom" required>

@@ -14,10 +14,10 @@ window.addEventListener('DOMContentLoaded', () => {
             tbody.innerHTML +=`
                 <tr>
                     <td>${prestation.id}</td>
-                    <td><input id="nom-${prestation.id}" value="${prestation.name}" disabled></td>
-                    <td><input id="pu-${prestation.id}" value="${prestation.pu}" disabled></td>
+                    <td>${prestation.name}</td>
+                    <td>${prestation.pu}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
+                        <button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
@@ -27,52 +27,87 @@ window.addEventListener('DOMContentLoaded', () => {
     getPrestation();
 
     //ajouter un prestation
-    const addPrestationForm = document.getElementById('addPrestationForm');
-    addPrestationForm.addEventListener('submit', async function addPrestation() {
+
+async function addPrestation() {
+
             const name = document.getElementById('nom').value;
             const pu= document.getElementById('pu').value;
-        console.log('name')
         // Convertir l'objet en tableau dans le bon ordre
         await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", [name, pu]);
         getPrestation();
     
-        // Fermer la modale
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addPrestationModal'));
-        modal.hide();
     
         // Réinitialiser le formulaire
-        addPrestationForm.reset();
-    })
+        document.getElementById('typeForm').value = "add";
+        document.getElementById('nom').value = "";
+        document.getElementById('pu').value = "";
+    }
 
     
-    //supprimer un prestation
+//supprimer un prestation
     window.deletePrestation = async function(id) {
         await window.api.eQuery("DELETE FROM prestation WHERE id=?", [id]);
         getPrestation();
     }
-    //Modifier une Prestation
-    window.updatePrestation = async function(id, btn) {
-        const inputs = [
-            document.getElementById(`nom-${id}`),
-            document.getElementById(`pu-${id}`),
-        ]
-    
-        if(btn.innerHTML === "Modifier" ) {
-            inputs.forEach(input => input.disabled = false);
-            btn.innerText = "Sauvegarder";
-        } else {
-            const prestation = {
-            name: document.getElementById(`nom-${id}`).value,
-            pu: document.getElementById(`pu-${id}`).value,
-        };
-        const values = [prestation.name, prestation.pu, id];
-        await window.api.eQuery("UPDATE prestation set name=? , pu=? WHERE id=? ", values);
-        inputs.forEach(input => input.disabled = true);
-        btn.innerText = "Modifier";
-        getPrestation();
+
+//Modifier une Prestation
+    window.updatePrestation = async function(id) {
+        document.getElementById('typeForm').value = "update"; 
+        document.getElementById('prestationId').value = id;
+
+        const prestation = await window.api.fetchAll(
+            "SELECT * FROM prestation WHERE id=?", [id]
+        );
+        const p = prestation[0];
+
+        // Remplir les champs devis
+            document.getElementById('nom').value = p.name;
+            document.getElementById('pu').value = p.pu;
+
+        // Transformer le bouton Ajouter en bouton Mettre à jour
+        const addBtn = document.getElementById('addPrestation');
+        addBtn.textContent = "Mettre à jour";
         }
-        
-        
+
+// ENREGISTREMENT DES MODIFICATIONS DE PRESTATION
+async function updatePrestationSubmit(id) {
+    // Update de la prestation
+    const prestation = {
+        name: document.getElementById('nom').value,
+        pu: document.getElementById('pu').value,
+        id: id
+    };
+    const valuesPrestation = [prestation.name, prestation.pu, prestation.id]
+
+    await window.api.eQuery(
+        "UPDATE prestation SET name=?, pu=? WHERE id=?",
+        valuesPrestation
+    );
+    await getPrestation();
+
+    // Réinitialiser le formulaire
+    document.getElementById('typeForm').value = "add";
+    const addBtn = document.getElementById('addPrestation');
+    addBtn.textContent = "Ajouter";
+
+}
+
+//CHOISIR entre add ou update
+document.getElementById('addPrestation').onclick = async function(event) {
+    event.preventDefault()
+    const mode = document.getElementById('typeForm').value;
+
+    if(mode === "add") {
+        await addPrestation();       // fonction qui gère l'ajout
+    } else if(mode === "update") {
+        const id = document.getElementById('prestationId').value;
+        await updatePrestationSubmit(id);  // fonction qui gère la mise à jour
     }
+    //Fermer la modale après succès
+    const modalEl = document.getElementById('addPrestationModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl) 
+        || new bootstrap.Modal(modalEl);
+    modalInstance.hide();
+}
     
     });

@@ -1,8 +1,8 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
-function generateDevis(devisData, outputPath) {
-    console.log(devisData)
+function generateFacture(factureData, outputPath) {
+    console.log(factureData)
   const doc = new PDFDocument({ margin: 50 });
 
   // Sauvegarde dans un fichier
@@ -22,7 +22,7 @@ function generateDevis(devisData, outputPath) {
   // --- En-tête ---
   doc
     .fontSize(20)
-    .text("DEVIS",0, 50, { align: "center" })
+    .text("FACTURE",0, 50, { align: "center" })
     .moveDown();
 
   // --- Infos société ---
@@ -36,9 +36,9 @@ function generateDevis(devisData, outputPath) {
   // --- Infos client ---
   doc
     .fontSize(12)
-    .text(`Client : ${devisData.clients.nom}`)
-    .text(`Adresse : ${devisData.clients.adresse}`)
-    .text(`Téléphone : ${devisData.clients.telephone}`)
+    .text(`Client : ${factureData.clients.nom}`)
+    .text(`Adresse : ${factureData.clients.adresse}`)
+    .text(`Téléphone : ${factureData.clients.telephone}`)
     .moveDown();
 
     // --- Tableau prestations ---
@@ -64,14 +64,14 @@ function generateDevis(devisData, outputPath) {
     doc.font('Helvetica').fontSize(12);
 
 
-    devisData.devis_prestation.forEach((devis_presta, index) => {
+    factureData.facture_prestation.forEach((facture_presta, index) => {
     
         if (index % 2 === 0) doc.rect(startX, y - 3, colPresta + colPU + colQty + colTotal + colSpacing * 3, 20).fill('#f9f9f9').fillColor('black');
 
-        doc.text(devis_presta.prestation.name, startX+5, y, { width: colPresta  })
-            .text(devis_presta.prestation.pu.toFixed(2), startX + colPresta + colSpacing, y, { width: colPU, align: "right" })
-            .text(devis_presta.quantity, startX + colPresta + colPU + colSpacing * 2, y, { width: colQty, align: "right" })
-            .text(devis_presta.sous_total.toFixed(2), startX + colPresta + colPU + colQty + colSpacing * 3, y, { width: colTotal, align: "right" })
+        doc.text(facture_presta.prestation.name, startX+5, y, { width: colPresta  })
+            .text(facture_presta.prestation.pu.toFixed(2), startX + colPresta + colSpacing, y, { width: colPU, align: "right" })
+            .text(facture_presta.quantity, startX + colPresta + colPU + colSpacing * 2, y, { width: colQty, align: "right" })
+            .text(facture_presta.sous_total.toFixed(2), startX + colPresta + colPU + colQty + colSpacing * 3, y, { width: colTotal, align: "right" })
     
         y += 20;
       });
@@ -81,27 +81,26 @@ function generateDevis(devisData, outputPath) {
       y += 10;
 
 // calcul du plus de la tva
-const tva = devisData.devis.total_HT*(devisData.devis.taux_tva/100);
+const tva = factureData.facture.total_HT*(factureData.facture.taux_tva/100);
 
 // Total HT
 doc.fontSize(12).text("Total HT :", 300, y, { width: 160, align: "right" });
-doc.text(devisData.devis.total_HT.toFixed(2) + " €", 480, y, { width: 80, align: "right" });
+doc.text(factureData.facture.total_HT.toFixed(2) + " €", 480, y, { width: 80, align: "right" });
 y += 20;
 
 // TVA
-doc.fontSize(12).text(`TVA (${devisData.devis.taux_tva}%) :`, 300, y, { width: 160, align: "right" });
+doc.fontSize(12).text(`TVA (${factureData.facture.taux_tva}%) :`, 300, y, { width: 160, align: "right" });
 doc.text(tva.toFixed(2) + " €", 480, y, { width: 80, align: "right" });
 y += 20;
 
 // Total TTC
 doc.fontSize(14).text("TOTAL TTC :", 300, y, { width: 160, align: "right" });
-doc.text(devisData.devis.total_TTC.toFixed(2) + " €", 480, y, { width: 80, align: "right" });
+doc.text(factureData.facture.total_TTC.toFixed(2) + " €", 480, y, { width: 80, align: "right" });
 
-  // --- Pied de page ---
-  doc.moveDown(3).font('Helvetica').fontSize(10).text("Devis valable 30 jours", { align: "center" });
+
 
   // Finalise le PDF
   doc.end();
 }
 
-module.exports = {generateDevis};
+module.exports = {generateFacture};
