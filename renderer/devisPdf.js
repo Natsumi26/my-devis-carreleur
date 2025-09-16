@@ -1,12 +1,20 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
-function generateDevis(devisData, outputPath) {
-    console.log(devisData)
-  const doc = new PDFDocument({ margin: 50 });
+function generateDevis(devisData, outputPath=null) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 50 });
+    const chunks = [];
 
-  // Sauvegarde dans un fichier
-  doc.pipe(fs.createWriteStream(outputPath));
+    // Si outputPath est fourni, on écrit dans un fichier
+    if (outputPath) {
+      doc.pipe(fs.createWriteStream(outputPath));
+    } else {
+      doc.on('data', chunk => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+    }
+
+    doc.on('error', err => reject(err));
 
   // --- Contour de page ---
   doc.rect(5, 5, doc.page.width - 10, doc.page.height - 10).stroke();
@@ -39,6 +47,14 @@ function generateDevis(devisData, outputPath) {
     .text(`Client : ${devisData.clients.nom}`)
     .text(`Adresse : ${devisData.clients.adresse}`)
     .text(`Téléphone : ${devisData.clients.telephone}`)
+    .moveDown();
+
+  // --- Infos Devis ---
+  doc
+    .fontSize(12)
+    .text(`Numéro du devis : ${devisData.devis.number}`)
+    .text(`Date du devis : ${devisData.devis.date_devis}`)
+    
     .moveDown();
 
     // --- Tableau prestations ---
@@ -102,6 +118,6 @@ doc.text(devisData.devis.total_TTC.toFixed(2) + " €", 480, y, { width: 80, ali
 
   // Finalise le PDF
   doc.end();
+});
 }
-
 module.exports = {generateDevis};

@@ -1,10 +1,80 @@
 window.addEventListener('DOMContentLoaded', async () => {
-//-------------------
-    document.getElementById('NewDevis').addEventListener('click', () => {
-        document.getElementById('prestationsContainer').innerHTML = "";
-    });
 
-    //Créer un facture pour un devis -----------------------
+//Fonction pour afficher le PDF dans la modal
+    function openModalWithPDF(base64) {
+        const modal = document.getElementById('ShowDevisModal');
+        const iframe = document.getElementById('pdfPreview');
+        iframe.src = `data:application/pdf;base64,${base64}`;
+        modal.style.display = 'block';
+      }
+//telecharger depuis la modal
+      window.downloadPDF = function () {
+        const base64 = document.getElementById('pdfPreview').src.split(',')[1];
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${base64}`;
+        link.download = `${currentDevisNumber}.pdf`;
+        link.click();
+      };
+//Fermer la modal
+      window.closeModal = function () {
+        document.getElementById('ShowDevisModal').style.display = 'none';
+      };
+// construction des données pour le pdf
+ async function buildDevisData(result){
+      // Construction des données
+          return {
+                devis: {
+                    id: result[0].id,
+                    number: result[0].number,
+                    date_devis: result[0].date_devis,
+                    total_HT: result[0].total_HT,
+                    total_TTC: result[0].total_TTC,
+                    taux_tva: result[0].taux_tva,
+                    statue: result[0].statue
+                },
+                clients: {
+                    nom: result[0].nom,
+                    adresse: result[0].adresse,
+                    telephone: result[0].telephone
+                },
+                devis_prestation: result
+                .filter(r => r.dp_id !== null)
+                .map(r => ({
+                    id: r.dp_id,
+                    prestation_id: r.prestation_id,
+                    prestation: {
+                        name: r.name,
+                        pu: r.pu
+                    },
+                    quantity: r.quantity,
+                    sous_total: r.sous_total
+                }))
+            };
+        };
+
+//Recuperation des données pour la génération des PDF
+
+        async function getDataDevis(id) {
+            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+            return result;
+        }
+//Generation des PDF pour le telechargement 
+        async function generateDevisFromId(id) {
+            const result = await getDataDevis(id);
+            if(!result || result.length === 0) {
+                console.error("aucun devis trouvé");
+                return;
+            }
+    
+            const devisData = await buildDevisData(result);
+            const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
+        if(response.success) {
+            console.log(`Devis sauvegardé : ${response.path}`);
+        }
+    
+        }
+        let currentDevisNumber = null;
+//Créer un facture pour un devis -----------------------
 async function createFactureFromDevis(devis_id) {
     // copier le devis dans facture
     const devis = await window.api.fetchAll(
@@ -45,58 +115,6 @@ for (const p of prestations) {
 
 }
     //-------------------------------------
-//Recuperation des données pour la génération des PDF
-
-    async function getDataDevis(id) {
-        const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
-        return result;
-    }
-
-    async function generateDevisFromId(id) {
-        const result = await getDataDevis(id);
-        if(!result || result.length === 0) {
-            console.error("aucun devis trouvé");
-            return;
-        }
-
-        // Construction des données
-        const devisData = {
-            devis: {
-              id: result[0].id,
-              number: result[0].number,
-              date_devis: result[0].date_devis,
-              total_HT: result[0].total_HT,
-              total_TTC: result[0].total_TTC,
-              taux_tva: result[0].taux_tva,
-              statue: result[0].statue
-            },
-            clients: {
-              nom: result[0].nom,
-              adresse: result[0].adresse,
-              telephone: result[0].telephone
-            },
-            devis_prestation: result
-            .filter(r => r.dp_id !== null)
-            .map(r => ({
-                id: r.dp_id,
-                prestation_id: r.prestation_id,
-                prestation: {
-                    name: r.name,
-                    pu: r.pu
-                },
-              quantity: r.quantity,
-              sous_total: r.sous_total
-            }))
-        };
-        console.log(devisData);
-
-        const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
-    if(response.success) {
-        console.log(`Devis sauvegardé : ${response.path}`);
-    }
-
-    }
-    
 
     // Remplir le select CLIENTS -----------------------------
     async function getClients() {
@@ -233,9 +251,10 @@ for (const p of prestations) {
         
         const tbody = document.getElementById('devisTable')
         tbody.innerHTML='';
+
         devis.forEach(d => {
-            tbody.innerHTML +=`
-                <tr>
+            const row = document.createElement('tr');
+            row.innerHTML +=`
                     <td>${d.id}</td>
                     <td>${d.number}</td>
                     <td>${d.date_devis}</td>
@@ -243,13 +262,26 @@ for (const p of prestations) {
                     <td>${d.statue}</td>
                     <td>${d.client_nom}</td>
                     <td>
-                        <button class="btn btn-sm btn-success me-1"><i class="bi bi-download"></i></button>
+                        <button class="btn btn-sm btn-warning me-1" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-success me-1" id="telecharger-${d.id}"><i class="bi bi-download"></i></button>
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
                     </td>
-                </tr>
             `;
-            tbody.querySelector('.btn-success').addEventListener('click', () => generateDevisFromId(d.id));
+            // Ajout de la ligne au tableau
+            tbody.appendChild(row);
+            // Bouton Télécharger
+            document.getElementById(`telecharger-${d.id}`).addEventListener('click', async () => await generateDevisFromId(d.id));
+            // Bouton Voir
+            document.getElementById(`voir-${d.id}`).addEventListener('click', async () => {
+                const result = await getDataDevis(d.id);
+                if (!result || result.length === 0) return;
+            
+                    const devisData = await buildDevisData(result);
+                    const devisDataJson = JSON.parse(JSON.stringify(devisData));
+                    currentDevisNumber = devisData.devis.number;
+                window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
+            });
         });
     }
     await getDevis();
@@ -455,4 +487,10 @@ document.getElementById('addDevis').onclick = async function(event) {
     modalInstance.hide();
 }
 
+// 📥 Réception du PDF depuis le main process
+window.devisAPI.onPreview((base64) => {
+    openModalWithPDF(base64);
 });
+
+});
+

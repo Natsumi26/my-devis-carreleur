@@ -34,3 +34,9 @@ contextBridge.exposeInMainWorld('factureAPI', {
   onPreview: (callback) => ipcRenderer.on('preview-facture', (event, base64) => callback(base64))
 });
 
+//function pour visualiser le devis
+contextBridge.exposeInMainWorld('devisAPI', {
+  previewDevis: (devisData) => ipcRenderer.invoke('preview-devis', devisData),
+  onPreview: (callback) => ipcRenderer.on('preview-devis', (event, base64) => callback(base64))
+});
+

@@ -66,6 +66,12 @@ db.serialize(() => {
     FOREIGN KEY(prestation_id) REFERENCES prestation(id),
     FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
   )`);
+  db.run(`CREATE TABLE IF NOT EXISTS entreprise (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    telephone TEXT,
+    adresse TEXT
+  )`);
 });
 
 module.exports = db;

@@ -38,11 +38,19 @@ ipcMain.handle('generate-facture', async (event, factureData, defaultFileName) =
 
   return { success: true, path: filePath };
 });
+
 //Previsualisation de la facture pdf
 ipcMain.handle('preview-facture', async (event, factureData) => {
   const pdfBuffer = await generateFacture(factureData);
   const base64 = pdfBuffer.toString('base64');
   event.sender.send('preview-facture', base64); // envoie au renderer
+});
+
+//Previsualisation de le devis pdf
+ipcMain.handle('preview-devis', async (event, devisData) => {
+  const pdfBuffer = await generateDevis(devisData);
+  const base64 = pdfBuffer.toString('base64');
+  event.sender.send('preview-devis', base64); // envoie au renderer
 });
 
 

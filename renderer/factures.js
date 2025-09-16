@@ -94,7 +94,7 @@ async function getFactures() {
                 <td>${facture.devis_number}</td>
                 <td>${facture.client_name}</td>
                 <td>
-                <button class="btn btn-sm btn-primary me-1" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
+                <button class="btn btn-sm btn-warning me-1" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
                     <button class="btn btn-sm btn-success me-1" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
 
                 </td>
