@@ -227,7 +227,7 @@ for (const p of prestations) {
         });
     })
 
-    // GET tous les DEVIS -------------------------------
+// GET tous les DEVIS -------------------------------
     async function getDevis() {
         const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
         
@@ -238,8 +238,8 @@ for (const p of prestations) {
                 <tr>
                     <td>${d.id}</td>
                     <td>${d.number}</td>
-                    <td>${d.total_TTC} €</td>
                     <td>${d.date_devis}</td>
+                    <td>${d.total_TTC} €</td>
                     <td>${d.statue}</td>
                     <td>${d.client_nom}</td>
                     <td>

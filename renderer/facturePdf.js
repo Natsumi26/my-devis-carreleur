@@ -1,12 +1,20 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
-function generateFacture(factureData, outputPath) {
-    console.log(factureData)
-  const doc = new PDFDocument({ margin: 50 });
+function generateFacture(factureData, outputPath= null) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 50 });
+    const chunks = [];
 
-  // Sauvegarde dans un fichier
-  doc.pipe(fs.createWriteStream(outputPath));
+    // Si outputPath est fourni, on écrit dans un fichier
+    if (outputPath) {
+      doc.pipe(fs.createWriteStream(outputPath));
+    } else {
+      doc.on('data', chunk => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+    }
+
+    doc.on('error', err => reject(err));
 
   // --- Contour de page ---
   doc.rect(5, 5, doc.page.width - 10, doc.page.height - 10).stroke();
@@ -101,6 +109,7 @@ doc.text(factureData.facture.total_TTC.toFixed(2) + " €", 480, y, { width: 80,
 
   // Finalise le PDF
   doc.end();
+});
 }
 
 module.exports = {generateFacture};

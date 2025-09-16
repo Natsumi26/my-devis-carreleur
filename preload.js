@@ -23,8 +23,13 @@ contextBridge.exposeInMainWorld('api', {
     fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
   });
 
-//export function generateDevis()
+//export function
   contextBridge.exposeInMainWorld('pdfAPI', {
     generateDevis: (data, defaultFileName) => ipcRenderer.invoke('generate-devis', data, defaultFileName),
     generateFacture: (data, defaultFileName) => ipcRenderer.invoke('generate-facture', data, defaultFileName)
+});
+
+//function pour visualiser la facture
+contextBridge.exposeInMainWorld('factureAPI', {
+  voirFacture: (factureData) => ipcRenderer.invoke('preview-facture', factureData),
 });

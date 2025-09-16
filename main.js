@@ -1,9 +1,11 @@
 const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, dialog } = require('electron')
 const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
+const { generateFacture } = require('./renderer/facturePdf.js');
 const sqlite3 = require('sqlite3').verbose();
 let win;
 
+//Generer le devis en pdf-------------------------------
 ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
   // Ouvre une boîte de dialogue pour choisir où sauvegarder
   const { filePath, canceled } = await dialog.showSaveDialog({
@@ -18,6 +20,39 @@ ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
   generateDevis(devisData, filePath);
 
   return { success: true, path: filePath };
+});
+
+//Generer la factures en pdf----------------------------------
+ipcMain.handle('generate-facture', async (event, factureData, defaultFileName) => {
+  // Ouvre une boîte de dialogue pour choisir où sauvegarder
+  const { filePath, canceled } = await dialog.showSaveDialog({
+      title: "Enregistrer la facture",
+      defaultPath: defaultFileName,
+      filters: [{ name: "PDF", extensions: ["pdf"] }]
+  });
+
+  if (canceled || !filePath) return { success: false };
+
+  // Appelle ta fonction de génération en passant le chemin choisi
+  generateFacture(factureData, filePath);
+
+  return { success: true, path: filePath };
+});
+
+//Créer une fenetre pour voir les Pdf-------------------------------------
+ipcMain.handle('preview-facture', async (event, factureData) => {
+  const pdfBuffer = await generateFacture(factureData); // retourne un Buffer
+  const base64 = pdfBuffer.toString('base64');
+  const previewWin = new BrowserWindow({
+    width: 900,
+    height: 1200,
+    title: 'Aperçu de la facture',
+    webPreferences: {
+      plugins: true,
+    }
+  });
+
+  previewWin.loadURL(`data:application/pdf;base64,${base64}`);
 });
 
 
