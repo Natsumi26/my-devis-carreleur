@@ -74,7 +74,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="statut" class="form-label">Statut</label>
-                        <select name="statut" id="statut">
+                        <select name="statut" id="statut" class="form-select">
                             <option value="En attente">En attente</option>
                             <option value="Accepté">Accepté</option>
                             <option value="Refusé">Refusé</option>
@@ -82,15 +82,16 @@
                     </div>
                     <div class="mb-3">
                         <!-- Select clients -->
-                        <select name="clientListe" id="clientListe"></select>
+                        <label for="clientListe" class="form-label">Client</label>
+                        <select name="clientListe" id="clientListe" class="form-select"></select>
                     </div>
 
                     <div class="mb-3">
                         <!-- Template caché pour prestations -->
-                        <select id="prestationsListeTemplate" style="display:none;"></select>
+                        <select id="prestationsListeTemplate" class="form-select" style="display:none;"></select>
                         <!-- Container pour ajouter les prestations-->
                         <section id="prestationsContainer"></section>
-                        <button type="button" id="addPrestaLine">Ajouter un prestation</button>
+                        <button class="btn btn-secondary" type="button" id="addPrestaLine">Ajouter un prestation</button>
                     </div>
                         
                     <button type="submit" id="addDevis" class="btn btn-success">Ajouter</button>

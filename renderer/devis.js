@@ -83,6 +83,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     
         }
         let currentDevisNumber = null;
+
 //Créer un facture pour un devis -----------------------
 async function createFactureFromDevis(devis_id) {
     // copier le devis dans facture
@@ -144,6 +145,7 @@ for (const p of prestations) {
         const prestations = await window.api.fetchAll("SELECT * FROM prestation");
         console.log(prestations)
         const prestationSelectTemplate = document.getElementById('prestationsListeTemplate');
+        prestationSelectTemplate.classList.add('form-select');
         prestationSelectTemplate.innerHTML='';
         prestations.forEach(prestation => {
             prestationSelectTemplate.innerHTML += `
@@ -224,7 +226,8 @@ for (const p of prestations) {
         const line = document.createElement('div');
         line.classList.add('presta-line');
         line.innerHTML = `
-            <select class="prestationsListe" >
+            <hr>
+            <select class="prestationsListe form-select mb-3" >
             <option value=''>Choisir la prestation</option>
                 ${document.getElementById('prestationsListeTemplate').innerHTML}
             </select>
@@ -401,7 +404,7 @@ window.updateDevis = async function(id) {
         const line = document.createElement('div');
         line.classList.add('presta-line');
         line.innerHTML = `
-            <select class="prestationsListe">
+            <select class="prestationsListe form-select mb-3" >
                 ${document.getElementById('prestationsListeTemplate').innerHTML}
             </select>
             <div class="mb-3">
