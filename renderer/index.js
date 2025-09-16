@@ -20,7 +20,7 @@ async function getDevisAttente() {
     const result = await window.api.fetchAll(`
         SELECT COUNT(*) AS nb
         FROM devis
-        WHERE statue="En attente"
+        WHERE statut="En attente"
       `);
       return result[0].nb;
 }
@@ -56,7 +56,6 @@ async function getFactureMois(){
 async function afficherFacturationMois() {
     const total = await getFactureMois();
     document.getElementById('montant-facture').textContent = total + ' €';
-    console.log("Facturation du mois en cours :", total);
   }
   
   afficherFacturationMois();

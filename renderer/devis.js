@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     total_HT: result[0].total_HT,
                     total_TTC: result[0].total_TTC,
                     taux_tva: result[0].taux_tva,
-                    statue: result[0].statue
+                    statut: result[0].statut
                 },
                 clients: {
                     nom: result[0].nom,
@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 //Recuperation des données pour la génération des PDF
 
         async function getDataDevis(id) {
-            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statut, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
             return result;
         }
 
@@ -256,7 +256,7 @@ for (const p of prestations) {
 
 // GET tous les DEVIS -------------------------------
     async function getDevis() {
-        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statue, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
+        const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statut, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
         
         const tbody = document.getElementById('devisTable')
         tbody.innerHTML='';
@@ -268,7 +268,7 @@ for (const p of prestations) {
                     <td>${d.number}</td>
                     <td>${d.date_devis}</td>
                     <td>${d.total_TTC} €</td>
-                    <td>${d.statue}</td>
+                    <td>${d.statut}</td>
                     <td>${d.client_nom}</td>
                     <td>
                         <button class="btn btn-sm btn-warning me-1" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
@@ -307,10 +307,10 @@ async function addDevis() {
             total_TTC: document.getElementById('totalTTC').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
-            statue: document.getElementById('statue').value,
+            statut: document.getElementById('statut').value,
         };
-        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statue];
-        await window.api.eQuery("INSERT INTO devis (number, total_HT, taux_tva, total_TTC, date_devis, client_id, statue) VALUES (?, ?, ?, ?, ?, ?, ?)", valuesDevis);
+        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statut];
+        await window.api.eQuery("INSERT INTO devis (number, total_HT, taux_tva, total_TTC, date_devis, client_id, statut) VALUES (?, ?, ?, ?, ?, ?, ?)", valuesDevis);
 
         const result = await window.api.fetchAll("SELECT id FROM devis ORDER BY id DESC LIMIT 1");
         if (!result || result.length === 0) {
@@ -351,7 +351,7 @@ async function addDevis() {
         document.getElementById('totalTTC').value = "";
         document.getElementById('tva').value = "";
         document.getElementById('date').value = "";
-        document.getElementById('statue').value = "";
+        document.getElementById('statut').value = "";
         document.getElementById('clientListe').value = "";
         document.getElementById('prestationsContainer').innerHTML = "";
     }
@@ -389,7 +389,7 @@ window.updateDevis = async function(id) {
     document.getElementById('totalTTC').value = d.total_TTC;
     document.getElementById('tva').value = d.taux_tva;
     document.getElementById('date').value = d.date_devis;
-    document.getElementById('statue').value = d.statue;
+    document.getElementById('statut').value = d.statut;
     document.getElementById('clientListe').value = d.client_id;
 
     // Nettoyer le container prestations
@@ -445,16 +445,16 @@ async function updateDevisSubmit(id) {
             total_TTC: document.getElementById('totalTTC').value,
             date_devis: document.getElementById('date').value,
             client_id: document.getElementById('clientListe').value,
-            statue: document.getElementById('statue').value,
+            statut: document.getElementById('statut').value,
             id: id
         };
-        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statue, devis.id]
+        const valuesDevis = [devis.number, devis.total_HT, devis.taux_tva, devis.total_TTC, devis.date_devis, devis.client_id, devis.statut, devis.id]
 
         await window.api.eQuery(
-            "UPDATE devis SET number=?, total_HT=?, taux_tva=?, total_TTC=?, date_devis=?, client_id=?, statue=? WHERE id=?",
+            "UPDATE devis SET number=?, total_HT=?, taux_tva=?, total_TTC=?, date_devis=?, client_id=?, statut=? WHERE id=?",
             valuesDevis
         );
-        if (devis.statue === "Accepté") {
+        if (devis.statut === "Accepté") {
             await createFactureFromDevis(devis.id);
         }
         // Supprimer les anciennes prestations du devis

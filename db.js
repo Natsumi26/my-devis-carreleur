@@ -29,7 +29,7 @@ db.serialize(() => {
     total_HT REAL NOT NULL,
     taux_tva REAL NOT NULL,
     total_TTC REAL NOT NULL,
-    statue TEXT,
+    statut TEXT,
     client_id INTEGER,
     FOREIGN KEY(client_id) REFERENCES clients(id)
   )`);
@@ -72,7 +72,6 @@ db.serialize(() => {
     telephone TEXT,
     adresse TEXT
   )`);
-    
 });
 
 module.exports = db;
