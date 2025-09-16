@@ -61,20 +61,22 @@ function openModalWithPDF(base64) {
         
         return result;
     }
+    async function getEntrepriseData() {
+        const result = await window.api.fetchAll('SELECT * FROM entreprise');
+        return result;
+    }
 
 //Generation des PDF pour téléchargement
     async function generateFacturesFromId(id) {
         const result = await getDataFactures(id);
+        const entrepriseData = await getEntrepriseData();
         if(!result || result.length === 0) {
             console.error("aucune facture trouvé");
             return;
         }
         const factureData = await buildFactureData(result);
+        factureData.entreprise = entrepriseData;
         const response = await window.pdfAPI.generateFacture(factureData, `${factureData.facture.number}.pdf`);
-    
-        if(response.success) {
-            notifier("Facture télechargée avec succès", "Factures");
-    }
 
     }
     let currentFactureNumber = null;
@@ -105,10 +107,13 @@ async function getFactures() {
         // Bouton Voir
         document.getElementById(`voir-${facture.id}`).addEventListener('click', async () => {
           const result = await getDataFactures(facture.id);
+          const entrepriseData = await getEntrepriseData();
           if (!result || result.length === 0) return;
       
             const factureData = await buildFactureData(result);
+            factureData.entreprise = entrepriseData;
             const factureDataJson = JSON.parse(JSON.stringify(factureData));
+
             currentFactureNumber = factureData.facture.number;
           window.factureAPI.previewFacture(factureDataJson); // Envoie au main process
         });

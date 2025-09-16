@@ -36,23 +36,26 @@ function generateDevis(devisData, outputPath=null) {
   // --- Infos société ---
   doc
     .fontSize(12)
-    .text("Entreprise L'atelier du carrelage", 50, 150)
-    .text("12 rue des artisans")
-    .text("26270 Loriol")
+    .text(`Entreprise : ${devisData.entreprise[0].name}`, 50, 150)
+    .text(`Téléphone : ${devisData.entreprise[0].telephone}`)
+    .text(`Adresse : ${devisData.entreprise[0].adresse}`, {
+      width: 200, // largeur de la zone
+      align: 'left'
+    })
     .moveDown();
 
   // --- Infos client ---
   doc
     .fontSize(12)
-    .text(`Client : ${devisData.clients.nom}`)
-    .text(`Adresse : ${devisData.clients.adresse}`)
-    .text(`Téléphone : ${devisData.clients.telephone}`)
+    .text(`Client : ${devisData.clients.nom}`, 325, 200, { width: 250 })
+    .text(`Adresse : ${devisData.clients.adresse}`, 325, doc.y, { width: 250 })
+    .text(`Téléphone : ${devisData.clients.telephone}`, 325, doc.y, { width: 250 })
     .moveDown();
 
   // --- Infos Devis ---
   doc
     .fontSize(12)
-    .text(`Numéro du devis : ${devisData.devis.number}`)
+    .text(`Numéro du devis : ${devisData.devis.number}`, 50, 280, { align: "left", width: 200 })
     .text(`Date du devis : ${devisData.devis.date_devis}`)
     
     .moveDown();

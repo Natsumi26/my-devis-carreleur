@@ -29,7 +29,7 @@
               <ul class="dropdown-menu">
                 <!-- Dropdown menu links -->
                 <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
-                <li class="text-center"><a href="entreprise.html">Coordonnées</a></li>
+                <li class="text-center mt-3"><a class="text-decoration-none link-dark" href="entreprise.html">Coordonnées</a></li>
               </ul>
             </div>
           </li>
@@ -41,22 +41,13 @@
     <h2 class="mb-4">Tableau de bord</h2>
     
       <!-- Cartes statistiques -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card text-white bg-primary">
-            <div class="card-body">
-              <h5 class="card-title">Devis en cours</h5>
-              <h3 id="devis-en-cours">12</h3>
-              <hr>
-            </div>
-          </div>
-        </div>
+      <div class="row g-3 mb-4 justify-content-between">
     
         <div class="col-md-3">
           <div class="card text-white bg-success">
             <div class="card-body">
               <h5 class="card-title">Clients</h5>
-              <h3 id="clients-actifs">35</h3>
+              <h3 ><span id="clients-actifs"></span></h3>
               <hr>
             </div>
           </div>
@@ -66,7 +57,7 @@
           <div class="card text-white bg-warning">
             <div class="card-body">
               <h5 class="card-title">Montant facturé ce mois</h5>
-              <h3 id="montant-facture">12 500€</h3>
+              <h3 ><span id="montant-facture"></span></h3>
               <hr>
             </div>
           </div>
@@ -76,7 +67,7 @@
           <div class="card text-white bg-danger">
             <div class="card-body">
               <h5 class="card-title">Devis en attente</h5>
-              <h3 id="devis-attente">4</h3>
+              <h3 ><span id="devis-attente"></span></h3>
               <hr>
             </div>
           </div>

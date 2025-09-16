@@ -36,23 +36,26 @@ function generateFacture(factureData, outputPath= null) {
   // --- Infos société ---
   doc
     .fontSize(12)
-    .text("Entreprise L'atelier du carrelage", 50, 150)
-    .text("12 rue des artisans")
-    .text("26270 Loriol")
+    .text(`Entreprise : ${factureData.entreprise[0].name}`, 50, 150)
+    .text(`Téléphone : ${factureData.entreprise[0].telephone}`)
+    .text(`Adresse : ${factureData.entreprise[0].adresse}`, {
+      width: 200, // largeur de la zone
+      align: 'left'
+    })
     .moveDown();
 
   // --- Infos client ---
   doc
     .fontSize(12)
-    .text(`Client : ${factureData.clients.nom}`)
-    .text(`Adresse : ${factureData.clients.adresse}`)
-    .text(`Téléphone : ${factureData.clients.telephone}`)
+    .text(`Client : ${factureData.clients.nom}`, 325, 200, { width: 250 })
+    .text(`Adresse : ${factureData.clients.adresse}`,325, doc.y, { width: 250 })
+    .text(`Téléphone : ${factureData.clients.telephone}`,325, doc.y, { width: 250 })
     .moveDown();
   
   // --- Devis associé ---
   doc
     .fontSize(12)
-    .text(`Devis associé : ${factureData.devis.number}`)
+    .text(`Devis associé : ${factureData.devis.number}`, 50, 280, { align: "left", width: 200 })
     .moveDown();
 
   // --- Date facture ---

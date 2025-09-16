@@ -53,21 +53,29 @@ window.addEventListener('DOMContentLoaded', async () => {
             };
         };
 
+
 //Recuperation des données pour la génération des PDF
 
         async function getDataDevis(id) {
             const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statue, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
             return result;
         }
+
+        async function getEntrepriseData() {
+            const result = await window.api.fetchAll('SELECT * FROM entreprise');
+            return result;
+        }
 //Generation des PDF pour le telechargement 
         async function generateDevisFromId(id) {
             const result = await getDataDevis(id);
+            const entrepriseData = await getEntrepriseData();
             if(!result || result.length === 0) {
                 console.error("aucun devis trouvé");
                 return;
             }
     
             const devisData = await buildDevisData(result);
+            devisData.entreprise = entrepriseData;
             const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
         if(response.success) {
             notifier("Devis sauvegardé avec succès", "Devis");
@@ -82,7 +90,7 @@ async function createFactureFromDevis(devis_id) {
         "SELECT * FROM `devis` WHERE devis.id=?",
         [devis_id]
     )
-    const date_facture = new Date().toLocaleDateString('fr-FR');
+    const date_facture = new Date().toISOString().split('T')[0];
     const number = `FAC-${date_facture.replace(/-/g, '')}-${devis_id}`;
     const totalHT = devis[0].total_HT;
     const totalTTC = devis[0].total_TTC;
@@ -153,7 +161,7 @@ for (const p of prestations) {
         //Set le type de formulaire
         document.getElementById('typeForm').value = 'add';
         // date du jour pour le devis
-        document.getElementById('date').value = new Date().toLocaleDateString('fr-FR');
+        document.getElementById('date').value = new Date().toISOString().split('T')[0];;
     })
 
     //Creation du NUMERO de devis
@@ -276,10 +284,13 @@ for (const p of prestations) {
             // Bouton Voir
             document.getElementById(`voir-${d.id}`).addEventListener('click', async () => {
                 const result = await getDataDevis(d.id);
+                const entrepriseData = await getEntrepriseData();
                 if (!result || result.length === 0) return;
             
                     const devisData = await buildDevisData(result);
+                    devisData.entreprise = entrepriseData;
                     const devisDataJson = JSON.parse(JSON.stringify(devisData));
+                    
                     currentDevisNumber = devisData.devis.number;
                 window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
             });
