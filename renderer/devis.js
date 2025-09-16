@@ -11,7 +11,7 @@ async function createFactureFromDevis(devis_id) {
         "SELECT * FROM `devis` WHERE devis.id=?",
         [devis_id]
     )
-    const date_facture = new Date().toISOString().split("T")[0];
+    const date_facture = new Date().toLocaleDateString('fr-FR');
     const number = `FAC-${date_facture.replace(/-/g, '')}-${devis_id}`;
     const totalHT = devis[0].total_HT;
     const totalTTC = devis[0].total_TTC;

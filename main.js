@@ -38,21 +38,11 @@ ipcMain.handle('generate-facture', async (event, factureData, defaultFileName) =
 
   return { success: true, path: filePath };
 });
-
-//Créer une fenetre pour voir les Pdf-------------------------------------
+//Previsualisation de la facture pdf
 ipcMain.handle('preview-facture', async (event, factureData) => {
-  const pdfBuffer = await generateFacture(factureData); // retourne un Buffer
+  const pdfBuffer = await generateFacture(factureData);
   const base64 = pdfBuffer.toString('base64');
-  const previewWin = new BrowserWindow({
-    width: 900,
-    height: 1200,
-    title: 'Aperçu de la facture',
-    webPreferences: {
-      plugins: true,
-    }
-  });
-
-  previewWin.loadURL(`data:application/pdf;base64,${base64}`);
+  event.sender.send('preview-facture', base64); // envoie au renderer
 });
 
 

@@ -48,6 +48,19 @@ function generateFacture(factureData, outputPath= null) {
     .text(`Adresse : ${factureData.clients.adresse}`)
     .text(`Téléphone : ${factureData.clients.telephone}`)
     .moveDown();
+  
+  // --- Devis associé ---
+  doc
+    .fontSize(12)
+    .text(`Devis associé : ${factureData.devis.number}`)
+    .moveDown();
+
+  // --- Date facture ---
+  doc
+    .fontSize(12)
+    .text(`Date de la facture : ${factureData.facture.date_facture}`)
+    .text(`Numéro de la facture : ${factureData.facture.number}`)
+    .moveDown();
 
     // --- Tableau prestations ---
     const startX = 50;

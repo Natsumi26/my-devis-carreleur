@@ -1,5 +1,4 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const { generateDevis } = require('./renderer/devisPdf.js');
 
 
 contextBridge.exposeInMainWorld('versions', {
@@ -31,5 +30,7 @@ contextBridge.exposeInMainWorld('api', {
 
 //function pour visualiser la facture
 contextBridge.exposeInMainWorld('factureAPI', {
-  voirFacture: (factureData) => ipcRenderer.invoke('preview-facture', factureData),
+  previewFacture: (factureData) => ipcRenderer.invoke('preview-facture', factureData),
+  onPreview: (callback) => ipcRenderer.on('preview-facture', (event, base64) => callback(base64))
 });
+
