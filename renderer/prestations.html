@@ -27,6 +27,7 @@
           <ul class="dropdown-menu">
             <!-- Dropdown menu links -->
             <li class="text-center"><button class="btn btn-outline-dark btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
+            <li class="text-center"><a href="entreprise.html">Coordonnées</a></li>
           </ul>
         </div>
       </li>
@@ -37,7 +38,7 @@
 <div class="flex-grow-1 p-4 container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-4">Prestations</h2>
-          <button id="NewPrestation" class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
+          <button id="NewPrestation" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
             Ajouter une prestation
           </button>
   </div>
@@ -69,7 +70,7 @@
             <div class="modal-body">
               <form id="addPrestationForm">
                 <input type="hidden" id="prestationId">
-                <input type="hidden" id='typeForm'>
+                <input type="hidden" id='typeForm' value="add">
                 <div class="mb-3">
                   <label for="nom" class="form-label">Nom</label>
                   <input type="text" class="form-control" id="nom" required>

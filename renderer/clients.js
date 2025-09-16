@@ -41,6 +41,7 @@ async function addClient() {
     // Convertir l'objet en tableau dans le bon ordre
     const values = [client.nom, client.telephone, client.email, client.adresse];
     await window.api.eQuery("INSERT INTO clients (nom, telephone, email, adresse) VALUES (?, ?, ?, ?)", values);
+    notifier("Client créé avec succès", "Clients");
     getClients();
 
     // Réinitialiser le formulaire
@@ -54,6 +55,7 @@ async function addClient() {
 //supprimer un clients
 window.deleteClient = async function(id) {
     await window.api.eQuery("DELETE FROM clients WHERE id=?", [id]);
+    notifier("Client supprimé avec succès", "Clients");
     getClients();
 }
 //Modifier un clients
@@ -89,7 +91,7 @@ async function updateClientSubmit(id) {
     };
     const values = [client.nom, client.telephone, client.email, client.adresse, id];
     await window.api.eQuery("UPDATE clients set nom=? , telephone=? , email=? , adresse=? WHERE id=? ", values);
-
+    notifier("Client modifié avec succès", "Clients");
     await getClients();
     
     // Réinitialiser le formulaire

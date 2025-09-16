@@ -37,66 +37,43 @@
       </div>
 
       <!-- Contenu -->
-  <div class="flex-grow-1 p-4 container mt-4">
-    <h2 class="mb-4">Tableau de bord</h2>
-    
-      <!-- Cartes statistiques -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card text-white bg-primary">
-            <div class="card-body">
-              <h5 class="card-title">Devis en cours</h5>
-              <h3 id="devis-en-cours">12</h3>
-              <hr>
-            </div>
-          </div>
-        </div>
-    
-        <div class="col-md-3">
-          <div class="card text-white bg-success">
-            <div class="card-body">
-              <h5 class="card-title">Clients</h5>
-              <h3 id="clients-actifs">35</h3>
-              <hr>
-            </div>
-          </div>
-        </div>
-    
-        <div class="col-md-3">
-          <div class="card text-white bg-warning">
-            <div class="card-body">
-              <h5 class="card-title">Montant facturé ce mois</h5>
-              <h3 id="montant-facture">12 500€</h3>
-              <hr>
-            </div>
-          </div>
-        </div>
-    
-        <div class="col-md-3">
-          <div class="card text-white bg-danger">
-            <div class="card-body">
-              <h5 class="card-title">Devis en attente</h5>
-              <h3 id="devis-attente">4</h3>
-              <hr>
-            </div>
-          </div>
+  <div class="flex-grow-1 p-4 container justify-content-center mt-4">
+    <div class="card text-center w-50 shadow-sm">
+        <div class="card-body flex justify-content-center">
+          <h5 class="card-title">Coordonnées de l'entreprise</h5>
+          <img src="../assets/logo_entreprise.png" alt="logo" class="w-25 mb-3">
+          <p><strong>Nom :</strong> <span id="nomEntreprise"></span></p>
+          <p><strong>Téléphone :</strong> <span id="telEntreprise"></span></p>
+          <p><strong>Adresse :</strong> <span id="adresseEntreprise"></span></p>
+          <button class="btn btn-outline-primary" onclick="activerEdition()">Modifier</button>
         </div>
       </div>
-    
-      <!-- Graphique -->
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Chiffre d'affaires mensuel</h5>
-            <canvas id="chartCA" height="100"></canvas>
-        </div>
+  
+  <!-- Formulaire d'edition  -->
+  <div id="formEdition" class="mt-4" style="display:none;">
+    <h5>Modifier les coordonnées</h5>
+    <form onsubmit="enregistrerCoordonnees(event)">
+      <div class="mb-2">
+        <label for="inputNom" class="form-label">Nom</label>
+        <input type="text" class="form-control" id="inputNom">
       </div>
+      <div class="mb-2">
+        <label for="inputTel" class="form-label">Téléphone</label>
+        <input type="text" class="form-control" id="inputTel">
+      </div>
+      <div class="mb-2">
+        <label for="inputAdresse" class="form-label">Adresse</label>
+        <input type="text" class="form-control" id="inputAdresse">
+      </div>
+      <button type="submit" class="btn btn-success">Enregistrer</button>
+      <button type="button" class="btn btn-secondary" onclick="annulerEdition()">Annuler</button>
+    </form>
   </div>
 </div>
     
-    
+    </div>
   </body>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../node_modules/chart.js/dist/chart.umd.min.js"></script>
   <script src="./renderer.js"></script>
-  <script src="./index.js"></script>
+  <script src="./entreprise.js"></script>
 </html>

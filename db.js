@@ -40,7 +40,7 @@ db.serialize(() => {
     devis_id INTEGER,
     quantity INTEGER NOT NULL,
     sous_total REAL NOT NULL,
-    FOREIGN KEY(prestation_id) REFERENCES prestation(id),
+    FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
     FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
   )`);
 
@@ -63,7 +63,7 @@ db.serialize(() => {
     facture_id INTEGER,
     quantity INTEGER NOT NULL,
     sous_total REAL NOT NULL,
-    FOREIGN KEY(prestation_id) REFERENCES prestation(id),
+    FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
     FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
   )`);
   db.run(`CREATE TABLE IF NOT EXISTS entreprise (
@@ -72,6 +72,7 @@ db.serialize(() => {
     telephone TEXT,
     adresse TEXT
   )`);
+    
 });
 
 module.exports = db;

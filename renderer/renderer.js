@@ -13,3 +13,21 @@ document.getElementById('darkMode').addEventListener('click', async () => {
   const theme = isDarkMode ? 'dark' : 'light';
   document.documentElement.setAttribute('data-bs-theme', theme);
 });
+
+function notifier(message, title = "Notification") {
+  if (Notification.permission === 'granted') {
+    new Notification(title, {
+      body: message,
+      icon: '../assets/logo_entreprise.png'
+    });
+  } else if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        new Notification(title, {
+          body: message,
+          icon: '../assets/logo_entreprise.png'
+        });
+      }
+    });
+  }
+}

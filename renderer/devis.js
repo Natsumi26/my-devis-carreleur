@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         link.href = `data:application/pdf;base64,${base64}`;
         link.download = `${currentDevisNumber}.pdf`;
         link.click();
+        notifier("Devis sauvegardé avec succès", "Devis");
       };
 //Fermer la modal
       window.closeModal = function () {
@@ -69,7 +70,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const devisData = await buildDevisData(result);
             const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
         if(response.success) {
-            console.log(`Devis sauvegardé : ${response.path}`);
+            notifier("Devis sauvegardé avec succès", "Devis");
         }
     
         }
@@ -98,7 +99,7 @@ async function createFactureFromDevis(devis_id) {
     const facture = await window.api.fetchAll("SELECT id FROM factures ORDER BY id DESC LIMIT 1");
     const facture_id = facture[0].id;
     
-    console.log("Facture créée :", number);
+    notifier("Facture créée à partir du devis avec succès", "Devis");
 
     // Copier les devis_prestation dans facture_prestation
     const prestations = await window.api.fetchAll(
@@ -310,7 +311,6 @@ async function addDevis() {
 
         //recuperer les données de toutes les lignes prestations
         const lines = document.querySelectorAll('.presta-line');
-        console.log("➡️ Lignes prestations détectées:", lines.length);
         
         for (let line of lines) {
             const prestation_id = line.querySelector('.prestationsListe').value;
@@ -330,7 +330,7 @@ async function addDevis() {
             );
 
         }
-        console.log("✅ Toutes les prestations ont été insérées.");
+        notifier("Devis créé avec succès", "Devis");
         await getDevis();
     
         // REINITIALISATION et cacher le FORMULAIRE
@@ -348,6 +348,7 @@ async function addDevis() {
 //SUPPRIMER un devis ----------------------------
 window.deleteDevis = async function(id) {
         await window.api.eQuery("DELETE FROM devis WHERE id=?", [id]);
+        notifier("Devis supprimé avec succès", "Devis");
         await getDevis();
     }
     
@@ -459,7 +460,7 @@ async function updateDevisSubmit(id) {
                 [prestation_id, id, quantity, sous_total]
             );
         }
-
+        notifier("Devis modifié avec succès", "Devis");
         // Rafraîchir la liste des devis
         await getDevis();
 

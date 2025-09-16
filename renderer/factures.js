@@ -12,6 +12,7 @@ function openModalWithPDF(base64) {
     link.href = `data:application/pdf;base64,${base64}`;
     link.download = `${currentFactureNumber}.pdf`;
     link.click();
+    notifier("Facture télechargée avec succès", "Factures");
   };
 //Fermer la modal
   window.closeModal = function () {
@@ -72,7 +73,7 @@ function openModalWithPDF(base64) {
         const response = await window.pdfAPI.generateFacture(factureData, `${factureData.facture.number}.pdf`);
     
         if(response.success) {
-        console.log(`Facture sauvegardé : ${response.path}`);
+            notifier("Facture télechargée avec succès", "Factures");
     }
 
     }
@@ -96,8 +97,8 @@ async function getFactures() {
                 <td>
                 <button class="btn btn-sm btn-warning me-1" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
                     <button class="btn btn-sm btn-success me-1" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
-
-                </td>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFacture(${facture.id})"><i class="bi bi-trash3"></i></button>
+                    </td>
         `;
         // Ajout de la ligne au tableau
         tbody.appendChild(row);
@@ -116,6 +117,13 @@ async function getFactures() {
     });
 }
 getFactures();
+
+//supprimer une facture
+    window.deleteFacture = async function(id) {
+        await window.api.eQuery("DELETE FROM factures WHERE id=?", [id]);
+        notifier("Facture supprimée avec succès", "Factures");
+        getFactures();
+    }
 
 // 📥 Réception du PDF depuis le main process
 window.factureAPI.onPreview((base64) => {

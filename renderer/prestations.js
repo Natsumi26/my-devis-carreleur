@@ -33,7 +33,9 @@ async function addPrestation() {
             const name = document.getElementById('nom').value;
             const pu= document.getElementById('pu').value;
         // Convertir l'objet en tableau dans le bon ordre
+        
         await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", [name, pu]);
+        notifier("Prestation ajoutée avec succès", "Prestations");
         getPrestation();
     
     
@@ -41,12 +43,14 @@ async function addPrestation() {
         document.getElementById('typeForm').value = "add";
         document.getElementById('nom').value = "";
         document.getElementById('pu').value = "";
+        
     }
 
     
 //supprimer un prestation
     window.deletePrestation = async function(id) {
         await window.api.eQuery("DELETE FROM prestation WHERE id=?", [id]);
+        notifier("Prestation supprimée avec succès", "Prestations");
         getPrestation();
     }
 
@@ -83,6 +87,7 @@ async function updatePrestationSubmit(id) {
         "UPDATE prestation SET name=?, pu=? WHERE id=?",
         valuesPrestation
     );
+    notifier("Prestation modifiée avec succès", "Prestations");
     await getPrestation();
 
     // Réinitialiser le formulaire
