@@ -86,44 +86,55 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 //Créer un facture pour un devis -----------------------
 async function createFactureFromDevis(devis_id) {
-    // copier le devis dans facture
-    const devis = await window.api.fetchAll(
-        "SELECT * FROM `devis` WHERE devis.id=?",
-        [devis_id]
-    )
-    const date_facture = new Date().toISOString().split('T')[0];
-    const number = `FAC-${date_facture.replace(/-/g, '')}-${devis_id}`;
-    const totalHT = devis[0].total_HT;
-    const totalTTC = devis[0].total_TTC;
-    const tva = devis[0].taux_tva;
-    const client = devis[0].client_id
-
-    const values = [number, date_facture, totalHT, totalTTC, tva, devis_id, client]
-    await window.api.eQuery(
-        "INSERT INTO factures (number, date_facture, total_HT, total_TTC, taux_tva, devis_id, client_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        values
-    );
-
-    // Récupérer l'ID de la facture créée
-    const facture = await window.api.fetchAll("SELECT id FROM factures ORDER BY id DESC LIMIT 1");
-    const facture_id = facture[0].id;
+    const factureExistante = await window.api.fetchOne(`SELECT id FROM factures WHERE devis_id= ?`, [devis_id])
+    console.log(factureExistante)
+    if(factureExistante) {
+        const facture_id = factureExistante[0].id;
+        await window.api.eQuery(`DELETE FROM factures WHERE id=?`, [facture_id]);
+            console.log(`Ancienne facture supprimée (ID: ${facture_id})`);
+        await window.api.eQuery(`DELETE FROM facture_prestation WHERE facture_id=?`,[facture_id])
+            console.log(`Ancienne facture supprimée (ID: ${facture_id})`);
+        
+    }
+            // copier le devis dans facture
+                const devis = await window.api.fetchOne(
+                    "SELECT * FROM `devis` WHERE devis.id=?",
+                    [devis_id]
+                )
+                const date_facture = new Date().toISOString().split('T')[0];
+                const number = `FAC-${date_facture.replace(/-/g, '')}-${devis_id}`;
+                const totalHT = devis[0].total_HT;
+                const totalTTC = devis[0].total_TTC;
+                const tva = devis[0].taux_tva;
+                const client = devis[0].client_id
     
-    notifier("Facture créée à partir du devis avec succès", "Devis");
-
-    // Copier les devis_prestation dans facture_prestation
-    const prestations = await window.api.fetchAll(
-  "SELECT prestation_id, quantity, sous_total FROM devis_prestation WHERE devis_id = ?",
-  [devis_id]
-);
-
-for (const p of prestations) {
-  await window.api.eQuery(
-    "INSERT INTO facture_prestation (prestation_id, facture_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
-    [p.prestation_id, facture_id, p.quantity, p.sous_total]
-  );
-}
-
-}
+                const values = [number, date_facture, totalHT, totalTTC, tva, devis_id, client]
+                await window.api.eQuery(
+                    "INSERT INTO factures (number, date_facture, total_HT, total_TTC, taux_tva, devis_id, client_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    values
+                );
+    
+                // Récupérer l'ID de la facture créée
+                const facture = await window.api.fetchAll("SELECT id FROM factures ORDER BY id DESC LIMIT 1");
+                const facture_id = facture[0].id;
+                
+                notifier("Facture créée à partir du devis avec succès", "Devis");
+    
+                // Copier les devis_prestation dans facture_prestation
+                const prestations = await window.api.fetchAll(
+                    "SELECT prestation_id, quantity, sous_total FROM devis_prestation WHERE devis_id = ?",
+                    [devis_id]
+                );
+    
+                for (const p of prestations) {
+                await window.api.eQuery(
+                    "INSERT INTO facture_prestation (prestation_id, facture_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
+                    [p.prestation_id, facture_id, p.quantity, p.sous_total]
+                );
+                }
+            }
+       
+    
     //-------------------------------------
 
     // Remplir le select CLIENTS -----------------------------
@@ -257,6 +268,8 @@ for (const p of prestations) {
         });
     })
 
+
+
 // GET tous les DEVIS -------------------------------
     async function getDevis() {
         const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statut, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
@@ -275,6 +288,7 @@ for (const p of prestations) {
                     <td>${d.client_nom}</td>
                     <td>
                         <button class="btn btn-sm btn-warning me-1" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-info me-1" id="accepter-${d.id}"><i class="bi bi-check2"></i></button>
                         <button class="btn btn-sm btn-success me-1" id="telecharger-${d.id}"><i class="bi bi-download"></i></button>
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
@@ -282,6 +296,30 @@ for (const p of prestations) {
             `;
             // Ajout de la ligne au tableau
             tbody.appendChild(row);
+            // Display le bouton valider si statut accepter
+            if(d.statut === 'Accepté'){
+                document.getElementById(`accepter-${d.id}`).style= 'display:none';
+            } else {
+                document.getElementById(`accepter-${d.id}`).style= 'display:block';
+            } 
+
+            // Bouton accepter
+            document.getElementById(`accepter-${d.id}`).addEventListener('click', async () => {
+                await window.api.eQuery(
+                    "UPDATE devis SET statut=? WHERE id=?",
+                    ["Accepté", d.id]
+                );
+                await createFactureFromDevis(d.id);
+                await getDevis();
+                
+                // Feedback visuel
+                const btn = document.getElementById(`accepter-${d.id}`);
+                btn.classList.remove("btn-info");
+                btn.classList.add("btn-success");
+                btn.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+                
+            });
+            
             // Bouton Télécharger
             document.getElementById(`telecharger-${d.id}`).addEventListener('click', async () => await generateDevisFromId(d.id));
             // Bouton Voir

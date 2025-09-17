@@ -20,6 +20,9 @@ contextBridge.exposeInMainWorld('api', {
   
     // Récupérer tout
     fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
+
+    //Recupere un seul
+    fetchOne: (query, values) => ipcRenderer.invoke('fetchOne', query, values),
   });
 
 //export function

@@ -211,6 +211,15 @@ app.whenReady().then(() => {
       });
     });
   });
+  //SELECT un seul
+  ipcMain.handle('fetchOne', (event, query, values = []) => {
+    return new Promise((resolve, reject) => {
+      db.all(query, values, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  });
   
   // INSERT / UPDATE / DELETE
   ipcMain.handle('executeQuery', (event, query, values = []) => {
