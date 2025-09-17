@@ -76,6 +76,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     
             const devisData = await buildDevisData(result);
             devisData.entreprise = entrepriseData;
+            console.log(devisData)
             const response = await window.pdfAPI.generateDevis(devisData, `${devisData.devis.number}.pdf`);
         if(response.success) {
             notifier("Devis sauvegardé avec succès", "Devis");

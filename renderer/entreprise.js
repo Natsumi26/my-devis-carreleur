@@ -41,18 +41,28 @@ async function enregistrerCoordonnees(e) {
     let logoPath = null;
 
     if (file) {
-      const fs = window.api.writeFile; // exposé via preload
-      const path = window.api.joinPath;
 
       const timestamp = Date.now();
+      const logoDir = window.api.joinPath('assets', 'logo_entreprise');
       const ext = window.api.extname(file.name);
       const newFileName = `logo_${timestamp}${ext}`;
-      const destPath = path('assets/logo_entreprise', newFileName);
+      const destPath = window.api.joinPath('assets/logo_entreprise', newFileName);
   
       // Lire le fichier et l’écrire dans assets
       const buffer = await file.arrayBuffer();
-      await fs(destPath, new Uint8Array(buffer));
-  
+      await window.api.writeFile(destPath, new Uint8Array(buffer));
+
+      // Supprimer les autres fichiers du dossier
+      const files = await window.api.readdir(logoDir);
+      if (Array.isArray(files)) {
+        for (const fileName of files) {
+          if (fileName !== newFileName) {
+            const filePath = window.api.joinPath(logoDir, fileName);
+            await window.api.unlink(filePath);
+          }
+        }
+      }
+
       logoPath = destPath;
       logoPath = logoPath.replace(/\\/g, '/');
     } else {

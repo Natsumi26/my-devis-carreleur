@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('darkMode', {
 //CRUD
 contextBridge.exposeInMainWorld('api', {
     writeFile: (filePath, buffer) => fs.writeFile(filePath, buffer),
+    readdir: (dirPath) => fs.readdir(dirPath),
+    unlink: (filePath) => fs.unlink(filePath),
     extname: (filename) => path.extname(filename),
     joinPath: (...args) => path.join(...args),
     // Ajouter

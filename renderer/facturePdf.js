@@ -1,7 +1,9 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+const path = require('path');
 
 function generateFacture(factureData, outputPath= null) {
+  const logoPath = path.join(__dirname, '..', factureData.entreprise[0].logo_path);
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
     const chunks = [];
@@ -21,11 +23,11 @@ function generateFacture(factureData, outputPath= null) {
 
   // --- Logo ---
   // Assure-toi d'avoir un logo.png dans le dossier assets par exemple
-  try {
-    doc.image('././assets/logo_entreprise.png', 50, 45, { width: 100 });
-  } catch (err) {
-    console.warn("Logo introuvable");
-  }
+   if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 50, 45, { width: 100 });
+    } else {
+      console.warn("Logo introuvable :", logoPath);
+    }
 
   // --- En-tête ---
   doc
