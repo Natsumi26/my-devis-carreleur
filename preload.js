@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
-
+const fs = require('fs/promises'); // pour utiliser les fonctions async comme writeFile
+const path = require('path');
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
@@ -15,6 +16,9 @@ contextBridge.exposeInMainWorld('darkMode', {
 
 //CRUD
 contextBridge.exposeInMainWorld('api', {
+    writeFile: (filePath, buffer) => fs.writeFile(filePath, buffer),
+    extname: (filename) => path.extname(filename),
+    joinPath: (...args) => path.join(...args),
     // Ajouter
     eQuery: (query, values) => ipcRenderer.invoke('executeQuery', query, values),
   

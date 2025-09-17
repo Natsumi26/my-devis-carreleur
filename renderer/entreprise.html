@@ -41,7 +41,7 @@
     <div class="card text-center w-50 h-50 shadow-sm mb-4">
         <div class="card-body">
           <h5 class="card-title">Coordonnées de l'entreprise</h5>
-          <img src="../assets/logo_entreprise.png" alt="logo" class="w-25 mb-3">
+          <img id="logoEntreprise" src="" alt="logo" class="w-25 mb-3">
           <p><strong>Nom :</strong> <span id="nomEntreprise"></span></p>
           <p><strong>Téléphone :</strong> <span id="telEntreprise"></span></p>
           <p><strong>Adresse :</strong> <span id="adresseEntreprise"></span></p>
@@ -53,6 +53,11 @@
   <div id="formEdition" class="mt-4 card w-50 p-3 shadow-sm" style="display:none;">
     <h5>Modifier les coordonnées</h5>
     <form onsubmit="enregistrerCoordonnees(event)">
+      <img id="previewLogo" src="" alt="Aperçu du logo" class="w-25 mt-2 rounded shadow-sm">
+      <div class="mb-2">
+        <label for="inputLogo" class="form-label">Logo</label>
+        <input type="file" class="form-control" id="inputLogo"  accept="image/*">
+      </div>
       <div class="mb-2">
         <label for="inputNom" class="form-label">Nom</label>
         <input type="text" class="form-control" id="inputNom">

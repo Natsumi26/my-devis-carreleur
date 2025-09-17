@@ -1,3 +1,14 @@
+document.getElementById('inputLogo').addEventListener('change', function () {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById('previewLogo').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 //GET entreprise
 async function chargerCoordonnees() {
     const result = await window.api.fetchAll('SELECT * FROM entreprise LIMIT 1');
@@ -5,6 +16,8 @@ async function chargerCoordonnees() {
   
     const data = result[0];
     entrepriseId = data.id;
+
+    document.getElementById('logoEntreprise').src = `../${data.logo_path}`;
     document.getElementById('nomEntreprise').textContent = data.name;
     document.getElementById('telEntreprise').textContent = data.telephone;
     document.getElementById('adresseEntreprise').textContent = data.adresse;
@@ -13,6 +26,7 @@ chargerCoordonnees();
 //Activer l'edition
 function activerEdition() {
     document.getElementById('formEdition').style.display = 'block';
+    document.getElementById('inputLogo').value = '';
     document.getElementById('inputNom').value = document.getElementById('nomEntreprise').textContent;
     document.getElementById('inputTel').value = document.getElementById('telEntreprise').textContent;
     document.getElementById('inputAdresse').value = document.getElementById('adresseEntreprise').textContent;
@@ -20,16 +34,42 @@ function activerEdition() {
 //Enregistrer les modifications
 async function enregistrerCoordonnees(e) {
     e.preventDefault();
+
+    const fileInput = document.getElementById('inputLogo');
+    const file = fileInput.files[0];
+  
+    let logoPath = null;
+
+    if (file) {
+      const fs = window.api.writeFile; // exposé via preload
+      const path = window.api.joinPath;
+
+      const timestamp = Date.now();
+      const ext = window.api.extname(file.name);
+      const newFileName = `logo_${timestamp}${ext}`;
+      const destPath = path('assets/logo_entreprise', newFileName);
+  
+      // Lire le fichier et l’écrire dans assets
+      const buffer = await file.arrayBuffer();
+      await fs(destPath, new Uint8Array(buffer));
+  
+      logoPath = destPath;
+      logoPath = logoPath.replace(/\\/g, '/');
+    } else {
+      // Aucun nouveau logo : garder l'ancien
+      const entreprise = await window.api.fetchOne('SELECT logo_path FROM entreprise WHERE id = ?', [entrepriseId]);
+      logoPath = entreprise[0].logo_path;
+    }
   
     const nom = document.getElementById('inputNom').value;
     const tel = document.getElementById('inputTel').value;
     const adresse = document.getElementById('inputAdresse').value;
   
     await window.api.eQuery(
-      'UPDATE entreprise SET name = ?, telephone = ?, adresse = ? WHERE id = ?',
-      [nom, tel, adresse, entrepriseId]
+      'UPDATE entreprise SET name = ?, telephone = ?, adresse = ?, logo_path = ? WHERE id = ?',
+      [nom, tel, adresse, logoPath, entrepriseId]
     );
-  
+    document.getElementById('logoEntreprise').src = `../${logoPath}`;
     document.getElementById('nomEntreprise').textContent = nom;
     document.getElementById('telEntreprise').textContent = tel;
     document.getElementById('adresseEntreprise').textContent = adresse;

@@ -68,6 +68,7 @@ db.serialize(() => {
   )`);
   db.run(`CREATE TABLE IF NOT EXISTS entreprise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    logo_path TEXT,
     name TEXT NOT NULL,
     telephone TEXT,
     adresse TEXT
