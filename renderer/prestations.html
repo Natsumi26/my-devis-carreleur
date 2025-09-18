@@ -38,13 +38,14 @@
 <div class="flex-grow-1 p-4 container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-4">Prestations</h2>
+    <div class="w-50"><input id="search" class="form-control me-2" type="search" onkeyup="Search()" placeholder="Recherche par nom" aria-label="Search"/></div>
           <button id="NewPrestation" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPrestationModal">
             Ajouter une prestation
           </button>
   </div>
 
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table id="myTable" class="table table-striped table-hover">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
