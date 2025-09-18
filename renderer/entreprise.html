@@ -45,16 +45,16 @@
           <p><strong>Nom :</strong> <span id="nomEntreprise"></span></p>
           <p><strong>Téléphone :</strong> <span id="telEntreprise"></span></p>
           <p><strong>Adresse :</strong> <span id="adresseEntreprise"></span></p>
-          <button class="btn btn-outline-success" id="btnCreerEntreprise">Créer l'entreprise</button>
-          <button class="btn btn-outline-primary" onclick="activerEdition()">Modifier</button>
+          <button class="btn btn-outline-success" onclick="addEntreprise()" id="btnCreerEntreprise">Créer l'entreprise</button>
+          <button class="btn btn-outline-primary" onclick="openFormUpdate()">Modifier</button>
         </div>
       </div>
   
   <!-- Formulaire d'edition  -->
   <div id="formEdition" class="mt-4 card w-50 p-3 shadow-sm" style="display:none;">
-    <h5>Modifier les coordonnées</h5>
-    <form onsubmit="enregistrerCoordonnees(event)">
-      <input type="hidden" name="typeForm" value="add">
+    <h5 id="title"></h5>
+    <form id="form">
+      <input type="hidden" id="typeForm" value="add">
       <img id="previewLogo" src="" alt="Aperçu du logo" class="w-25 mt-2 rounded shadow-sm">
       <div class="mb-2">
         <label for="inputLogo" class="form-label">Logo</label>

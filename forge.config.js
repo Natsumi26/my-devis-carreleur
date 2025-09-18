@@ -4,6 +4,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: './assets/build/icons/icon',
     extraResources: [
       'assets/'
     ]
@@ -12,7 +13,12 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        setupIcon: './assets/build/icons/icon.ico', // icône du setup
+        shortcutName: 'Mes devis/factures',
+        createDesktopShortcut: true,
+        createStartMenuShortcut: true
+      }
     },
     {
       name: '@electron-forge/maker-zip',

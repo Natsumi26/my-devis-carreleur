@@ -1,5 +1,6 @@
 {
   "name": "my-devis-carreleur",
+  "productName": "Mes devis/factures", 
   "version": "1.0.0",
   "description": "Gestion devis/factures pour un carreleur",
   "main": "main.js",
@@ -30,4 +31,5 @@
     "pdfkit": "^0.17.2",
     "sqlite3": "^5.1.7"
   }
+  
 }

@@ -91,6 +91,9 @@ db.serialize(() => {
     telephone TEXT,
     adresse TEXT
   )`);
+  // db.run(`
+  //   DELETE FROM entreprise
+  //   `)
 });
 
 module.exports = db;
