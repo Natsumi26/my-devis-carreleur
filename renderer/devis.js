@@ -88,8 +88,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 //Créer un facture pour un devis -----------------------
 async function createFactureFromDevis(devis_id) {
     const factureExistante = await window.api.fetchOne(`SELECT id FROM factures WHERE devis_id= ?`, [devis_id])
-    console.log(factureExistante)
-    if(factureExistante) {
+    console.log(factureExistante )
+    if(factureExistante && factureExistante.length > 0) {
         const facture_id = factureExistante[0].id;
         await window.api.eQuery(`DELETE FROM factures WHERE id=?`, [facture_id]);
             console.log(`Ancienne facture supprimée (ID: ${facture_id})`);

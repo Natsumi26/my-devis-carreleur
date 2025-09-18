@@ -1,10 +1,13 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require('path');
+const { app } = require('electron');
 
 
 function generateDevis(devisData, outputPath=null) {
-  const logoPath = path.join(__dirname, '..', devisData.entreprise[0].logo_path);
+  const logoFileName = devisData.entreprise[0].logo_path;
+  const logoPath = path.join(app.getPath('userData'), 'logo_entreprise', logoFileName);
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
     const chunks = [];

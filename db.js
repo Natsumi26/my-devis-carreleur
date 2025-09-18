@@ -1,8 +1,26 @@
 // db.js
 const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
 const path = require('node:path');
+const { app } = require('electron');
 
-const dbPath = path.join(__dirname, 'db.sqlite');
+// Chemin vers le dossier accessible en écriture
+const userDataPath = app.getPath('userData');
+const dbPath = path.join(userDataPath, 'db.sqlite');
+
+// Chemin vers la base embarquée dans assets
+const sourceDbPath = path.join(process.resourcesPath, 'assets', 'db.sqlite');
+
+// Copier la base si elle n'existe pas encore
+if (!fs.existsSync(dbPath)) {
+  try {
+    fs.copyFileSync(sourceDbPath, dbPath);
+    console.log('Base SQLite copiée dans userData');
+  } catch (err) {
+    console.error('Erreur lors de la copie de la base :', err);
+  }
+}
+
 const db = new sqlite3.Database(dbPath);
 db.run("PRAGMA foreign_keys = ON");
 

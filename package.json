@@ -1,21 +1,32 @@
 {
   "name": "my-devis-carreleur",
   "version": "1.0.0",
-  "description": "Génération de devis pour un carreleur",
+  "description": "Gestion devis/factures pour un carreleur",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "author": "Marion",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^38.0.0"
+    "@electron-forge/cli": "^7.9.0",
+    "@electron-forge/maker-deb": "^7.9.0",
+    "@electron-forge/maker-rpm": "^7.9.0",
+    "@electron-forge/maker-squirrel": "^7.9.0",
+    "@electron-forge/maker-zip": "^7.9.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
+    "@electron-forge/plugin-fuses": "^7.9.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^28.1.0"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
+    "electron-squirrel-startup": "^1.0.1",
     "pdfkit": "^0.17.2",
     "sqlite3": "^5.1.7"
   }

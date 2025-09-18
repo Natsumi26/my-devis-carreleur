@@ -1,6 +1,8 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer} = require('electron');
 const fs = require('fs/promises'); // pour utiliser les fonctions async comme writeFile
+const fsSync = require('fs'); 
 const path = require('path');
+
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,
@@ -16,11 +18,17 @@ contextBridge.exposeInMainWorld('darkMode', {
 
 //CRUD
 contextBridge.exposeInMainWorld('api', {
-    writeFile: (filePath, buffer) => fs.writeFile(filePath, buffer),
-    readdir: (dirPath) => fs.readdir(dirPath),
-    unlink: (filePath) => fs.unlink(filePath),
-    extname: (filename) => path.extname(filename),
-    joinPath: (...args) => path.join(...args),
+  getUserDataPath: () => ipcRenderer.invoke('get-user-data-path'),
+  joinPath: (...args) => path.join(...args),
+  extname: (filename) => path.extname(filename),
+  writeFile: (filePath, buffer) => fs.writeFile(filePath, buffer),
+  readdir: (dirPath) => fs.readdir(dirPath),
+  unlink: (filePath) => fs.unlink(filePath),
+  ensureDir: async (dirPath) => {
+    if (!fsSync.existsSync(dirPath)) {
+      fsSync.mkdirSync(dirPath, { recursive: true });
+    }
+  },
     // Ajouter
     eQuery: (query, values) => ipcRenderer.invoke('executeQuery', query, values),
   

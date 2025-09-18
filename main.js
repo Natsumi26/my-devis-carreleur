@@ -2,8 +2,11 @@ const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, dialog } = req
 const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
-const sqlite3 = require('sqlite3').verbose();
 let win;
+
+ipcMain.handle('get-user-data-path', () => {
+  return app.getPath('userData');
+});
 
 //Generer le devis en pdf-------------------------------
 ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
@@ -58,7 +61,7 @@ const createWindow = () => {
     win = new BrowserWindow({
     width: 1500,
     height: 1000,
-    icon: path.join(__dirname, 'build/icons/icon.ico'),
+    icon: path.join(__dirname, 'assets/build/icons/icon.ico'),
     webPreferences: {
         nodeIntegration: true,
         preload: path.join(__dirname, 'preload.js'),
