@@ -4,12 +4,17 @@ const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
 let win;
 
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
+
 ipcMain.handle('get-user-data-path', () => {
   return app.getPath('userData');
 });
 
 //Generer le devis en pdf-------------------------------
 ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
+
   // Ouvre une boîte de dialogue pour choisir où sauvegarder
   const { filePath, canceled } = await dialog.showSaveDialog({
       title: "Enregistrer le devis",

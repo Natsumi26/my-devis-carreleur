@@ -87,19 +87,21 @@ async function getFactures() {
     tbody.innerHTML='';
 
     factures.forEach(facture => {
+        const date = new Date(facture.date_facture);
+        const dateFr = date.toLocaleDateString("fr-FR");
         const row = document.createElement('tr');
 
         row.innerHTML += `
                 <td>${facture.id}</td>
                 <td>${facture.number}</td>
-                <td>${facture.date_facture}</td>
-                <td>${facture.total_TTC}</td>
+                <td>${dateFr}</td>
+                <td>${facture.total_TTC} €</td>
                 <td>${facture.devis_number}</td>
                 <td>${facture.client_name}</td>
                 <td>
-                <button class="btn btn-sm btn-warning me-1" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
-                    <button class="btn btn-sm btn-success me-1" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteFacture(${facture.id})"><i class="bi bi-trash3"></i></button>
+                    <button class="btn btn-sm btn-outline-warning me-4" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
+                    <button class="btn btn-sm btn-outline-success me-4" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(${facture.id})"><i class="bi bi-trash3"></i></button>
                     </td>
         `;
         // Ajout de la ligne au tableau

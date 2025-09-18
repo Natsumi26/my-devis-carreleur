@@ -45,8 +45,8 @@
           <p><strong>Nom :</strong> <span id="nomEntreprise"></span></p>
           <p><strong>Téléphone :</strong> <span id="telEntreprise"></span></p>
           <p><strong>Adresse :</strong> <span id="adresseEntreprise"></span></p>
-          <button class="btn btn-outline-success" onclick="addEntreprise()" id="btnCreerEntreprise">Créer l'entreprise</button>
-          <button class="btn btn-outline-primary" onclick="openFormUpdate()">Modifier</button>
+          <button class="btn btn-outline-success" onclick="openFormAdd()" id="btnCreerEntreprise">Créer l'entreprise</button>
+          <button class="btn btn-outline-primary" onclick="openFormUpdate()"id="btnUpdateEntreprise">Modifier</button>
         </div>
       </div>
   
@@ -72,7 +72,7 @@
         <label for="inputAdresse" class="form-label">Adresse</label>
         <input type="text" class="form-control" id="inputAdresse">
       </div>
-      <button type="submit" class="btn btn-success">Enregistrer</button>
+      <button type="button" id="enregistrer" class="btn btn-success">Enregistrer</button>
       <button type="button" class="btn btn-secondary" onclick="annulerEdition()">Annuler</button>
     </form>
   </div>

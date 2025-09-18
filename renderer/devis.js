@@ -279,20 +279,24 @@ async function createFactureFromDevis(devis_id) {
         tbody.innerHTML='';
 
         devis.forEach(d => {
+            const date = new Date(d.date_devis);
+            const dateFr = date.toLocaleDateString("fr-FR");
             const row = document.createElement('tr');
             row.innerHTML +=`
                     <td>${d.id}</td>
                     <td>${d.number}</td>
-                    <td>${d.date_devis}</td>
+                    <td>${dateFr}</td>
                     <td>${d.total_TTC} €</td>
                     <td>${d.statut}</td>
                     <td>${d.client_nom}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning me-1" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-info me-1" id="accepter-${d.id}"><i class="bi bi-check2"></i></button>
-                        <button class="btn btn-sm btn-success me-1" id="telecharger-${d.id}"><i class="bi bi-download"></i></button>
-                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-primary me-1" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
+                    <td >
+                        <div class="d-flex ">
+                        <button class="btn btn-sm btn-outline-warning me-3" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-info me-3" id="accepter-${d.id}"><i class="bi bi-check2"></i></button>
+                        <button class="btn btn-sm btn-outline-success me-3" id="telecharger-${d.id}"><i class="bi bi-download"></i></button>
+                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-outline-primary me-3" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
+                        </div>
                     </td>
             `;
             // Ajout de la ligne au tableau

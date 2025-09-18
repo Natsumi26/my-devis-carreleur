@@ -17,8 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     <td>${prestation.name}</td>
                     <td>${prestation.pu}</td>
                     <td>
-                        <button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-primary me-1" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
+                        <button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-outline-primary me-4" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
                     </td>
                 </tr>
             `;

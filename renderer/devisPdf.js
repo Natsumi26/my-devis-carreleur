@@ -7,7 +7,6 @@ const { app } = require('electron');
 function generateDevis(devisData, outputPath=null) {
   const logoFileName = devisData.entreprise[0].logo_path;
   const logoPath = path.join(app.getPath('userData'), 'logo_entreprise', logoFileName);
-
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: 50 });
     const chunks = [];
@@ -26,13 +25,17 @@ function generateDevis(devisData, outputPath=null) {
   doc.rect(5, 5, doc.page.width - 10, doc.page.height - 10).stroke();
 
   // --- Logo ---
-  // Assure-toi d'avoir un logo.png dans le dossier assets par exemple
-  if (fs.existsSync(logoPath)) {
-    doc.image(logoPath, 50, 45, { width: 100 });
+
+  if (logoPath && fs.existsSync(logoPath)) {
+    doc.image(logoPath, 50, 45, {
+      width: 100, // largeur fixe
+      height: 100, // hauteur limite
+      fit: [100, 100], // adapte l’image dans ce cadre
+      valign: 'top'
+    })
   } else {
     console.warn("Logo introuvable :", logoPath);
   }
-
   // --- En-tête ---
   doc
     .fontSize(20)
@@ -59,10 +62,12 @@ function generateDevis(devisData, outputPath=null) {
     .moveDown();
 
   // --- Infos Devis ---
+  const date = new Date(devisData.devis.date_devis);
+  const dateFr = date.toLocaleDateString("fr-FR"); // ex: 18/09/2025
   doc
     .fontSize(12)
     .text(`Numéro du devis : ${devisData.devis.number}`, 50, 280, { align: "left", width: 200 })
-    .text(`Date du devis : ${devisData.devis.date_devis}`)
+    .text(`Date du devis : ${dateFr}`)
     
     .moveDown();
 

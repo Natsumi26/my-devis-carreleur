@@ -26,7 +26,12 @@ function generateFacture(factureData, outputPath= null) {
   // --- Logo ---
   // Assure-toi d'avoir un logo.png dans le dossier assets par exemple
    if (fs.existsSync(logoPath)) {
-      doc.image(logoPath, 50, 45, { width: 100 });
+      doc.image(logoPath, 50, 45, {
+        width: 100, // largeur fixe
+        height: 100, // hauteur limite
+        fit: [100, 100], // adapte l’image dans ce cadre
+        valign: 'top'
+      });
     } else {
       console.warn("Logo introuvable :", logoPath);
     }
@@ -63,9 +68,12 @@ function generateFacture(factureData, outputPath= null) {
     .moveDown();
 
   // --- Date facture ---
+
+  const date = new Date(factureData.facture.date_facture);
+  const dateFr = date.toLocaleDateString("fr-FR"); // ex: 18/09/2025
   doc
     .fontSize(12)
-    .text(`Date de la facture : ${factureData.facture.date_facture}`)
+    .text(`Date de la facture : ${dateFr}`)
     .text(`Numéro de la facture : ${factureData.facture.number}`)
     .moveDown();
 

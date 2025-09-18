@@ -20,8 +20,8 @@ async function getClients() {
                 <td>${client.email}</td>
                 <td>${client.adresse}</td>
                 <td>
-                    <button data-bs-toggle="modal" data-bs-target="#addClientModal" class="btn btn-sm btn-primary me-1" onclick="updateClient(${client.id}, this)"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.id})"><i class="bi bi-trash3"></i></button>
+                    <button data-bs-toggle="modal" data-bs-target="#addClientModal" class="btn btn-sm btn-outline-primary me-4" onclick="updateClient(${client.id}, this)"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteClient(${client.id})"><i class="bi bi-trash3"></i></button>
                 </td>
             </tr>
         `;

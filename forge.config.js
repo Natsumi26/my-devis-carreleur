@@ -3,6 +3,7 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
+    name: 'MesDevisFactures',
     asar: true,
     icon: './assets/build/icons/icon',
     extraResources: [
@@ -14,10 +15,9 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
+        name: 'MesDevisFactures',
         setupIcon: './assets/build/icons/icon.ico', // icône du setup
-        shortcutName: 'Mes devis/factures',
-        createDesktopShortcut: true,
-        createStartMenuShortcut: true
+        iconUrl: 'https://github.com/Natsumi26/my-devis-carreleur/blob/dev/assets/logoDevis.png' 
       }
     },
     {
