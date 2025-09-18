@@ -21,6 +21,69 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    //Function pour tri par ordre alphabet
+const sortDirections = {}; // clé : index de colonne, valeur : 'asc' ou 'desc'
+
+window.sortTable = function(colIndex) {
+  const table = document.getElementById("myTable");
+  let shouldSwitch = true;
+  let i;
+  let switching = true;
+  let switchcount = 0;
+
+  // Définir la direction initiale si elle n'existe pas
+  if (!sortDirections[colIndex]) {
+    sortDirections[colIndex] = "asc";
+  }
+
+  while (switching) {
+    switching = false;
+    const rows = table.rows;
+
+    for (i = 1; i < rows.length - 1; i++) {
+      shouldSwitch = false;
+      const x = rows[i].getElementsByTagName("TD")[colIndex];
+      const y = rows[i + 1].getElementsByTagName("TD")[colIndex];
+
+      let xContent = x.innerText.trim();
+      let yContent = y.innerText.trim();
+
+      // Si c’est une date en format fr (jj/mm/aaaa)
+      if (colIndex === 1) {
+        xContent = xContent.toLowerCase();
+        yContent = yContent.toLowerCase();
+      }
+
+      if (
+        (sortDirections[colIndex] === "asc" && xContent > yContent) ||
+        (sortDirections[colIndex] === "desc" && xContent < yContent)
+      ) {
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+        switchcount++;
+    } else {
+      if (switchcount === 0) {
+        // Inverser la direction
+        sortDirections[colIndex] = sortDirections[colIndex] === "asc" ? "desc" : "asc";
+        switching = true;
+      }
+    }
+    // Mise à jour visuelle des flèches
+    const headers = document.querySelectorAll("#myTable th");
+    headers.forEach((th, i) => {
+    th.classList.remove("sorted-asc", "sorted-desc");
+    if (i === colIndex) {
+        th.classList.add(`sorted-${sortDirections[colIndex]}`);
+    }
+    });
+  }
+};
     
 document.getElementById('addClientModal').addEventListener('show.bs.modal', () => {
     document.getElementById('addClientForm').reset();

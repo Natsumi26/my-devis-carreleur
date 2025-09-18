@@ -30,3 +30,15 @@
     font-size: 24px;
     cursor: pointer;
   }
+  /* Fleche sortable */
+  th.sorted-asc::after {
+    content: " ▲";
+    font-size: 0.8em;
+    color: #bdbdbd;
+  }
+  
+  th.sorted-desc::after {
+    content: " ▼";
+    font-size: 0.8em;
+    color: #bdbdbd;
+  }

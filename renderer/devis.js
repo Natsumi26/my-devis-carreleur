@@ -20,6 +20,77 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
+    //Function pour tri par date
+const sortDirections = {}; // clé : index de colonne, valeur : 'asc' ou 'desc'
+
+window.sortTable = function(colIndex) {
+  const table = document.getElementById("myTable");
+  let shouldSwitch = true;
+  let switching = true;
+  let switchcount = 0;
+  let i;
+
+  // Définir la direction initiale si elle n'existe pas
+  if (!sortDirections[colIndex]) {
+    sortDirections[colIndex] = "asc";
+  }
+
+  while (switching) {
+    switching = false;
+    const rows = table.rows;
+
+    for (i = 1; i < rows.length - 1; i++) {
+      shouldSwitch = false;
+      const x = rows[i].getElementsByTagName("TD")[colIndex];
+      const y = rows[i + 1].getElementsByTagName("TD")[colIndex];
+
+      let xContent = x.innerText.trim();
+      let yContent = y.innerText.trim();
+
+      // Si c’est une date en format fr (jj/mm/aaaa)
+      if (colIndex === 2) {
+        xContent = new Date(xContent.split('/').reverse().join('/'));
+        yContent = new Date(yContent.split('/').reverse().join('/'));
+      }
+
+      if (
+        (sortDirections[colIndex] === "asc" && xContent > yContent) ||
+        (sortDirections[colIndex] === "desc" && xContent < yContent)
+      ) {
+        shouldSwitch = true;
+      } else if (xContent.getTime && yContent.getTime && xContent.getTime() === yContent.getTime()) {
+        // Si les dates sont identiques, tu peux comparer une autre colonne (ex: numéro)
+        const xSecondary = rows[i].getElementsByTagName("TD")[1].innerText.trim(); // colonne numéro
+        const ySecondary = rows[i + 1].getElementsByTagName("TD")[1].innerText.trim();
+      
+        if (xSecondary > ySecondary) {
+          shouldSwitch = sortDirections[colIndex] === "asc";
+        } else if (xSecondary < ySecondary) {
+          shouldSwitch = sortDirections[colIndex] === "desc";
+        }
+      }
+    }
+    if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+        switchcount++;
+    } else {
+      if (switchcount === 0) {
+        // Inverser la direction
+        sortDirections[colIndex] = sortDirections[colIndex] === "asc" ? "desc" : "asc";
+        switching = true;
+      }
+    }
+    // Mise à jour visuelle des flèches
+    const headers = document.querySelectorAll("#myTable th");
+    headers.forEach((th, i) => {
+    th.classList.remove("sorted-asc", "sorted-desc");
+    if (i === colIndex) {
+        th.classList.add(`sorted-${sortDirections[colIndex]}`);
+    }
+    });
+  }
+};
 
 //Fonction pour afficher le PDF dans la modal
     function openModalWithPDF(base64) {
