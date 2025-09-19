@@ -6,5 +6,5 @@ Toutes les npm install:
   npm i bootstrap-icons
   npm install -g electron-icon-builder
   npm install chart.js
-  npm install excel.js
+  npm install exceljs
   npm install --save-dev @electron-forge/cli
