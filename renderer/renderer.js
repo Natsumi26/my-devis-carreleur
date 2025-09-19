@@ -31,3 +31,29 @@ function notifier(message, title = "Notification") {
     });
   }
 }
+
+//Function concernant le contextMenu et les boutons d'action--------------
+const contextMenu = document.getElementById('contextmenu');
+let selectedId = null;
+function showContextMenu(event){
+  event.preventDefault();
+  
+  // Cherche l'élément le plus proche avec l'attribut data-client-id
+  const row = event.target.closest('[data-id]');
+
+  if (row) {
+    selectedId = row.getAttribute('data-id');
+    console.log("Client ID sélectionné :", selectedId);
+    // Positionne et affiche le menu
+    contextMenu.style.top = `${event.pageY}px`;
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.classList.remove('d-none');
+    }
+}
+document.getElementById('bodyTable').addEventListener('contextmenu', function(event){
+  showContextMenu(event);
+})
+
+document.addEventListener('click', function() {
+  contextMenu.classList.add('d-none');
+});

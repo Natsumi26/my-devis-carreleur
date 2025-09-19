@@ -92,20 +92,20 @@ document.getElementById('addClientModal').addEventListener('show.bs.modal', () =
 async function getClients() {
     const clients = await window.api.fetchAll("SELECT * FROM clients");
     console.log(clients)
-    const tbody = document.getElementById('clientsTable')
+    const tbody = document.getElementById('bodyTable')
     tbody.innerHTML='';
     clients.forEach(client => {
         tbody.innerHTML +=`
-            <tr>
+            <tr data-id="${client.id}">
                 <td>${client.id}</td>
                 <td>${client.nom}</td>
                 <td>${client.telephone}</td>
                 <td>${client.email}</td>
                 <td>${client.adresse}</td>
-                <td>
+                <!-- <td>
                     <button data-bs-toggle="modal" data-bs-target="#addClientModal" class="btn btn-sm btn-outline-primary me-4" onclick="updateClient(${client.id}, this)"><i class="bi bi-pencil"></i></button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteClient(${client.id})"><i class="bi bi-trash3"></i></button>
-                </td>
+                </td>-->
             </tr>
         `;
     });

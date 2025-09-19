@@ -177,13 +177,14 @@ function openModalWithPDF(base64) {
 // Fonction pour avoir les factures
 async function getFactures() {
     const factures = await window.api.fetchAll("SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.taux_tva, factures.total_TTC, devis.number AS devis_number, clients.nom AS client_name FROM `factures` LEFT JOIN devis ON (devis.id=factures.devis_id) LEFT JOIN clients ON (clients.id=factures.client_id)");
-    const tbody = document.getElementById('facturesTable');
+    const tbody = document.getElementById('bodyTable');
     tbody.innerHTML='';
 
     factures.forEach(facture => {
         const date = new Date(facture.date_facture);
         const dateFr = date.toLocaleDateString("fr-FR");
         const row = document.createElement('tr');
+        row.setAttribute('data-id', `${d.id}`);
 
         row.innerHTML += `
                 <td>${facture.id}</td>
@@ -192,16 +193,17 @@ async function getFactures() {
                 <td>${facture.total_TTC} €</td>
                 <td>${facture.devis_number}</td>
                 <td>${facture.client_name}</td>
-                <td>
+                <!--<td>
                     <button class="btn btn-sm btn-outline-warning me-4" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
                     <button class="btn btn-sm btn-outline-success me-4" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(${facture.id})"><i class="bi bi-trash3"></i></button>
-                    </td>
+                    </td>-->
         `;
         // Ajout de la ligne au tableau
         tbody.appendChild(row);
+
         // Bouton Voir
-        document.getElementById(`voir-${facture.id}`).addEventListener('click', async () => {
+        document.getElementById(`voir`).addEventListener('click', async () => {
           const result = await getDataFactures(facture.id);
           const entrepriseData = await getEntrepriseData();
           if (!result || result.length === 0) return;

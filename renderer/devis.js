@@ -367,13 +367,14 @@ async function createFactureFromDevis(devis_id) {
     async function getDevis() {
         const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statut, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
         
-        const tbody = document.getElementById('devisTable')
+        const tbody = document.getElementById('bodyTable')
         tbody.innerHTML='';
 
         devis.forEach(d => {
             const date = new Date(d.date_devis);
             const dateFr = date.toLocaleDateString("fr-FR");
             const row = document.createElement('tr');
+            row.setAttribute('data-id', `${d.id}`);
             row.innerHTML +=`
                     <td>${d.id}</td>
                     <td>${d.number}</td>
@@ -381,7 +382,7 @@ async function createFactureFromDevis(devis_id) {
                     <td>${d.total_TTC} €</td>
                     <td>${d.statut}</td>
                     <td>${d.client_nom}</td>
-                    <td >
+                    <!--<td >
                         <div class="d-flex ">
                         <button class="btn btn-sm btn-outline-warning me-3" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-sm btn-outline-info me-3" id="accepter-${d.id}"><i class="bi bi-check2"></i></button>
@@ -389,39 +390,47 @@ async function createFactureFromDevis(devis_id) {
                         <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-outline-primary me-3" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
                         </div>
-                    </td>
+                    </td>-->
             `;
             // Ajout de la ligne au tableau
             tbody.appendChild(row);
+        
+        });
+    }
+    await getDevis();
+//Fonction pour les bouton 
+    
             // Display le bouton valider si statut accepter
             if(d.statut === 'Accepté'){
-                document.getElementById(`accepter-${d.id}`).style= 'display:none';
+                document.getElementById(`accepter`).classList.add('d-none');
             } else {
-                document.getElementById(`accepter-${d.id}`).style= 'display:block';
+                document.getElementById(`accepter`).classList.add('d-block');
             } 
-
+            
             // Bouton accepter
-            document.getElementById(`accepter-${d.id}`).addEventListener('click', async () => {
+             window.AcceptDevis= async function(id) {
                 await window.api.eQuery(
                     "UPDATE devis SET statut=? WHERE id=?",
-                    ["Accepté", d.id]
+                    ["Accepté", id]
                 );
-                await createFactureFromDevis(d.id);
+                await createFactureFromDevis(id);
                 await getDevis();
                 
                 // Feedback visuel
-                const btn = document.getElementById(`accepter-${d.id}`);
+                const btn = document.getElementById(`accepter`);
                 btn.classList.remove("btn-info");
                 btn.classList.add("btn-success");
                 btn.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
                 
-            });
+            };
             
             // Bouton Télécharger
-            document.getElementById(`telecharger-${d.id}`).addEventListener('click', async () => await generateDevisFromId(d.id));
+            async function Upload(id){
+                await generateDevisFromId(id)
+            }
             // Bouton Voir
-            document.getElementById(`voir-${d.id}`).addEventListener('click', async () => {
-                const result = await getDataDevis(d.id);
+            document.getElementById('voir').addEventListener('click', async function(id){
+                const result = await getDataDevis(id);
                 const entrepriseData = await getEntrepriseData();
                 if (!result || result.length === 0) return;
             
@@ -431,10 +440,7 @@ async function createFactureFromDevis(devis_id) {
                     
                     currentDevisNumber = devisData.devis.number;
                 window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
-            });
-        });
-    }
-    await getDevis();
+            })
 
     //AJOUTER un DEVIS -------------------------
 async function addDevis() {

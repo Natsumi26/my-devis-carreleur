@@ -51,15 +51,22 @@
                     <th>#</th>
                     <th onclick="sortTable(1)">Nom</th>
                     <th>Prix unitaire</th>
-                    <th></th>
+                    <!-- <th></th> -->
                 </tr>
             </thead>
-            <tbody id="prestationsTable">
+            <tbody id="bodyTable">
 
             </tbody>
         </table>
     </div>
-    
+    <!-- Menu contextuel -->
+    <div class="bg-secondary w-25 h-25 text-dark rounded d-none position-absolute" id="contextmenu">
+      <ul id="listMenu" class="list-unstyled m-2">
+        <li><button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-outline-primary me-4" onclick="updatePrestation(selectedId)"><i class="bi bi-pencil"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-danger" onclick="deletePrestation(selectedId)"><i class="bi bi-trash3"></i></button></li>
+      </ul>
+    </div>
+
     <!-- Modal de creation -->
     <div class="modal fade" id="addPrestationModal" tabindex="-1" aria-labelledby="addPrestationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -86,6 +93,7 @@
           </div>
         </div>
       </div>
+    </div>
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./renderer.js"></script>

@@ -92,18 +92,18 @@ window.sortTable = function(colIndex) {
     async function getPrestation() {
         const prestations = await window.api.fetchAll("SELECT * FROM prestation");
         console.log(prestations)
-        const tbody = document.getElementById('prestationsTable')
+        const tbody = document.getElementById('bodyTable')
         tbody.innerHTML='';
         prestations.forEach(prestation => {
             tbody.innerHTML +=`
-                <tr>
+                <tr data-id="${prestation.id}" >
                     <td>${prestation.id}</td>
                     <td>${prestation.name}</td>
                     <td>${prestation.pu}</td>
-                    <td>
+                    <!--<td>
                         <button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-outline-primary me-4" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
-                    </td>
+                    </td>-->
                 </tr>
             `;
         });

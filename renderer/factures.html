@@ -56,10 +56,18 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody id="facturesTable">
+            <tbody id="bodyTable">
 
             </tbody>
         </table>
+    </div>
+    <!-- Menu contextuel -->
+    <div class="bg-secondary w-25 h-25 text-dark rounded d-none position-absolute" id="contextmenu">
+      <ul id="listMenu" class="list-unstyled m-2">
+        <li><button class="btn btn-sm btn-outline-warning me-4" id="voir"><i class="bi bi-eye"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-success me-4" id="telecharger"><i class="bi bi-download"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(selectedId)"><i class="bi bi-trash3"></i></button></li>
+      </ul>
     </div>
 </div>
 
