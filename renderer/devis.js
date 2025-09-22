@@ -21,76 +21,51 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
     //Function pour tri par date
-const sortDirections = {}; // clé : index de colonne, valeur : 'asc' ou 'desc'
+    const sortDirections = {};
 
-window.sortTable = function(colIndex) {
-  const table = document.getElementById("myTable");
-  let shouldSwitch = true;
-  let switching = true;
-  let switchcount = 0;
-  let i;
-
-  // Définir la direction initiale si elle n'existe pas
-  if (!sortDirections[colIndex]) {
-    sortDirections[colIndex] = "asc";
-  }
-
-  while (switching) {
-    switching = false;
-    const rows = table.rows;
-
-    for (i = 1; i < rows.length - 1; i++) {
-      shouldSwitch = false;
-      const x = rows[i].getElementsByTagName("TD")[colIndex];
-      const y = rows[i + 1].getElementsByTagName("TD")[colIndex];
-
-      let xContent = x.innerText.trim();
-      let yContent = y.innerText.trim();
-
-      // Si c’est une date en format fr (jj/mm/aaaa)
-      if (colIndex === 2) {
-        xContent = new Date(xContent.split('/').reverse().join('/'));
-        yContent = new Date(yContent.split('/').reverse().join('/'));
-      }
-
-      if (
-        (sortDirections[colIndex] === "asc" && xContent > yContent) ||
-        (sortDirections[colIndex] === "desc" && xContent < yContent)
-      ) {
-        shouldSwitch = true;
-      } else if (xContent.getTime && yContent.getTime && xContent.getTime() === yContent.getTime()) {
-        // Si les dates sont identiques, tu peux comparer une autre colonne (ex: numéro)
-        const xSecondary = rows[i].getElementsByTagName("TD")[1].innerText.trim(); // colonne numéro
-        const ySecondary = rows[i + 1].getElementsByTagName("TD")[1].innerText.trim();
-      
-        if (xSecondary > ySecondary) {
-          shouldSwitch = sortDirections[colIndex] === "asc";
-        } else if (xSecondary < ySecondary) {
-          shouldSwitch = sortDirections[colIndex] === "desc";
+    window.sortTable = function(colIndex) {
+      const table = document.getElementById("myTable");
+      const rows = Array.from(table.rows).slice(1); // exclut le header
+      const direction = sortDirections[colIndex] === "asc" ? "desc" : "asc";
+      sortDirections[colIndex] = direction;
+    
+      rows.sort((a, b) => {
+        let x = a.cells[colIndex].innerText.trim();
+        let y = b.cells[colIndex].innerText.trim();
+    
+        // Si c’est une date (colonne 2)
+        if (colIndex === 2) {
+          x = new Date(x.split('/').reverse().join('/')).getTime();
+          y = new Date(y.split('/').reverse().join('/')).getTime();
         }
-      }
-    }
-    if (shouldSwitch) {
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-        switchcount++;
-    } else {
-      if (switchcount === 0) {
-        // Inverser la direction
-        sortDirections[colIndex] = sortDirections[colIndex] === "asc" ? "desc" : "asc";
-        switching = true;
-      }
-    }
-    // Mise à jour visuelle des flèches
-    const headers = document.querySelectorAll("#myTable th");
-    headers.forEach((th, i) => {
-    th.classList.remove("sorted-asc", "sorted-desc");
-    if (i === colIndex) {
-        th.classList.add(`sorted-${sortDirections[colIndex]}`);
-    }
-    });
-  }
-};
+    
+        if (x === y && colIndex === 2) {
+          // Comparaison secondaire sur la colonne numéro (index 1)
+          const xSecondary = a.cells[1].innerText.trim();
+          const ySecondary = b.cells[1].innerText.trim();
+          return direction === "asc"
+            ? xSecondary.localeCompare(ySecondary)
+            : ySecondary.localeCompare(xSecondary);
+        }
+    
+        return direction === "asc"
+          ? x > y ? 1 : -1
+          : x < y ? 1 : -1;
+      });
+    
+      // Réinjection des lignes triées
+      rows.forEach(row => table.tBodies[0].appendChild(row));
+    
+      // Mise à jour visuelle des flèches
+      const headers = document.querySelectorAll("#myTable th");
+      headers.forEach((th, i) => {
+        th.classList.remove("sorted-asc", "sorted-desc");
+        if (i === colIndex) {
+          th.classList.add(`sorted-${direction}`);
+        }
+      });
+    };
+    
 
 //Fonction pour afficher le PDF dans la modal
     function openModalWithPDF(base64) {
@@ -140,6 +115,7 @@ window.sortTable = function(colIndex) {
                         pu: r.pu
                     },
                     quantity: r.quantity,
+                    unite: r.unite,
                     sous_total: r.sous_total
                 }))
             };
@@ -149,7 +125,7 @@ window.sortTable = function(colIndex) {
 //Recuperation des données pour la génération des PDF
 
         async function getDataDevis(id) {
-            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statut, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity,prestation.pu, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statut, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity, prestation.pu, devis_prestation.unite, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
             return result;
         }
 
@@ -215,14 +191,14 @@ async function createFactureFromDevis(devis_id) {
     
                 // Copier les devis_prestation dans facture_prestation
                 const prestations = await window.api.fetchAll(
-                    "SELECT prestation_id, quantity, sous_total FROM devis_prestation WHERE devis_id = ?",
+                    "SELECT prestation_id, quantity, unite, sous_total FROM devis_prestation WHERE devis_id = ?",
                     [devis_id]
                 );
     
                 for (const p of prestations) {
                 await window.api.eQuery(
-                    "INSERT INTO facture_prestation (prestation_id, facture_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
-                    [p.prestation_id, facture_id, p.quantity, p.sous_total]
+                    "INSERT INTO facture_prestation (prestation_id, facture_id, quantity,  unite, sous_total) VALUES (?, ?, ?, ?, ?)",
+                    [p.prestation_id, facture_id, p.quantity, p.unite, p.sous_total]
                 );
                 }
             }
@@ -324,7 +300,7 @@ async function createFactureFromDevis(devis_id) {
     }
 
 //AJOUTER des inputs pour les PRESTATIONS 
-    document.getElementById("addPrestaLine").addEventListener("click", (sousTotal) => {
+    document.getElementById("addPrestaLine").addEventListener("click", () => {
         
         const container = document.getElementById('prestationsContainer');
         const line = document.createElement('div');
@@ -337,6 +313,16 @@ async function createFactureFromDevis(devis_id) {
             </select>
             <div class="mb-3">
                 <input type="number" class="form-control quantity" placeholder="Quantité">
+            </div>
+            <div class="mb-3">
+                <label for="unite">Unité de mesure</label>
+                <select type="text" class="form-control unite">
+                    <option value="">Choisir l'unité de mesure</option>
+                    <option value="m²">m²</option>
+                    <option value="mètre linéaire">Mètre linéaire</option>
+                    <option value="heure">Heure</option>
+                    <option value="jour">Jour</option>
+                </select>
             </div>
             <div class="mb-3">
                 <input type="number" class="form-control pu"  placeholder="Prix unitaire" disabled> 
@@ -366,7 +352,7 @@ async function createFactureFromDevis(devis_id) {
 // GET tous les DEVIS -------------------------------
     async function getDevis() {
         const devis = await window.api.fetchAll("SELECT devis.id, devis.number, devis.total_TTC, devis.statut, devis.date_devis, clients.nom AS client_nom FROM devis JOIN clients ON devis.client_id = clients.id");
-        
+
         const tbody = document.getElementById('bodyTable')
         tbody.innerHTML='';
 
@@ -376,39 +362,40 @@ async function createFactureFromDevis(devis_id) {
             const row = document.createElement('tr');
             row.setAttribute('data-id', `${d.id}`);
             row.innerHTML +=`
-                    <td>${d.id}</td>
-                    <td>${d.number}</td>
-                    <td>${dateFr}</td>
-                    <td>${d.total_TTC} €</td>
-                    <td>${d.statut}</td>
-                    <td>${d.client_nom}</td>
-                    <!--<td >
+                    <td class="w-10">${d.id}</td>
+                    <td class="w-20">${d.number}</td>
+                    <td class="w-20">${dateFr}</td>
+                    <td class="w-15">${d.total_TTC} €</td>
+                    <td class="w-10">${d.statut}</td>
+                    <td class="w-20">${d.client_nom}</td>
+                    <td class="w-5"> 
                         <div class="d-flex ">
-                        <button class="btn btn-sm btn-outline-warning me-3" id="voir-${d.id}"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-outline-info me-3" id="accepter-${d.id}"><i class="bi bi-check2"></i></button>
-                        <button class="btn btn-sm btn-outline-success me-3" id="telecharger-${d.id}"><i class="bi bi-download"></i></button>
-                        <button data-bs-toggle="modal" data-bs-target="#addDevisModal" class="btn btn-sm btn-outline-primary me-3" onclick="updateDevis(${d.id}, this)"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDevis(${d.id})"><i class="bi bi-trash3"></i></button>
+                        <button class="btn btn-sm btn-outline-info me-3" id="accepter-${d.id}"  data-id="${d.id}"><i class="bi bi-check2"></i></button>
                         </div>
-                    </td>-->
+                    </td>
             `;
             // Ajout de la ligne au tableau
             tbody.appendChild(row);
-        
+           
+                // Display le bouton valider si statut accepter
+            if(d.statut === 'Accepté'){
+                document.getElementById(`accepter-${d.id}`).style.display = 'none';
+            } 
+
+            // Ajouter l'événement au bouton
+            const btn = document.getElementById(`accepter-${d.id}`);
+            btn.addEventListener('click', async () => {
+            await AcceptDevis(d.id);
+            });
+            
         });
     }
     await getDevis();
+
 //Fonction pour les bouton 
     
-            // Display le bouton valider si statut accepter
-            if(d.statut === 'Accepté'){
-                document.getElementById(`accepter`).classList.add('d-none');
-            } else {
-                document.getElementById(`accepter`).classList.add('d-block');
-            } 
-            
             // Bouton accepter
-             window.AcceptDevis= async function(id) {
+            async function AcceptDevis(id) {
                 await window.api.eQuery(
                     "UPDATE devis SET statut=? WHERE id=?",
                     ["Accepté", id]
@@ -416,20 +403,14 @@ async function createFactureFromDevis(devis_id) {
                 await createFactureFromDevis(id);
                 await getDevis();
                 
-                // Feedback visuel
-                const btn = document.getElementById(`accepter`);
-                btn.classList.remove("btn-info");
-                btn.classList.add("btn-success");
-                btn.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
-                
             };
-            
+
             // Bouton Télécharger
             async function Upload(id){
                 await generateDevisFromId(id)
             }
             // Bouton Voir
-            document.getElementById('voir').addEventListener('click', async function(id){
+            async function ShowDevis(id){
                 const result = await getDataDevis(id);
                 const entrepriseData = await getEntrepriseData();
                 if (!result || result.length === 0) return;
@@ -440,7 +421,29 @@ async function createFactureFromDevis(devis_id) {
                     
                     currentDevisNumber = devisData.devis.number;
                 window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
-            })
+            }
+    //Click bouton
+    document.addEventListener('click',async function(e) {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+    
+        const action = btn.getAttribute('data-action');
+        const id = btn.getAttribute('data-id');
+    
+        switch (action) {
+        case 'voir':
+            ShowDevis(id);
+            break;
+        case 'telecharger':
+            await Upload(id)
+            break;
+        case 'accepter':
+            await AcceptDevis(id)
+            break;
+        }
+    
+        contextMenu.classList.add('d-none'); // Masquer le menu après action
+    });
 
     //AJOUTER un DEVIS -------------------------
 async function addDevis() {
@@ -470,18 +473,20 @@ async function addDevis() {
         for (let line of lines) {
             const prestation_id = line.querySelector('.prestationsListe').value;
             const quantity = parseFloat(line.querySelector('.quantity').value)|| 0;
+            const unite = line.querySelector('.unite').value;
             const sous_total = parseFloat(line.querySelector('.sousTotal').value) || 0;
 
             console.log("👉 Insertion prestation:", {
                 devis_id,
                 prestation_id,
                 quantity,
+                unite,
                 sous_total
             });
 
             await window.api.eQuery(
-                "INSERT INTO devis_prestation (prestation_id, devis_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
-                [prestation_id, devis_id, quantity, sous_total]
+                "INSERT INTO devis_prestation (prestation_id, devis_id, quantity, unite, sous_total) VALUES (?, ?, ?, ?, ?)",
+                [prestation_id, devis_id, quantity, unite, sous_total]
             );
 
         }
@@ -522,7 +527,7 @@ window.updateDevis = async function(id) {
 
     // Récupérer les devis_prestations liées
     const prestations = await window.api.fetchAll(
-        "SELECT dp.id, dp.quantity, dp.sous_total, p.id AS prestation_id, p.name, p.pu " +
+        "SELECT dp.id, dp.quantity, dp.unite, dp.sous_total, p.id AS prestation_id, p.name, p.pu " +
         "FROM devis_prestation dp JOIN prestation p ON dp.prestation_id = p.id WHERE dp.devis_id=?",
         [id]
     );
@@ -551,6 +556,16 @@ window.updateDevis = async function(id) {
             <div class="mb-3">
                         <label for="quantite" class="form-label">Quantité</label>
                         <input type="number" id="quantite"  class="form-control quantity" value="${prestation.quantity}">
+            </div>
+            <div class="mb-3">
+                        <label for="unite" class="form-label">Unité de mesure</label>
+                        <select type="text" class="form-control unite" value="${prestation.unite}">
+                            <option value="">Choisir l'unité de mesure</option>
+                            <option value="m²">m²</option>
+                            <option value="mètre linéaire">Mètre linéaire</option>
+                            <option value="heure">Heure</option>
+                            <option value="jour">Jour</option>
+                        </select>
             </div>
             <div class="mb-3">
                         <label for="pu" class="form-label">Prix Unitaire</label>
@@ -609,10 +624,11 @@ async function updateDevisSubmit(id) {
         for (let line of lines) {
             const prestation_id = line.querySelector('.prestationsListe').value;
             const quantity = parseFloat(line.querySelector('.quantity').value);
+            const unite = parseFloat(line.querySelector('.unite').value);
             const sous_total = line.querySelector('.sousTotal').value;
             await window.api.eQuery(
-                "INSERT INTO devis_prestation (prestation_id, devis_id, quantity, sous_total) VALUES (?, ?, ?, ?)",
-                [prestation_id, id, quantity, sous_total]
+                "INSERT INTO devis_prestation (prestation_id, devis_id, quantity, unite, sous_total) VALUES (?, ?, ?, ?, ?)",
+                [prestation_id, id, quantity, unite, sous_total]
             );
         }
         notifier("Devis modifié avec succès", "Devis");

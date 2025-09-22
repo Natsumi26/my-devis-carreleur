@@ -48,6 +48,11 @@ function showContextMenu(event){
     contextMenu.style.top = `${event.pageY}px`;
     contextMenu.style.left = `${event.pageX}px`;
     contextMenu.classList.remove('d-none');
+    // Met à jour les data-id des boutons dans le menu contextuel
+    contextMenu.querySelectorAll('button[data-action]').forEach(btn => {
+      btn.setAttribute('data-id', selectedId);
+    });
+
     }
 }
 document.getElementById('bodyTable').addEventListener('contextmenu', function(event){

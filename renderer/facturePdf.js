@@ -82,9 +82,9 @@ function generateFacture(factureData, outputPath= null) {
     let y = doc.y+ 20;
   
     // Largeurs des colonnes
-        const colPresta = 250; // largeur réduite
+        const colPresta = 240; // largeur réduite
         const colPU = 70;
-        const colQty = 70;
+        const colQty = 80;
         const colTotal = 90;
         const colSpacing = 10; // espacement entre colonnes
 
@@ -106,10 +106,10 @@ function generateFacture(factureData, outputPath= null) {
 
         doc.text(facture_presta.prestation.name, startX+5, y, { width: colPresta  })
             .text(facture_presta.prestation.pu.toFixed(2), startX + colPresta + colSpacing, y, { width: colPU, align: "right" })
-            .text(facture_presta.quantity, startX + colPresta + colPU + colSpacing * 2, y, { width: colQty, align: "right" })
+            .text(`${facture_presta.quantity} ${facture_presta.unite}`, startX + colPresta + colPU + colSpacing * 2, y, { width: colQty, align: "right" })
             .text(facture_presta.sous_total.toFixed(2), startX + colPresta + colPU + colQty + colSpacing * 3, y, { width: colTotal, align: "right" })
     
-        y += 20;
+        y += 25;
       });
 
 // Ligne avant total

@@ -57,6 +57,7 @@ db.serialize(() => {
     prestation_id INTEGER,
     devis_id INTEGER,
     quantity INTEGER NOT NULL,
+    unite text NOT NULL,
     sous_total REAL NOT NULL,
     FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
     FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
@@ -80,6 +81,7 @@ db.serialize(() => {
     prestation_id INTEGER,
     facture_id INTEGER,
     quantity INTEGER NOT NULL,
+    unite TEXT NOT NULL,
     sous_total REAL NOT NULL,
     FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
     FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE

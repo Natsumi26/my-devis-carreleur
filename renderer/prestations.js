@@ -97,13 +97,9 @@ window.sortTable = function(colIndex) {
         prestations.forEach(prestation => {
             tbody.innerHTML +=`
                 <tr data-id="${prestation.id}" >
-                    <td>${prestation.id}</td>
-                    <td>${prestation.name}</td>
-                    <td>${prestation.pu}</td>
-                    <!--<td>
-                        <button data-bs-toggle="modal" data-bs-target="#addPrestationModal" class="btn btn-sm btn-outline-primary me-4" onclick="updatePrestation(${prestation.id}, this)"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deletePrestation(${prestation.id})"><i class="bi bi-trash3"></i></button>
-                    </td>-->
+                    <td class="w-25">${prestation.id}</td>
+                    <td class="w-50">${prestation.name}</td>
+                    <td class="w-25">${prestation.pu}</td>
                 </tr>
             `;
         });

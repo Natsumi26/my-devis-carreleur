@@ -9,6 +9,24 @@
   @media (prefers-color-scheme: light) {
     body { background: #ddd !important; color: black !important; }
   }
+  /*-----------taille-------------*/
+  .w-05{
+    width: 5%;
+  }
+  .w-10{
+    width: 10%;
+  }
+  .w-15{
+    width: 15%;
+  }
+  .w-20{
+    width: 20%;
+  }
+  .w-30{
+    width: 30%;
+  }
+
+  /*-------------Modal-------------------*/
   .modal {
     display: none;
     position: fixed;
@@ -42,3 +60,16 @@
     font-size: 0.8em;
     color: #bdbdbd;
   }
+  /*-----------scroll------------*/
+.scroll tbody{
+  display: block;
+  width: 100%;
+  max-height: 78vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.scroll tbody tr, .scroll thead{
+  display: table;
+  width: 100%;
+}
+

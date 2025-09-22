@@ -20,76 +20,51 @@ window.Search = async function(){
     }
 }
 //Function pour tri par date
-const sortDirections = {}; // clé : index de colonne, valeur : 'asc' ou 'desc'
+const sortDirections = {};
 
 window.sortTable = function(colIndex) {
   const table = document.getElementById("myTable");
-  let shouldSwitch = true;
-  let switching = true;
-  let switchcount = 0;
-  let i;
+  const rows = Array.from(table.rows).slice(1); // exclut le header
+  const direction = sortDirections[colIndex] === "asc" ? "desc" : "asc";
+  sortDirections[colIndex] = direction;
 
-  // Définir la direction initiale si elle n'existe pas
-  if (!sortDirections[colIndex]) {
-    sortDirections[colIndex] = "asc";
-  }
+  rows.sort((a, b) => {
+    let x = a.cells[colIndex].innerText.trim();
+    let y = b.cells[colIndex].innerText.trim();
 
-  while (switching) {
-    switching = false;
-    const rows = table.rows;
-
-    for (i = 1; i < rows.length - 1; i++) {
-      shouldSwitch = false;
-      const x = rows[i].getElementsByTagName("TD")[colIndex];
-      const y = rows[i + 1].getElementsByTagName("TD")[colIndex];
-
-      let xContent = x.innerText.trim();
-      let yContent = y.innerText.trim();
-
-      // Si c’est une date en format fr (jj/mm/aaaa)
-      if (colIndex === 2) {
-        xContent = new Date(xContent.split('/').reverse().join('/'));
-        yContent = new Date(yContent.split('/').reverse().join('/'));
-      }
-
-      if (
-        (sortDirections[colIndex] === "asc" && xContent > yContent) ||
-        (sortDirections[colIndex] === "desc" && xContent < yContent)
-      ) {
-        shouldSwitch = true;
-      } else if (xContent.getTime && yContent.getTime && xContent.getTime() === yContent.getTime()) {
-        // Si les dates sont identiques, tu peux comparer une autre colonne (ex: numéro)
-        const xSecondary = rows[i].getElementsByTagName("TD")[1].innerText.trim(); // colonne numéro
-        const ySecondary = rows[i + 1].getElementsByTagName("TD")[1].innerText.trim();
-      
-        if (xSecondary > ySecondary) {
-          shouldSwitch = sortDirections[colIndex] === "asc";
-        } else if (xSecondary < ySecondary) {
-          shouldSwitch = sortDirections[colIndex] === "desc";
-        }
-      }
+    // Si c’est une date (colonne 2)
+    if (colIndex === 2) {
+      x = new Date(x.split('/').reverse().join('/')).getTime();
+      y = new Date(y.split('/').reverse().join('/')).getTime();
     }
-    if (shouldSwitch) {
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-        switchcount++;
-    } else {
-      if (switchcount === 0) {
-        // Inverser la direction
-        sortDirections[colIndex] = sortDirections[colIndex] === "asc" ? "desc" : "asc";
-        switching = true;
-      }
+
+    if (x === y && colIndex === 2) {
+      // Comparaison secondaire sur la colonne numéro (index 1)
+      const xSecondary = a.cells[1].innerText.trim();
+      const ySecondary = b.cells[1].innerText.trim();
+      return direction === "asc"
+        ? xSecondary.localeCompare(ySecondary)
+        : ySecondary.localeCompare(xSecondary);
     }
-    // Mise à jour visuelle des flèches
-    const headers = document.querySelectorAll("#myTable th");
-    headers.forEach((th, i) => {
+
+    return direction === "asc"
+      ? x > y ? 1 : -1
+      : x < y ? 1 : -1;
+  });
+
+  // Réinjection des lignes triées
+  rows.forEach(row => table.tBodies[0].appendChild(row));
+
+  // Mise à jour visuelle des flèches
+  const headers = document.querySelectorAll("#myTable th");
+  headers.forEach((th, i) => {
     th.classList.remove("sorted-asc", "sorted-desc");
     if (i === colIndex) {
-        th.classList.add(`sorted-${sortDirections[colIndex]}`);
+      th.classList.add(`sorted-${direction}`);
     }
-    });
-  }
+  });
 };
+
 
 
 //Fonction pour afficher le PDF dans la modal
@@ -184,27 +159,28 @@ async function getFactures() {
         const date = new Date(facture.date_facture);
         const dateFr = date.toLocaleDateString("fr-FR");
         const row = document.createElement('tr');
-        row.setAttribute('data-id', `${d.id}`);
+        row.setAttribute('data-id', `${facture.id}`);
 
         row.innerHTML += `
-                <td>${facture.id}</td>
-                <td>${facture.number}</td>
-                <td>${dateFr}</td>
-                <td>${facture.total_TTC} €</td>
-                <td>${facture.devis_number}</td>
-                <td>${facture.client_name}</td>
-                <!--<td>
-                    <button class="btn btn-sm btn-outline-warning me-4" id="voir-${facture.id}"><i class="bi bi-eye"></i></button>
-                    <button class="btn btn-sm btn-outline-success me-4" id="telecharger-${facture.id}"><i class="bi bi-download"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(${facture.id})"><i class="bi bi-trash3"></i></button>
-                    </td>-->
+                <td class="w-10">${facture.id}</td>
+                <td class="w-20">${facture.number}</td>
+                <td class="w-20">${dateFr}</td>
+                <td class="w-10">${facture.total_TTC} €</td>
+                <td class="w-20">${facture.devis_number}</td>
+                <td class="w-20">${facture.client_name}</td>
         `;
         // Ajout de la ligne au tableau
         tbody.appendChild(row);
 
-        // Bouton Voir
-        document.getElementById(`voir`).addEventListener('click', async () => {
-          const result = await getDataFactures(facture.id);
+        
+
+    });
+}
+getFactures();
+
+//function bouton voir
+      async function ShowFacture(id){
+          const result = await getDataFactures(id);
           const entrepriseData = await getEntrepriseData();
           if (!result || result.length === 0) return;
       
@@ -214,12 +190,27 @@ async function getFactures() {
 
             currentFactureNumber = factureData.facture.number;
           window.factureAPI.previewFacture(factureDataJson); // Envoie au main process
-        });
-        // Bouton Télécharger
-        document.getElementById(`telecharger-${facture.id}`).addEventListener('click', async () => await generateFacturesFromId(facture.id));
-    });
-}
-getFactures();
+        };
+
+//Click bouton
+document.addEventListener('click',async function(e) {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+
+  const action = btn.getAttribute('data-action');
+  const id = btn.getAttribute('data-id');
+
+  switch (action) {
+    case 'voir':
+      ShowFacture(id);
+      break;
+    case 'telecharger':
+      await generateFacturesFromId(id)
+      break;
+  }
+
+  contextMenu.classList.add('d-none'); // Masquer le menu après action
+});
 
 //supprimer une facture
     window.deleteFacture = async function(id) {

@@ -44,16 +44,15 @@
 
     <!-- Tableau de factures -->
     <div class="table-responsive">
-        <table id="myTable"  class="table table-striped table-hover">
+        <table id="myTable"  class="table table-striped table-hover scroll w-100">
             <thead class="table-dark">
                 <tr>
-                    <th>#</th>
-                    <th>Numéro</th>
-                    <th onclick="sortTable(2)">Date de la facture</th>
-                    <th>Total TTC</th>
-                    <th>Devis associé</th>
-                    <th>Client</th>
-                    <th></th>
+                    <th class="w-10">#</th>
+                    <th class="w-20">Numéro</th>
+                    <th class="w-20" onclick="sortTable(2)">Date de la facture</th>
+                    <th class="w-10">Total TTC</th>
+                    <th class="w-20">Devis associé</th>
+                    <th class="w-20">Client</th>
                 </tr>
             </thead>
             <tbody id="bodyTable">
@@ -64,8 +63,8 @@
     <!-- Menu contextuel -->
     <div class="bg-secondary w-25 h-25 text-dark rounded d-none position-absolute" id="contextmenu">
       <ul id="listMenu" class="list-unstyled m-2">
-        <li><button class="btn btn-sm btn-outline-warning me-4" id="voir"><i class="bi bi-eye"></i></button></li>
-        <li><button class="btn btn-sm btn-outline-success me-4" id="telecharger"><i class="bi bi-download"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-warning me-4" data-action="voir" id="voir"><i class="bi bi-eye"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-success me-4" data-action="telecharger" id="telecharger"><i class="bi bi-download"></i></button></li>
         <li><button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(selectedId)"><i class="bi bi-trash3"></i></button></li>
       </ul>
     </div>
