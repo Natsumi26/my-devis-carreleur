@@ -62,3 +62,14 @@ document.getElementById('bodyTable').addEventListener('contextmenu', function(ev
 document.addEventListener('click', function() {
   contextMenu.classList.add('d-none');
 });
+
+//Gestion bdd dans les parametres
+async function resetBase() {
+  const result = await window.api.resetDatabase();
+  alert(result); // Affiche le message de succès ou d’erreur
+}
+
+async function saveBase() {
+  const result = await window.api.saveDatabase();
+  alert(result); // Affiche le chemin ou l’erreur
+}

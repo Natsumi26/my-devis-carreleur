@@ -31,12 +31,13 @@ contextBridge.exposeInMainWorld('api', {
   },
     // Ajouter
     eQuery: (query, values) => ipcRenderer.invoke('executeQuery', query, values),
-  
     // Récupérer tout
     fetchAll: (query, values) => ipcRenderer.invoke('fetchAll', query, values),
-
     //Recupere un seul
     fetchOne: (query, values) => ipcRenderer.invoke('fetchOne', query, values),
+    //Gestion bdd
+    resetDatabase: () => ipcRenderer.invoke('reset-database'),
+    saveDatabase: () => ipcRenderer.invoke('save-database')
   });
 
 //export function

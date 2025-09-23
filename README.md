@@ -9,3 +9,4 @@ Toutes les npm install:
   npm install exceljs
   npm install --save-dev @electron-forge/cli
   npm install --save-dev @electron-forge/maker-wix (program files)
+  npm install fullcalendar

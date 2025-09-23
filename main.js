@@ -2,14 +2,44 @@ const { app, BrowserWindow, ipcMain, nativeTheme, Menu, dialog } = require('elec
 const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
+const { getDb, resetDatabase, saveDatabase } = require('./db');
 let win;
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+//Chemin de la bdd
 ipcMain.handle('get-user-data-path', () => {
   return app.getPath('userData');
+});
+
+//Reset de la bdd
+ipcMain.handle('reset-database', async () => {
+  try {
+    resetDatabase();
+    return 'Base réinitialisée avec succès';
+  } catch (err) {
+    return 'Erreur : ' + err.message;
+  }
+});
+
+//Save bdd
+ipcMain.handle('save-database', async () => {
+  const { dialog } = require('electron');
+  const result = await dialog.showSaveDialog({
+    title: 'Sauvegarder la base',
+    defaultPath: 'MesDevisFactures.sqlite',
+    filters: [{ name: 'SQLite', extensions: ['sqlite'] }]
+  });
+
+  if (result.canceled) return 'Annulé';
+  try {
+    saveDatabase(result.filePath);
+    return 'Base sauvegardée dans : ' + result.filePath;
+  } catch (err) {
+    return 'Erreur : ' + err.message;
+  }
 });
 
 //Generer le devis en pdf-------------------------------
@@ -212,6 +242,7 @@ app.whenReady().then(() => {
 
   // SELECT
   ipcMain.handle('fetchAll', (event, query, values = []) => {
+    const db = getDb();
     return new Promise((resolve, reject) => {
       db.all(query, values, (err, rows) => {
         if (err) reject(err);
@@ -221,6 +252,7 @@ app.whenReady().then(() => {
   });
   //SELECT un seul
   ipcMain.handle('fetchOne', (event, query, values = []) => {
+    const db = getDb();
     return new Promise((resolve, reject) => {
       db.all(query, values, (err, rows) => {
         if (err) reject(err);
@@ -231,6 +263,7 @@ app.whenReady().then(() => {
   
   // INSERT / UPDATE / DELETE
   ipcMain.handle('executeQuery', (event, query, values = []) => {
+    const db = getDb();
     return new Promise((resolve, reject) => {
       db.run(query, values, function (err) {
         if (err) reject(err);

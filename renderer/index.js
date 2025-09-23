@@ -22,7 +22,6 @@ async function getDevisAttente() {
         FROM devis
         WHERE statut="En attente"
       `);
-      console.log(result)
       return result[0].nb;
 }
 
@@ -63,10 +62,19 @@ async function afficherFacturationMois() {
   afficherFacturationMois();
 
 //chart.js
+
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
 async function renderFacturationChart() {
     const data = await getFacturationMensuelle();
   
-    const labels = data.map(row => row.mois);
+    const labels = data.map(row => {
+        const date = new Date(row.mois);
+        const moisFr =  new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(date);
+        return capitalizeFirstLetter(moisFr);
+      });
     const values = data.map(row => row.total_mensuel);
 
     const ctx = document.getElementById('chartCA').getContext('2d');

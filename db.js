@@ -7,98 +7,115 @@ const { app } = require('electron');
 // Chemin vers le dossier accessible en écriture
 const userDataPath = app.getPath('userData');
 const dbPath = path.join(userDataPath, 'db.sqlite');
-
-// Chemin vers la base embarquée dans assets
 const sourceDbPath = path.join(process.resourcesPath, 'assets', 'db.sqlite');
 
-// Supprimer l’ancienne base si elle existe
-// if (fs.existsSync(dbPath)) {
-//   fs.unlinkSync(dbPath);
-//   console.log('Ancienne base supprimée');
-// }
 
-const db = new sqlite3.Database(dbPath);
-db.run("PRAGMA foreign_keys = ON");
+let db;
+function initDatabase() {
+    db = new sqlite3.Database(dbPath);
+    db.run("PRAGMA foreign_keys = ON");
 
-// Création des tables
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    telephone TEXT,
-    email TEXT,
-    adresse TEXT
-  )`);
+    // Création des tables
+    db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL,
+      telephone TEXT,
+      email TEXT,
+      adresse TEXT
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS prestation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    pu REAL NOT NULL
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS prestation (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      pu REAL NOT NULL
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS devis (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    number INTEGER NOT NULL,
-    date_devis DATE,
-    total_HT REAL NOT NULL,
-    taux_tva REAL NOT NULL,
-    total_TTC REAL NOT NULL,
-    statut TEXT,
-    client_id INTEGER,
-    FOREIGN KEY(client_id) REFERENCES clients(id)
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS devis (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      number INTEGER NOT NULL,
+      date_devis DATE,
+      total_HT REAL NOT NULL,
+      taux_tva REAL NOT NULL,
+      total_TTC REAL NOT NULL,
+      statut TEXT,
+      client_id INTEGER,
+      FOREIGN KEY(client_id) REFERENCES clients(id)
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS devis_prestation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    prestation_id INTEGER,
-    devis_id INTEGER,
-    quantity INTEGER NOT NULL,
-    unite text NOT NULL,
-    sous_total REAL NOT NULL,
-    FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
-    FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS devis_prestation (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      prestation_id INTEGER,
+      devis_id INTEGER,
+      quantity INTEGER NOT NULL,
+      unite text NOT NULL,
+      sous_total REAL NOT NULL,
+      FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
+      FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS factures (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    number TEXT NOT NULL,
-    date_facture DATE,
-    total_HT REAL NOT NULL,
-    taux_tva REAL NOT NULL,
-    total_TTC REAL NOT NULL,
-    devis_id INTEGER,
-    client_id INTEGER,
-    FOREIGN KEY(devis_id) REFERENCES devis(id),
-    FOREIGN KEY(client_id) REFERENCES clients(id)
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS factures (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      number TEXT NOT NULL,
+      date_facture DATE,
+      total_HT REAL NOT NULL,
+      taux_tva REAL NOT NULL,
+      total_TTC REAL NOT NULL,
+      devis_id INTEGER,
+      client_id INTEGER,
+      FOREIGN KEY(devis_id) REFERENCES devis(id),
+      FOREIGN KEY(client_id) REFERENCES clients(id)
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS acomptes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date_acompte DATE,
-    montant REAL NOT NULL,
-    mode_payement TEXT,
-    facture_id INTEGER,
-    FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS acomptes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date_acompte DATE,
+      montant REAL NOT NULL,
+      mode_payement TEXT,
+      facture_id INTEGER,
+      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    prestation_id INTEGER,
-    facture_id INTEGER,
-    quantity INTEGER NOT NULL,
-    unite TEXT NOT NULL,
-    sous_total REAL NOT NULL,
-    FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
-    FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      prestation_id INTEGER,
+      facture_id INTEGER,
+      quantity INTEGER NOT NULL,
+      unite TEXT NOT NULL,
+      sous_total REAL NOT NULL,
+      FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
+      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
+    )`);
 
-  db.run(`CREATE TABLE IF NOT EXISTS entreprise (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    logo_path TEXT,
-    name TEXT NOT NULL,
-    telephone TEXT,
-    adresse TEXT
-  )`);
-});
+    db.run(`CREATE TABLE IF NOT EXISTS entreprise (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      logo_path TEXT,
+      name TEXT NOT NULL,
+      telephone TEXT,
+      adresse TEXT
+    )`);
+    });
+  }
 
-module.exports = db;
+  // Supprimer l’ancienne base si elle existe
+function resetDatabase() {
+  if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath);
+  fs.copyFileSync(sourceDbPath, dbPath);
+  initDatabase();
+}
+// function pour Sauvgarder la bdd
+function saveDatabase(destinationPath) {
+  fs.copyFileSync(dbPath, destinationPath);
+}
+
+initDatabase();
+
+function getDb() {
+  return db;
+}
+
+module.exports = {
+  getDb,
+  resetDatabase,
+  saveDatabase
+};
