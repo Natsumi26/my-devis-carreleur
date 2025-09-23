@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, nativeTheme, Menu, MenuItem, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeTheme, Menu, dialog } = require('electron')
 const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');

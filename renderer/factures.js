@@ -89,46 +89,57 @@ function openModalWithPDF(base64) {
   };
 
 // construction des données pour le pdf
-  async function buildFactureData(result){
+  async function buildFactureData({ facture, prestations, acomptes }){
       // Construction des données
           return {
                 facture: {
-                    id: result[0].id,
-                    number: result[0].number,
-                    date_facture: result[0].date_facture,
-                    total_HT: result[0].total_HT,
-                    total_TTC: result[0].total_TTC,
-                    taux_tva: result[0].taux_tva, 
+                    id: facture[0].id,
+                    number: facture[0].number,
+                    date_facture: facture[0].date_facture,
+                    total_HT: facture[0].total_HT,
+                    total_TTC: facture[0].total_TTC,
+                    taux_tva: facture[0].taux_tva, 
                     },
                 devis: {
-                    number: result[0].devis_number,
+                    number: facture[0].devis_number,
                 },
                 clients: {
-                    nom: result[0].nom,
-                    adresse: result[0].adresse,
-                    telephone: result[0].telephone
+                    nom: facture[0].nom,
+                    adresse: facture[0].adresse,
+                    telephone: facture[0].telephone
                 },
-                facture_prestation: result
-                .filter(r => r.fp_id !== null)
-                .map(r => ({
-                    id: r.fp_id,
-                    prestation_id: r.prestation_id,
+                facture_prestation: prestations
+                .map(fp => ({
+                    id: fp.fp_id,
+                    prestation_id: fp.prestation_id,
                     prestation: {
-                        name: r.name,
-                        pu: r.pu
+                        name: fp.name,
+                        pu: fp.pu
                     },
-                    quantity: r.quantity,
-                    sous_total: r.sous_total
-                }))
+                    quantity: fp.quantity,
+                    sous_total: fp.sous_total
+                })),
+                acomptes: acomptes
+                .map(ac => ({
+                    id: ac.id,
+                    facture_id: ac.facture_id,
+                    date_acompte: ac.date_acompte,
+                    montant: ac.montant,
+                    mode_payement: ac.mode_payement
+                  })),
             };
     }
 
 //Recuperation des données pour la génération des PDF
 
     async function getDataFactures(id) {
-        const result = await window.api.fetchAll('SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.total_TTC, factures.taux_tva,devis.number AS devis_number, factures.client_id AS client, clients.nom, clients.adresse, clients.telephone, prestation.pu, prestation.name, prestation.id AS prestation_id, facture_prestation.id AS fp_id, facture_prestation.quantity, prestation.pu, facture_prestation.sous_total FROM `factures` LEFT JOIN clients ON (clients.id=factures.client_id) LEFT JOIN facture_prestation ON (factures.id=facture_prestation.facture_id) LEFT JOIN prestation ON (prestation.id=facture_prestation.prestation_id) LEFT JOIN devis ON (devis.id=factures.devis_id) WHERE factures.id= ?', [id]);
-        
-        return result;
+        const facture = await window.api.fetchAll('SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.total_TTC, factures.taux_tva,devis.number AS devis_number, factures.client_id AS client, clients.nom, clients.adresse, clients.telephone FROM `factures` LEFT JOIN clients ON (clients.id=factures.client_id) LEFT JOIN devis ON (devis.id=factures.devis_id) WHERE factures.id= ?', [id]);
+        const prestations = await window.api.fetchAll('SELECT fp.id AS fp_id, fp.prestation_id, p.pu, p.name, fp.quantity, fp.unite, fp.sous_total FROM facture_prestation fp LEFT JOIN prestation p ON fp.prestation_id = p.id WHERE fp.facture_id = ?', [id])
+        const acomptes = await window.api.fetchAll('SELECT * FROM acomptes WHERE facture_id = ?', [id])
+        console.log(facture)
+        console.log(prestations)
+        console.log(acomptes)
+        return { facture, prestations, acomptes };
     }
     async function getEntrepriseData() {
         const result = await window.api.fetchAll('SELECT * FROM entreprise');
@@ -146,7 +157,6 @@ function openModalWithPDF(base64) {
         const factureData = await buildFactureData(result);
         factureData.entreprise = entrepriseData;
         const response = await window.pdfAPI.generateFacture(factureData, `${factureData.facture.number}.pdf`);
-
     }
     let currentFactureNumber = null;
 // Fonction pour avoir les factures
@@ -183,11 +193,11 @@ getFactures();
           const result = await getDataFactures(id);
           const entrepriseData = await getEntrepriseData();
           if (!result || result.length === 0) return;
-      
+          
             const factureData = await buildFactureData(result);
             factureData.entreprise = entrepriseData;
             const factureDataJson = JSON.parse(JSON.stringify(factureData));
-
+            console.log(factureDataJson)
             currentFactureNumber = factureData.facture.number;
           window.factureAPI.previewFacture(factureDataJson); // Envoie au main process
         };
@@ -224,6 +234,41 @@ window.factureAPI.onPreview((base64) => {
     openModalWithPDF(base64);
 });
 
+//------------function addAcompte ---------------
+
+document.getElementById('addAcompteModal').addEventListener('show.bs.modal', function (event) {
+  const trigger = event.relatedTarget;
+  const id = trigger.getAttribute('data-id');
+  document.getElementById('factureIdHidden').value = id;
+  console.log(id)
+});
 
 
-    
+// Function addAcompte
+async function addAcompte(){
+  const id = document.getElementById('factureIdHidden').value;
+  const date = document.getElementById('dateAcompte').value;
+  const montant = document.getElementById('montantAcompte').value;
+  const modePayement = document.getElementById('modePayement').value;
+  console.log(id)
+
+  await window.api.eQuery("INSERT INTO acomptes (date_acompte, montant, mode_payement, facture_id) VALUES (?, ?, ?, ?)", 
+    [date, montant, modePayement, id]);
+    notifier("Acompte créé avec succès pour la facture" + id, "Acompte");
+
+  // Réinitialiser le formulaire
+  document.getElementById('addAcompteForm').reset();
+
+  // Fermer la modal
+  const modalEl = document.getElementById('addAcompteModal');
+  const modalInstance = bootstrap.Modal.getInstance(modalEl);
+  modalInstance.hide();
+}
+document.getElementById('addAcompteForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  addAcompte();
+});
+
+//-------------get Acompte------------
+const resultAcomptes = window.api.fetchAll(`SELECT * FROM acomptes`)
+    console.log(resultAcomptes)

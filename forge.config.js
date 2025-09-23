@@ -1,11 +1,14 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
+
+const iconPath = path.resolve(__dirname, 'assets', 'build', 'icons', 'icon.ico');
 
 module.exports = {
   packagerConfig: {
     name: 'MesDevisFactures',
     asar: true,
-    icon: './assets/build/icons/icon',
+    icon: iconPath,
     extraResources: [
       'assets/'
     ]
@@ -16,7 +19,8 @@ module.exports = {
       name: '@electron-forge/maker-squirrel',
       config: {
         name: 'MesDevisFactures',
-        setupIcon: './assets/build/icons/icon.ico', // icône du setup
+        authors: 'REDON marion',                  // optionnel
+        setupIcon: iconPath, // icône du setup
         iconUrl: 'https://github.com/Natsumi26/my-devis-carreleur/blob/dev/assets/logoDevis.png' 
       }
     },
@@ -24,14 +28,14 @@ module.exports = {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
-    {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
-    },
+    // {
+    //   name: '@electron-forge/maker-deb',
+    //   config: {},
+    // },
+    // {
+    //   name: '@electron-forge/maker-rpm',
+    //   config: {},
+    // },
   ],
   plugins: [
     {

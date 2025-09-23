@@ -22,8 +22,10 @@ async function getDevisAttente() {
         FROM devis
         WHERE statut="En attente"
       `);
+      console.log(result)
       return result[0].nb;
 }
+
 async function nbDevisAttente(){
     const nb = await getDevisAttente();
 document.getElementById('devis-attente').textContent=nb;

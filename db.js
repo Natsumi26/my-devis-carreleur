@@ -11,15 +11,11 @@ const dbPath = path.join(userDataPath, 'db.sqlite');
 // Chemin vers la base embarquée dans assets
 const sourceDbPath = path.join(process.resourcesPath, 'assets', 'db.sqlite');
 
-// Copier la base si elle n'existe pas encore
-if (!fs.existsSync(dbPath)) {
-  try {
-    fs.copyFileSync(sourceDbPath, dbPath);
-    console.log('Base SQLite copiée dans userData');
-  } catch (err) {
-    console.error('Erreur lors de la copie de la base :', err);
-  }
-}
+// Supprimer l’ancienne base si elle existe
+// if (fs.existsSync(dbPath)) {
+//   fs.unlinkSync(dbPath);
+//   console.log('Ancienne base supprimée');
+// }
 
 const db = new sqlite3.Database(dbPath);
 db.run("PRAGMA foreign_keys = ON");
@@ -76,6 +72,15 @@ db.serialize(() => {
     FOREIGN KEY(client_id) REFERENCES clients(id)
   )`);
 
+  db.run(`CREATE TABLE IF NOT EXISTS acomptes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_acompte DATE,
+    montant REAL NOT NULL,
+    mode_payement TEXT,
+    facture_id INTEGER,
+    FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
+  )`);
+
   db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     prestation_id INTEGER,
@@ -86,6 +91,7 @@ db.serialize(() => {
     FOREIGN KEY(prestation_id) REFERENCES prestation(id) ON DELETE CASCADE,
     FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
   )`);
+
   db.run(`CREATE TABLE IF NOT EXISTS entreprise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     logo_path TEXT,
@@ -93,9 +99,6 @@ db.serialize(() => {
     telephone TEXT,
     adresse TEXT
   )`);
-  // db.run(`
-  //   DELETE FROM entreprise
-  //   `)
 });
 
 module.exports = db;

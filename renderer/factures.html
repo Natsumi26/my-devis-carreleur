@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="d-flex">
-    <!-- Sidebar -->
+<!------------ Sidebar ------------------>
     <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
         <h4 class="mb-4 text-center">Tableau de bord</h4>
         <ul class="nav flex-column">
@@ -63,13 +63,42 @@
     <!-- Menu contextuel -->
     <div class="bg-secondary w-25 h-25 text-dark rounded d-none position-absolute" id="contextmenu">
       <ul id="listMenu" class="list-unstyled m-2">
-        <li><button class="btn btn-sm btn-outline-warning me-4" data-action="voir" id="voir"><i class="bi bi-eye"></i></button></li>
-        <li><button class="btn btn-sm btn-outline-success me-4" data-action="telecharger" id="telecharger"><i class="bi bi-download"></i></button></li>
-        <li><button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(selectedId)"><i class="bi bi-trash3"></i></button></li>
+        <li><button class="btn btn-sm btn-outline-info me-4" data-bs-toggle="modal" data-action="modalAcompte" data-bs-target="#addAcompteModal" id="AcompteModal">Ajouter un acompte</button></li>
+        <li><button class="btn btn-sm btn-outline-warning me-4" data-action="voir" id="voir">Voir la facture</button></li>
+        <li><button class="btn btn-sm btn-outline-success me-4" data-action="telecharger" id="telecharger">Télécharger</button></li>
+        <li><button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(selectedId)">Supprimer</button></li>
       </ul>
     </div>
 </div>
-
+<!-----Modal ajout d'un acompte---------->
+    <div class="modal fade" id="addAcompteModal" tabindex="-1" aria-labelledby="addAcompteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="addAcompteModalLabel">Ajouter un acompte</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addAcompteForm">
+                <div class="mb-3">
+                  <label for="dateAcompte" class="form-label">Date de l'acompte</label>
+                  <input type="date" class="form-control" id="dateAcompte" required>
+                </div>
+                <div class="mb-3">
+                  <label for="montantAcompte" class="form-label">Montant</label>
+                  <input type="number" class="form-control" id="montantAcompte" required>
+                </div>
+                <div class="mb-3">
+                  <label for="modePayement" class="form-label">Mode de payement</label>
+                  <input type="text" class="form-control" id="modePayement" required>
+                </div>
+                <input type="hidden" id="factureIdHidden" name="facture_id">
+                <button type="submit" id="addAcompte" data-action="addAcompte" class="btn btn-success">Ajouter</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 <!-- Modal d'affichage -->
 <div id="factureModal" class="modal">
     <div class="modal-content">
