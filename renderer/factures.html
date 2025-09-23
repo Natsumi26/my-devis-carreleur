@@ -61,12 +61,12 @@
         </table>
     </div>
     <!-- Menu contextuel -->
-    <div class="bg-secondary w-25 h-25 text-dark rounded d-none position-absolute" id="contextmenu">
+    <div class="bg-light w-10 h-20 text-dark rounded d-none position-absolute" id="contextmenu">
       <ul id="listMenu" class="list-unstyled m-2">
-        <li><button class="btn btn-sm btn-outline-info me-4" data-bs-toggle="modal" data-action="modalAcompte" data-bs-target="#addAcompteModal" id="AcompteModal">Ajouter un acompte</button></li>
-        <li><button class="btn btn-sm btn-outline-warning me-4" data-action="voir" id="voir">Voir la facture</button></li>
-        <li><button class="btn btn-sm btn-outline-success me-4" data-action="telecharger" id="telecharger">Télécharger</button></li>
-        <li><button class="btn btn-sm btn-outline-danger" onclick="deleteFacture(selectedId)">Supprimer</button></li>
+        <li><button class="btn btn-sm btn-outline-info mb-2 w-100" data-bs-toggle="modal" data-action="modalAcompte" data-bs-target="#addAcompteModal" id="AcompteModal"><i class="bi bi-plus-lg"></i> Ajouter un acompte</button></li>
+        <li><button class="btn btn-sm btn-outline-warning mb-2 w-100" data-action="voir" id="voir"><i class="bi bi-eye"></i> Voir la facture</button></li>
+        <li><button class="btn btn-sm btn-outline-success mb-2 w-100" data-action="telecharger" id="telecharger"><i class="bi bi-download"></i> Télécharger</button></li>
+        <li><button class="btn btn-sm btn-outline-danger w-100" onclick="deleteFacture(selectedId)"><i class="bi bi-trash3"></i> Supprimer</button></li>
       </ul>
     </div>
 </div>
