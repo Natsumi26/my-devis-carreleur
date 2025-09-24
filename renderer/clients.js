@@ -121,8 +121,7 @@ async function getClients() {
     clients.forEach(client => {
         tbody.innerHTML +=`
             <tr data-id="${client.id}">
-                <td class="w-05">${client.id}</td>
-                <td class="w-05">${client.code}</td>
+                <td class="w-10">${client.code}</td>
                 <td class="w-25">${client.nom}</td>
                 <td class="w-20">${client.telephone}</td>
                 <td class="w-20">${client.email}</td>

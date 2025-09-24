@@ -97,8 +97,7 @@ window.sortTable = function(colIndex) {
         prestations.forEach(prestation => {
             tbody.innerHTML +=`
                 <tr data-id="${prestation.id}" >
-                    <td class="w-10">${prestation.id}</td>
-                    <td class="w-15">${prestation.code}</td>
+                    <td class="w-25">${prestation.code}</td>
                     <td class="w-50">${prestation.name}</td>
                     <td class="w-25">${prestation.pu}</td>
                 </tr>
