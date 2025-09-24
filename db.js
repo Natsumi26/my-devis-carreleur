@@ -119,14 +119,6 @@ function resetDatabase() {
       }
     }
 
-    // Copier la base vierge
-    try {
-      fs.copyFileSync(sourceDbPath, dbPath);
-      console.log('Base réinitialisée.');
-    } catch (e) {
-      console.error('Erreur lors de la copie :', e.message);
-      return;
-    }
     initDatabase();
   });
 }
