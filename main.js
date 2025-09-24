@@ -3,6 +3,8 @@ const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
 const { getDb, resetDatabase, saveDatabase } = require('./db');
+const ExcelJS = require('exceljs');
+const fs = require('fs');
 let win;
 
 if (require('electron-squirrel-startup')) {
@@ -109,6 +111,79 @@ const createWindow = () => {
   //-------
   win.loadFile('./renderer/index.html')
 }
+//Import Excel
+ipcMain.handle('import-excel', async () => {
+  const {canceled, filePaths} = await dialog.showOpenDialog({
+    filters: [{name: 'Excel Files', extensions: ['xlsx'] }],
+    properties: ['openFile']
+  });
+
+  if (canceled || filePaths.lenght === 0) return null;
+
+  const workbook = XLSX.readFile(filePaths[0]);
+  const sheetName = workbook.SheetNames[0];
+  const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+  return data;
+})
+//Export Excel
+ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    defaultPath: `${table}.xlsx`,
+    filters: [{ name: 'Excel Files', extensions: ['xlsx'] }]
+  });
+
+  if (canceled || !filePath) return false;
+
+  const dbInstance = getDb();
+
+  const rows = await new Promise((resolve, reject) => {
+    dbInstance.all(`SELECT * FROM ${table}`, [], (err, result) => {
+      if (err) reject(err);
+      else resolve(result);
+    });
+  });
+
+  const workbook = new ExcelJS.Workbook();
+
+  let sheet;
+  console.log(templateRelativePath)
+  if (templateRelativePath) {
+    const templatePath = path.join(app.getPath('userData'), templateRelativePath);
+    await workbook.xlsx.readFile(templatePath);
+    sheet = workbook.getWorksheet(table) || workbook.worksheets[0]; // ← utilise la bonne feuille
+    console.log('chemin template = ', templatePath)
+  } else {
+    sheet = workbook.addWorksheet(table);
+    console.log('pas de chemin')
+  }
+
+
+  let startRow = 3;
+
+  const lignes = rows.map(row =>
+    Object.entries(row)
+      .filter(([key]) => key !== 'id') // ⛔ exclut la colonne 'id'
+      .map(([, value]) => value)
+  );
+  // Insère les prestations à partir de la ligne 3
+    sheet.spliceRows(startRow, 0, ...lignes);
+
+    // ➕ Calculer où se trouve le footer après insertion
+const footerRowIndex = startRow + lignes.length;
+
+// Modifier le texte dans la cellule A du footer déplacé
+const footerCell = sheet.getCell(`A${footerRowIndex}`);
+footerCell.value = `Nombre de prestations : ${rows.length}`;
+footerCell.font = { bold: true, color: { argb: 'FFFFFFFF' }  };
+
+    // Fige les lignes 1 et 2 (titre + en-têtes)
+    sheet.views = [{ state: 'frozen', ySplit: 2 }];
+
+  await workbook.xlsx.writeFile(filePath);
+  return true;
+  });
+
 //dark mode-------------
 ipcMain.handle('dark-mode:toggle', () => {
   if (nativeTheme.shouldUseDarkColors) {
@@ -123,8 +198,34 @@ ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system'
   return nativeTheme.shouldUseDarkColors
 })
+//-----------Function copis dossier model-------------------------
+function copyFolderRecursiveSync(source, target) {
+  if (!fs.existsSync(source)) return;
+
+  if (!fs.existsSync(target)) {
+    fs.mkdirSync(target, { recursive: true });
+  }
+
+  const files = fs.readdirSync(source);
+
+  for (const file of files) {
+    const srcFile = path.join(source, file);
+    const destFile = path.join(target, file);
+
+    if (fs.lstatSync(srcFile).isDirectory()) {
+      copyFolderRecursiveSync(srcFile, destFile);
+    } else {
+      fs.copyFileSync(srcFile, destFile);
+    }
+  }
+}
 //-----------------------
 app.whenReady().then(() => {
+  const sourceModelFolder = path.join(app.getAppPath(), 'assets', 'model');
+  const targetModelFolder = path.join(app.getPath('userData'), 'model');
+
+  copyFolderRecursiveSync(sourceModelFolder, targetModelFolder);
+  console.log('📁 Dossier modèle copié dans userData');
   
     createWindow()
   

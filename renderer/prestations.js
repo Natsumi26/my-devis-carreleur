@@ -106,7 +106,7 @@ window.sortTable = function(colIndex) {
     }
     getPrestation();
 
-    //ajouter un prestation
+//ajouter un prestation ---------------------------
 
 async function addPrestation() {
 
@@ -126,6 +126,21 @@ async function addPrestation() {
         
     }
 
+//------------------Import d'excel---------------------------------
+document.getElementById('importBtn').addEventListener('click', async () => {
+    const data = await window.excelAPI.importExcel();
+    if (data) {
+        console.log('Données importées :', data);
+      // Tu peux les afficher dans ton interface ici
+    }
+});
+//-----------------------Export d'excel--------------------------------------
+// Export avec modèle Excel
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  const template = 'model/modele_export_prestation.xlsx'; // chemin vers ton modèle
+  const success = await window.excelAPI.exportTable('prestation', template);
+  if (success) alert('Prestations exportées avec modèle 🎉');
+});
     
 //supprimer un prestation
     window.deletePrestation = async function(id) {

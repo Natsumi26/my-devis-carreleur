@@ -58,3 +58,10 @@ contextBridge.exposeInMainWorld('devisAPI', {
   onPreview: (callback) => ipcRenderer.on('preview-devis', (event, base64) => callback(base64))
 });
 
+//function pour la gestion des excel (import et export)
+contextBridge.exposeInMainWorld('excelAPI', {
+  importExcel: () => ipcRenderer.invoke('import-excel'),
+  exportTable: (table, templateRelativePath) => ipcRenderer.invoke('export-excel', { table, templateRelativePath })
+});
+
+
