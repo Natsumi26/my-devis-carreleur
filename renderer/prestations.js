@@ -128,7 +128,7 @@ async function addPrestation() {
 
 //------------------Import d'excel---------------------------------
 document.getElementById('importBtn').addEventListener('click', async () => {
-    const data = await window.excelAPI.importExcel();
+    const data = await window.excelAPI.importTable('prestation');
     if (data) {
         console.log('Données importées :', data);
       // Tu peux les afficher dans ton interface ici

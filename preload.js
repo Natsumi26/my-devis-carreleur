@@ -60,7 +60,7 @@ contextBridge.exposeInMainWorld('devisAPI', {
 
 //function pour la gestion des excel (import et export)
 contextBridge.exposeInMainWorld('excelAPI', {
-  importExcel: () => ipcRenderer.invoke('import-excel'),
+  importTable: (table) => ipcRenderer.invoke('import-excel', {table}),
   exportTable: (table, templateRelativePath) => ipcRenderer.invoke('export-excel', { table, templateRelativePath })
 });
 

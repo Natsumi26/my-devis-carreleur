@@ -42,9 +42,11 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2>Clients</h2>
           <div class="w-50"><input id="search" class="form-control me-2" type="search" onkeyup="Search()" placeholder="Recherche par nom" aria-label="Search"/></div>
-          <button id="NewClient" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addClientModal">
-            Ajouter un client
-          </button>
+          <div>
+            <button id="NewClient" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addClientModal">Ajouter un client</button>
+            <button id="importBtn" class="btn btn-success" >Importer</button>
+            <button id="exportBtn" class="btn btn-success" >Exporter</button>
+          </div>
         </div>
     
     <!-- Modal de creation -->

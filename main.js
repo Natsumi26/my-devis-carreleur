@@ -112,7 +112,7 @@ const createWindow = () => {
   win.loadFile('./renderer/index.html')
 }
 //Import Excel
-ipcMain.handle('import-excel', async () => {
+ipcMain.handle('import-excel', async (_, {table}) => {
   const {canceled, filePaths} = await dialog.showOpenDialog({
     filters: [{name: 'Excel Files', extensions: ['xlsx'] }],
     properties: ['openFile']
@@ -120,12 +120,45 @@ ipcMain.handle('import-excel', async () => {
 
   if (canceled || filePaths.lenght === 0) return null;
 
-  const workbook = XLSX.readFile(filePaths[0]);
-  const sheetName = workbook.SheetNames[0];
-  const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+  const filePath = filePaths[0];
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const sheet = workbook.getWorksheet(table) || workbook.worksheets[0];
 
-  return data;
-})
+  const dbInstance = getDb();
+
+  // Lecture à partir de la ligne 3 (comme dans ton export)
+  const startRow = 3;
+  const rowsToInsert = [];
+
+  sheet.eachRow((row, rowNumber) => {
+    if (rowNumber < startRow) return;
+
+    const values = row.values.slice(1); // ignore la première cellule vide
+    const containsFooterText = values.some(val =>
+      typeof val === 'string' && val.toLowerCase().includes('nombre')
+    );
+
+    if (!containsFooterText) {
+        rowsToInsert.push(values);
+      }
+  });
+
+  // Récupère les noms de colonnes depuis la ligne 2
+  const headerRow = sheet.getRow(2);
+  const columns = headerRow.values.slice(1); // ignore la première cellule vide
+
+  const placeholders = columns.map(() => '?').join(', ');
+  const insertQuery = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
+
+  for (const row of rowsToInsert) {
+    dbInstance.run(insertQuery, row, (err) => {
+      if (err) console.error('Erreur insertion :', err.message);
+    });
+  }
+
+  return true;
+});
 //Export Excel
 ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
   const { canceled, filePath } = await dialog.showSaveDialog({
@@ -145,20 +178,12 @@ ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
   });
 
   const workbook = new ExcelJS.Workbook();
-
+  workbook.xlsx = {}; // reset interne (optionnel)
   let sheet;
-  console.log(templateRelativePath)
-  if (templateRelativePath) {
     const templatePath = path.join(app.getPath('userData'), templateRelativePath);
     await workbook.xlsx.readFile(templatePath);
     sheet = workbook.getWorksheet(table) || workbook.worksheets[0]; // ← utilise la bonne feuille
-    console.log('chemin template = ', templatePath)
-  } else {
-    sheet = workbook.addWorksheet(table);
-    console.log('pas de chemin')
-  }
-
-
+    console.log(templatePath)
   let startRow = 3;
 
   const lignes = rows.map(row =>
@@ -174,7 +199,8 @@ const footerRowIndex = startRow + lignes.length;
 
 // Modifier le texte dans la cellule A du footer déplacé
 const footerCell = sheet.getCell(`A${footerRowIndex}`);
-footerCell.value = `Nombre de prestations : ${rows.length}`;
+const currentValue = footerCell.value || '';
+footerCell.value = `${currentValue} ${rows.length}`;
 footerCell.font = { bold: true, color: { argb: 'FFFFFFFF' }  };
 
     // Fige les lignes 1 et 2 (titre + en-têtes)

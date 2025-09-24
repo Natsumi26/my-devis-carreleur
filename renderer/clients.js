@@ -129,6 +129,22 @@ async function addClient() {
         document.getElementById('email').value = "";
         document.getElementById('adresse').value = "";
 }
+//------------------Import d'excel---------------------------------
+document.getElementById('importBtn').addEventListener('click', async () => {
+    const data = await window.excelAPI.importExcel();
+    if (data) {
+        console.log('Données importées :', data);
+      // Tu peux les afficher dans ton interface ici
+    }
+});
+//-----------------------Export d'excel--------------------------------------
+// Export avec modèle Excel
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  const template = 'model/modele_export_clients.xlsx'; // chemin vers ton modèle
+  const success = await window.excelAPI.exportTable('clients', template);
+  if (success) alert('Clients exportées avec modèle 🎉');
+});
+
 
 //supprimer un clients
 window.deleteClient = async function(id) {
