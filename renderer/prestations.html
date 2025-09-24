@@ -14,20 +14,23 @@
   <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
     <h4 class="mb-4 text-center">Tableau de bord</h4>
     <ul class="nav flex-column">
-      <li class="nav-item"><a class="nav-link text-white" href="index.html">🏠 Accueil</a></li>
-      <li class="nav-item"><a class="nav-link text-white" href="devis.html">📋 Devis</a></li>
-      <li class="nav-item"><a class="nav-link text-white" href="clients.html">👥 Clients</a></li>
-      <li class="nav-item"><a class="nav-link text-white" href="prestations.html">🛠 Prestations</a></li>
-      <li class="nav-item"><a class="nav-link text-white" href="factures.html">🧾 Factures</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="index.html"><i class="bi bi-house-fill"></i> Accueil</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="devis.html"><i class="bi bi-receipt-cutoff"></i> Devis</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="clients.html"><i class="bi bi-people-fill"></i> Clients</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="prestations.html"><i class="bi bi-tools"></i> Prestations</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="factures.html"><i class="bi bi-cash-stack"></i> Factures</a></li>
+      <li class="nav-item"><a class="nav-link text-white" href="calendrier.html"><i class="bi bi-calendar3-week-fill"></i> Calendrier</a></li>
       <li class="nav-item">
         <!-- Default dropend button -->
-        <div class="btn-group dropend">
-          <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#">⚙ Paramètres</a>
+        <div class="btn-group dropend w-25">
+          <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="bi bi-gear-wide-connected"></i> Paramètres</a>
           
           <ul class="dropdown-menu bg-dark ">
             <!-- Dropdown menu links -->
-            <li class="text-center"><button class="btn btn-outline-light btn-sm me-1" type="button" id="darkMode">Dark mode</button></li>
-            <li class="text-center mt-3"><a class="text-decoration-none text-white" href="entreprise.html">Coordonnées</a></li>
+            <li class="text-center"><button class="btn btn-outline-light btn-sm mx-2" type="button" id="darkMode">Dark mode</button></li>
+            <li class="text-center mt-3"><a class="btn btn-outline-light btn-sm mx-2" href="entreprise.html">Coordonnées</a></li>
+            <li class="text-center mt-3"><button class="btn btn-outline-danger btn-sm mx-2" onclick="resetBase()">Réinitialiser la base</button></li>
+            <li class="text-center mt-3"><button class="btn btn-outline-success btn-sm mx-2" onclick="saveBase()">Sauvegarder la base</button></li>
           </ul>
         </div>
       </li>
