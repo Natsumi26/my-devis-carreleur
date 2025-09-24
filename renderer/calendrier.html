@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mon Calendrier</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    #calendar { max-width: 900px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h1 class="text-center">📅 Mon Calendrier</h1>
+  <div id="calendar"></div>
+
+  <script src="../assets/fullcalendar/core.min.js" ></script>
+  <script src="../assets/fullcalendar/daygrid.min.js" ></script>
+  <script src="../assets/fullcalendar/interaction.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const FC = window.FullCalendar;
+      // résolution "défensive" des plugins (selon la version / build)
+        // on récupère les plugins directement depuis FullCalendar
+        const dayGridPlugin = FullCalendar.DayGrid.default;
+        const interactionPlugin = FullCalendar.Interaction.default;
+
+      const plugins = [];
+      if (dayGridPlugin) plugins.push(dayGridPlugin);
+      if (interactionPlugin) plugins.push(interactionPlugin);
+
+
+      const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        plugins: plugins,
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        firstDay: 1,
+        buttonText: {
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour',
+            list: 'Liste'
+        },
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,dayGridWeek'
+        },
+        events: [
+          { title: 'RDV client', start: '2025-09-25' },
+          { title: 'Facture à envoyer', start: '2025-09-28' }
+        ]
+      });
+      calendar.render();
+    });
+  </script>
+</body>
+</html>
+
+

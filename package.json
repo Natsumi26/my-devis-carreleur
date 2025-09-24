@@ -25,16 +25,27 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.9.0",
     "@electron-forge/plugin-fuses": "^7.9.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "^28.1.0"
+    "electron": "^28.3.3"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/interaction": "^6.1.19",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
     "electron-squirrel-startup": "^1.0.1",
     "exceljs": "^4.4.0",
-    "fullcalendar": "^6.1.19",
     "pdfkit": "^0.17.2",
     "sqlite3": "^5.1.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Natsumi26/my-devis-carreleur.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/Natsumi26/my-devis-carreleur/issues"
+  },
+  "homepage": "https://github.com/Natsumi26/my-devis-carreleur#readme"
 }
