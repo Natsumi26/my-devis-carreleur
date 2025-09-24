@@ -84,7 +84,32 @@ window.sortTable = function(colIndex) {
     });
   }
 };
-    
+//------------fucntion pour autogenerer le code------------------------
+async function genererCodeClients() {
+    try {
+      const rows= await window.api.fetchAll(
+        `SELECT code FROM clients ORDER BY id DESC LIMIT 1`
+        ); 
+        console.log(rows) 
+
+        let nouveauCode = 'REF001';
+
+        if (rows.length > 0 && rows[0].code) {
+            const match = rows[0].code.match(/REF(\d+)/);
+            if (match) {
+                const numero = parseInt(match[1], 10) + 1;
+                nouveauCode = `REF${numero.toString().padStart(3, '0')}`;
+            }
+        }
+
+        return nouveauCode;
+        } catch (error) {
+          console.error('Erreur lors de la génération du code clients :', error);
+          return 'REF001'; // Valeur par défaut en cas d'erreur
+        }
+      }
+  
+//------------------------------------------------
 document.getElementById('addClientModal').addEventListener('show.bs.modal', () => {
     document.getElementById('addClientForm').reset();
 });
@@ -97,9 +122,10 @@ async function getClients() {
         tbody.innerHTML +=`
             <tr data-id="${client.id}">
                 <td class="w-05">${client.id}</td>
+                <td class="w-05">${client.code}</td>
                 <td class="w-25">${client.nom}</td>
                 <td class="w-20">${client.telephone}</td>
-                <td class="w-25">${client.email}</td>
+                <td class="w-20">${client.email}</td>
                 <td class="w-25">${client.adresse}</td>
             </tr>
         `;
@@ -110,15 +136,15 @@ getClients();
 //ajouter un client
 
 async function addClient() {
-    const client = {
-        nom: document.getElementById('nom').value,
-        telephone: document.getElementById('telephone').value,
-        email: document.getElementById('email').value,
-        adresse: document.getElementById('adresse').value,
-    };
+    const code =  await genererCodeClients();
+    const nom =  document.getElementById('nom').value;
+    const telephone = document.getElementById('telephone').value;
+    const email =  document.getElementById('email').value;
+    const adresse = document.getElementById('adresse').value;
+    
     // Convertir l'objet en tableau dans le bon ordre
-    const values = [client.nom, client.telephone, client.email, client.adresse];
-    await window.api.eQuery("INSERT INTO clients (nom, telephone, email, adresse) VALUES (?, ?, ?, ?)", values);
+    const values = [code, nom, telephone, email, adresse];
+    await window.api.eQuery("INSERT INTO clients (code, nom, telephone, email, adresse) VALUES (?, ?, ?, ?, ?)", values);
     notifier("Client créé avec succès", "Clients");
     getClients();
 
@@ -131,11 +157,12 @@ async function addClient() {
 }
 //------------------Import d'excel---------------------------------
 document.getElementById('importBtn').addEventListener('click', async () => {
-    const data = await window.excelAPI.importExcel();
+    const data = await window.excelAPI.importTable('clients', 'code');
     if (data) {
         console.log('Données importées :', data);
       // Tu peux les afficher dans ton interface ici
     }
+    getClients();
 });
 //-----------------------Export d'excel--------------------------------------
 // Export avec modèle Excel
@@ -162,7 +189,47 @@ window.updateClient = async function(id) {
     );
     const c = clients[0];
 
+function insererChampCode() {
+        // Vérifie si le champ existe déjà
+        if (document.getElementById('code')) return;
+
+        // Crée le conteneur
+    const div = document.createElement('div');
+    div.className = 'mb-3';
+
+    // Crée le label
+    const label = document.createElement('label');
+    label.setAttribute('for', 'code');
+    label.className = 'form-label';
+    label.textContent = 'Code';
+
+      // Crée l'input code
+        let codeInput = document.createElement('input');
+        codeInput.type = 'text';
+        codeInput.id = 'code';
+        codeInput.name = 'code';
+        codeInput.disabled = true; 
+        codeInput.classList.add('form-control'); // si tu utilises Bootstrap ou autre
+  
+      // Insère l'input dans le formulaire (ex: avant le champ nom)
+      const nomInput = document.getElementById('nom');
+      nomInput.parentNode.insertBefore(codeInput, nomInput);
+
+    // Assemble
+    div.appendChild(label);
+    div.appendChild(codeInput);
+
+    // Insère avant le label "Nom"
+        const nomLabel = document.querySelector('label[for="nom"]');
+        const form = document.getElementById('addClientForm');
+        form.insertBefore(div, nomLabel.parentNode);
+    }
+
+    insererChampCode();
+
+
     // Remplir les champs devis
+        document.getElementById('code').value = c.code;
         document.getElementById('nom').value = c.nom;
         document.getElementById('telephone').value = c.telephone;
         document.getElementById('email').value = c.email;
@@ -177,14 +244,15 @@ window.updateClient = async function(id) {
 async function updateClientSubmit(id) {
     // Update de la client
         const client = {
+        code: document.getElementById(`code`).value,
         nom: document.getElementById(`nom`).value,
         telephone: document.getElementById(`telephone`).value,
         email: document.getElementById(`email`).value,
         adresse: document.getElementById(`adresse`).value,
         id: id
     };
-    const values = [client.nom, client.telephone, client.email, client.adresse, id];
-    await window.api.eQuery("UPDATE clients set nom=? , telephone=? , email=? , adresse=? WHERE id=? ", values);
+    const values = [client.code, client.nom, client.telephone, client.email, client.adresse, id];
+    await window.api.eQuery("UPDATE clients set code=?, nom=? , telephone=? , email=? , adresse=? WHERE id=? ", values);
     notifier("Client modifié avec succès", "Clients");
     await getClients();
     

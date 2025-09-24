@@ -88,7 +88,7 @@ window.sortTable = function(colIndex) {
     document.getElementById('addPrestationModal').addEventListener('show.bs.modal', () => {
         addPrestationForm.reset();
       });
-    
+//----------------GetPrestation--------------------
     async function getPrestation() {
         const prestations = await window.api.fetchAll("SELECT * FROM prestation");
         console.log(prestations)
@@ -97,7 +97,8 @@ window.sortTable = function(colIndex) {
         prestations.forEach(prestation => {
             tbody.innerHTML +=`
                 <tr data-id="${prestation.id}" >
-                    <td class="w-25">${prestation.id}</td>
+                    <td class="w-10">${prestation.id}</td>
+                    <td class="w-15">${prestation.code}</td>
                     <td class="w-50">${prestation.name}</td>
                     <td class="w-25">${prestation.pu}</td>
                 </tr>
@@ -106,15 +107,41 @@ window.sortTable = function(colIndex) {
     }
     getPrestation();
 
+//------------fucntion pour autogenerer le code------------------------
+async function genererCodePrestation() {
+    try {
+      const rows= await window.api.fetchAll(
+        `SELECT code FROM prestation ORDER BY id DESC LIMIT 1`
+        ); 
+        console.log(rows) 
+
+        let nouveauCode = 'REF001';
+
+        if (rows.length > 0 && rows[0].code) {
+            const match = rows[0].code.match(/REF(\d+)/);
+            if (match) {
+                const numero = parseInt(match[1], 10) + 1;
+                nouveauCode = `REF${numero.toString().padStart(3, '0')}`;
+            }
+        }
+
+        return nouveauCode;
+        } catch (error) {
+          console.error('Erreur lors de la génération du code prestation :', error);
+          return 'REF001'; // Valeur par défaut en cas d'erreur
+        }
+      }
+  
+
 //ajouter un prestation ---------------------------
 
 async function addPrestation() {
-
+            const code = await genererCodePrestation();
             const name = document.getElementById('nom').value;
             const pu= document.getElementById('pu').value;
         // Convertir l'objet en tableau dans le bon ordre
         
-        await window.api.eQuery("INSERT INTO prestation (name, pu) VALUES (?, ?)", [name, pu]);
+        await window.api.eQuery("INSERT INTO prestation (code, name, pu) VALUES (?, ?, ?)", [code, name, pu]);
         notifier("Prestation ajoutée avec succès", "Prestations");
         getPrestation();
     
@@ -128,11 +155,12 @@ async function addPrestation() {
 
 //------------------Import d'excel---------------------------------
 document.getElementById('importBtn').addEventListener('click', async () => {
-    const data = await window.excelAPI.importTable('prestation');
+    const data = await window.excelAPI.importTable('prestation', 'code');
     if (data) {
         console.log('Données importées :', data);
       // Tu peux les afficher dans ton interface ici
     }
+    getPrestation();
 });
 //-----------------------Export d'excel--------------------------------------
 // Export avec modèle Excel
@@ -153,13 +181,53 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     window.updatePrestation = async function(id) {
         document.getElementById('typeForm').value = "update"; 
         document.getElementById('prestationId').value = id;
+        
 
         const prestation = await window.api.fetchAll(
             "SELECT * FROM prestation WHERE id=?", [id]
         );
         const p = prestation[0];
 
+function insererChampCode() {
+            // Vérifie si le champ existe déjà
+            if (document.getElementById('code')) return;
+
+            // Crée le conteneur
+        const div = document.createElement('div');
+        div.className = 'mb-3';
+
+        // Crée le label
+        const label = document.createElement('label');
+        label.setAttribute('for', 'code');
+        label.className = 'form-label';
+        label.textContent = 'Code';
+
+          // Crée l'input code
+            let codeInput = document.createElement('input');
+            codeInput.type = 'text';
+            codeInput.id = 'code';
+            codeInput.name = 'code';
+            codeInput.disabled = true; 
+            codeInput.classList.add('form-control'); // si tu utilises Bootstrap ou autre
+      
+          // Insère l'input dans le formulaire (ex: avant le champ nom)
+          const nomInput = document.getElementById('nom');
+          nomInput.parentNode.insertBefore(codeInput, nomInput);
+
+        // Assemble
+        div.appendChild(label);
+        div.appendChild(codeInput);
+
+        // Insère avant le label "Nom"
+            const nomLabel = document.querySelector('label[for="nom"]');
+            const form = document.getElementById('addPrestationForm');
+            form.insertBefore(div, nomLabel.parentNode);
+        }
+
+        insererChampCode();
+
         // Remplir les champs devis
+            document.getElementById('code').value = p.code;
             document.getElementById('nom').value = p.name;
             document.getElementById('pu').value = p.pu;
 
@@ -172,14 +240,15 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
 async function updatePrestationSubmit(id) {
     // Update de la prestation
     const prestation = {
+        code: document.getElementById('code').value,
         name: document.getElementById('nom').value,
         pu: document.getElementById('pu').value,
         id: id
     };
-    const valuesPrestation = [prestation.name, prestation.pu, prestation.id]
+    const valuesPrestation = [prestation.code, prestation.name, prestation.pu, prestation.id]
 
     await window.api.eQuery(
-        "UPDATE prestation SET name=?, pu=? WHERE id=?",
+        "UPDATE prestation SET code=?, name=?, pu=? WHERE id=?",
         valuesPrestation
     );
     notifier("Prestation modifiée avec succès", "Prestations");

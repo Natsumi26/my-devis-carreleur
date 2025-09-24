@@ -112,53 +112,93 @@ const createWindow = () => {
   win.loadFile('./renderer/index.html')
 }
 //Import Excel
-ipcMain.handle('import-excel', async (_, {table}) => {
-  const {canceled, filePaths} = await dialog.showOpenDialog({
-    filters: [{name: 'Excel Files', extensions: ['xlsx'] }],
+ipcMain.handle('import-excel', async (_, { table, keyColumn }) => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
     properties: ['openFile']
   });
 
-  if (canceled || filePaths.lenght === 0) return null;
+  if (canceled || filePaths.length === 0) return null;
 
   const filePath = filePaths[0];
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
-  const sheet = workbook.getWorksheet(table) || workbook.worksheets[0];
+  const sheet = workbook.worksheets[0]; // ← Sélectionne la première feuille
 
-  const dbInstance = getDb();
-
-  // Lecture à partir de la ligne 3 (comme dans ton export)
+  const db = getDb();
   const startRow = 3;
-  const rowsToInsert = [];
+  const lignesAjoutees = [];
+  const lignesModifiees = [];
 
-  sheet.eachRow((row, rowNumber) => {
-    if (rowNumber < startRow) return;
-
-    const values = row.values.slice(1); // ignore la première cellule vide
-    const containsFooterText = values.some(val =>
-      typeof val === 'string' && val.toLowerCase().includes('nombre')
-    );
-
-    if (!containsFooterText) {
-        rowsToInsert.push(values);
-      }
-  });
-
-  // Récupère les noms de colonnes depuis la ligne 2
   const headerRow = sheet.getRow(2);
-  const columns = headerRow.values.slice(1); // ignore la première cellule vide
+  const headers = headerRow.values.slice(1).map(h => h?.toString().trim().toLowerCase()); // nettoie les noms
 
-  const placeholders = columns.map(() => '?').join(', ');
-  const insertQuery = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
+  for (let rowNumber = startRow; rowNumber <= sheet.rowCount; rowNumber++) {
+    const row = sheet.getRow(rowNumber);
+    const values = row.values.slice(1);
 
-  for (const row of rowsToInsert) {
-    dbInstance.run(insertQuery, row, (err) => {
-      if (err) console.error('Erreur insertion :', err.message);
+    const isFooter = values.some(val =>
+      typeof val === 'string' &&
+      ['nombre', 'total', 'somme', 'lignes'].some(keyword =>
+        val.toLowerCase().includes(keyword)
+      )
+    );
+    
+    if (isFooter || values.length !== headers.length) continue;
+
+    const rowData = {};
+    headers.forEach((col, i) => {
+      rowData[col] = values[i];
     });
+
+    const keyValue = rowData[keyColumn];
+    if (!keyValue) continue;
+
+    const exists = await new Promise((resolve, reject) => {
+      db.get(`SELECT id FROM ${table} WHERE ${keyColumn} = ?`, [keyValue], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+
+    if (exists) {
+      const updateFields = headers.filter(h => h !== keyColumn);
+      const updateValues = updateFields.map(h => rowData[h]);
+      updateValues.push(keyValue);
+
+      const updateQuery = `UPDATE ${table} SET ${updateFields.map(h => `${h} = ?`).join(', ')} WHERE ${keyColumn} = ?`;
+
+      await new Promise((resolve, reject) => {
+        db.run(updateQuery, updateValues, err => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      lignesModifiees.push(keyValue);
+    } else {
+      const insertValues = headers.map(h => rowData[h]);
+      const insertQuery = `INSERT INTO ${table} (${headers.join(', ')}) VALUES (${headers.map(() => '?').join(', ')})`;
+
+      await new Promise((resolve, reject) => {
+        db.run(insertQuery, insertValues, err => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      lignesAjoutees.push(keyValue);
+    }
   }
 
-  return true;
+  return {
+    ajoutées: lignesAjoutees.length,
+    modifiées: lignesModifiees.length,
+    table
+  };
 });
+
+
+
+
 //Export Excel
 ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
   const { canceled, filePath } = await dialog.showSaveDialog({
@@ -251,7 +291,6 @@ app.whenReady().then(() => {
   const targetModelFolder = path.join(app.getPath('userData'), 'model');
 
   copyFolderRecursiveSync(sourceModelFolder, targetModelFolder);
-  console.log('📁 Dossier modèle copié dans userData');
   
     createWindow()
   

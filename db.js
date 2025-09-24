@@ -19,6 +19,7 @@ function initDatabase() {
     db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS clients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE,
       nom TEXT NOT NULL,
       telephone TEXT,
       email TEXT,
@@ -27,6 +28,7 @@ function initDatabase() {
 
     db.run(`CREATE TABLE IF NOT EXISTS prestation (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE,
       name TEXT NOT NULL,
       pu REAL NOT NULL
     )`);
@@ -99,9 +101,34 @@ function initDatabase() {
 
   // Supprimer l’ancienne base si elle existe
 function resetDatabase() {
-  if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath);
-  fs.copyFileSync(sourceDbPath, dbPath);
-  initDatabase();
+  db.close((err) => {
+    if (err) {
+      console.error('Erreur lors de la fermeture de la base :', err.message);
+      return;
+    }
+    console.log('Connexion SQLite fermée.');
+
+    // Supprimer l’ancienne base
+    if (fs.existsSync(dbPath)) {
+      try {
+        fs.unlinkSync(dbPath);
+        console.log('Base supprimée.');
+      } catch (e) {
+        console.error('Erreur lors de la suppression :', e.message);
+        return;
+      }
+    }
+
+    // Copier la base vierge
+    try {
+      fs.copyFileSync(sourceDbPath, dbPath);
+      console.log('Base réinitialisée.');
+    } catch (e) {
+      console.error('Erreur lors de la copie :', e.message);
+      return;
+    }
+    initDatabase();
+  });
 }
 // function pour Sauvgarder la bdd
 function saveDatabase(destinationPath) {
