@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Mon Calendrier</title>
+  <!-- <link rel="stylesheet" type="text/css" href="./index.css"> -->
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+
   <style>
     body { font-family: sans-serif; padding: 2rem; }
     #calendar { max-width: 900px; margin: auto; }
@@ -10,14 +14,16 @@
 </head>
 <body>
   <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a>
-  <h1 class="text-center">📅 Mon Calendrier</h1>
+  <h1 class="text-center mb-2">📅 Mon Calendrier</h1>
   <div id="calendar"></div>
-
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script src="../assets/fullcalendar/core.min.js" ></script>
   <script src="../assets/fullcalendar/daygrid.min.js" ></script>
   <script src="../assets/fullcalendar/interaction.min.js"></script>
+  
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
 
         const FC = window.FullCalendar;
       // résolution "défensive" des plugins (selon la version / build)
@@ -29,6 +35,14 @@
       if (dayGridPlugin) plugins.push(dayGridPlugin);
       if (interactionPlugin) plugins.push(interactionPlugin);
 
+      const rawEvents = await window.api.getPlanning();
+      const events = rawEvents.map(e => ({
+          id: e.id,
+          title: e.description, // ou autre champ pertinent
+          start: e.start_date,
+          end: e.end_date
+        }));
+      console.log(events)
 
       const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         plugins: plugins,
@@ -47,14 +61,20 @@
           center: 'title',
           right: 'dayGridMonth,dayGridWeek'
         },
-        events: [
-          { title: 'RDV client', start: '2025-09-25' },
-          { title: 'Facture à envoyer', start: '2025-09-28' }
-        ]
+        weekNumbers: true,
+        weekNumberFormat: { 
+          week: 'numeric' 
+        },
+        events: events,
+        dateClick:function(info) {
+          alert('Date: ' + info.dateStr);
+          alert('Resource ID: ' + info.resource.id);
+        }
       });
       calendar.render();
     });
   </script>
+  <script src="./renderer.js"></script>
 </body>
 </html>
 

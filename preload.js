@@ -37,7 +37,8 @@ contextBridge.exposeInMainWorld('api', {
     fetchOne: (query, values) => ipcRenderer.invoke('fetchOne', query, values),
     //Gestion bdd
     resetDatabase: () => ipcRenderer.invoke('reset-database'),
-    saveDatabase: () => ipcRenderer.invoke('save-database')
+    saveDatabase: () => ipcRenderer.invoke('save-database'),
+    getPlanning: () => ipcRenderer.invoke('get-planning-events'),
   });
 
 //export function

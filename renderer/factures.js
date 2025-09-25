@@ -159,6 +159,7 @@ function openModalWithPDF(base64) {
         const response = await window.pdfAPI.generateFacture(factureData, `${factureData.facture.number}.pdf`);
     }
     let currentFactureNumber = null;
+
 // Fonction pour avoir les factures
 async function getFactures() {
     const factures = await window.api.fetchAll("SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.taux_tva, factures.total_TTC, devis.number AS devis_number, clients.nom AS client_name FROM `factures` LEFT JOIN devis ON (devis.id=factures.devis_id) LEFT JOIN clients ON (clients.id=factures.client_id)");
@@ -181,9 +182,6 @@ async function getFactures() {
         `;
         // Ajout de la ligne au tableau
         tbody.appendChild(row);
-
-        
-
     });
 }
 getFactures();
@@ -233,6 +231,50 @@ document.addEventListener('click',async function(e) {
 window.factureAPI.onPreview((base64) => {
     openModalWithPDF(base64);
 });
+
+//------------function addEvent ---------------
+
+document.getElementById('addEventModal').addEventListener('show.bs.modal', async function (event) {
+  const trigger = event.relatedTarget;
+  const id = trigger.getAttribute('data-id');
+  const result = await window.api.fetchOne(`SELECT client_id FROM factures WHERE id=?`, [id])
+  const client = result[0].client_id;
+  document.getElementById('factureId').value = id;
+  document.getElementById('clientIdHidden').value = client;
+
+});
+
+
+// Function addEvent
+async function addEvent(){
+  const id = document.getElementById('factureId').value;
+  const client = document.getElementById('clientIdHidden').value;
+  const dateStart = document.getElementById('dateStart').value;
+  const dateEnd = document.getElementById('dateEnd').value;
+  const titre = document.getElementById('titre').value;
+
+
+  await window.api.eQuery("INSERT INTO planning (start_date, end_date, description, clients_id, facture_id) VALUES (?, ?, ?, ?, ?)", 
+    [dateStart, dateEnd, titre, client, id]);
+    notifier("Planning créé avec succès pour la facture" + id, "Planning");
+
+  // Réinitialiser le formulaire
+  document.getElementById('addEventForm').reset();
+
+  // Fermer la modal
+  const modalEl = document.getElementById('addEventModal');
+  const modalInstance = bootstrap.Modal.getInstance(modalEl);
+  modalInstance.hide();
+}
+document.getElementById('addEventForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  addEvent();
+});
+
+//-------------get Planning------------
+const resultPlanning = window.api.fetchAll(`SELECT * FROM planning`)
+    console.log(resultPlanning)
+
 
 //------------function addAcompte ---------------
 

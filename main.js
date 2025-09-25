@@ -7,6 +7,19 @@ const ExcelJS = require('exceljs');
 const fs = require('fs');
 let win;
 
+// function fetch planning
+ipcMain.handle('get-planning-events', async () => {
+  const db = getDb();
+  return await new Promise((resolve, reject) => {
+    db.all("SELECT * FROM planning", (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+});
+
+
+//builder windows
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
