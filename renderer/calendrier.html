@@ -16,12 +16,59 @@
   <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a>
   <h1 class="text-center mb-2">📅 Mon Calendrier</h1>
   <div id="calendar"></div>
+
+<!-- Modal de création d'event au click sur le planning -->
+<div id="addEventModal" class="modal" aria-labelledby="addEventModalLabel" aria-hidden="true" tabindex="-1" style="display: none;">
+  <div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h2 class="modal-title" id="addEventModalLabel">Ajouter un événement</h2>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer" onclick="closeAddEventModal()"></button>
+
+  </div>
+    <div class="modal-body">
+      <form id="addEventForm">
+        <div class="mb-3">
+          <label for="dateStart" class="form-label">Date de début</label>
+          <input type="date" class="form-control" id="dateStart" required>
+        </div>
+        <div class="mb-3">
+          <label for="dateEnd" class="form-label">Date prévu de fin</label>
+          <input type="date" class="form-control" id="dateEnd" required>
+        </div>
+        <div class="mb-3">
+          <label for="titre" class="form-label">Description</label>
+          <input type="text" class="form-control" id="titre" required>
+        </div>
+        <div class="mb-3">
+          <label for="factureId" class="form-label">Facture</label>
+          <select name="factureId" class="form-control" id="factureId">
+              <option value="">Choisir la chantier associé</option>
+          </select>
+        </div>
+        <input type="hidden" id="clientIdHidden" name="client_id">
+        <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   
   <script src="../assets/fullcalendar/core.min.js" ></script>
   <script src="../assets/fullcalendar/daygrid.min.js" ></script>
   <script src="../assets/fullcalendar/interaction.min.js"></script>
-  
+  <script src="calendrier.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
 
@@ -67,8 +114,11 @@
         },
         events: events,
         dateClick:function(info) {
-          alert('Date: ' + info.dateStr);
-          alert('Resource ID: ' + info.resource.id);
+            openAddEventModal(info.dateStr); // passe la date sélectionnée
+        },
+        eventClick: function(info) {
+          openShowModal(info)
+          info.el.style.borderColor = 'red';
         }
       });
       calendar.render();
