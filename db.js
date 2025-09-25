@@ -78,6 +78,17 @@ function initDatabase() {
       FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS planning (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      start_date DATE,
+      end_date DATE,
+      description TEXT,
+      clients_id INTERGER,
+      facture_id INTEGER,
+      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE,
+      FOREIGN KEY(clients_id) REFERENCES clients(id) ON DELETE CASCADE
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       prestation_id INTEGER,
