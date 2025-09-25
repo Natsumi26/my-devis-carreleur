@@ -82,6 +82,7 @@ function initDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       start_date DATE,
       end_date DATE,
+      title TEXT,
       description TEXT,
       clients_id INTERGER,
       facture_id INTEGER,
@@ -131,6 +132,7 @@ function resetDatabase() {
     }
 
     initDatabase();
+    window.location.reload();
   });
 }
 // function pour Sauvgarder la bdd

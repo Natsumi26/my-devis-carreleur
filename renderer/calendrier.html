@@ -28,39 +28,38 @@
   </div>
     <div class="modal-body">
       <form id="addEventForm">
+        <input type="hidden" id="eventIdHidden" name="eventIdHidden" />
         <div class="mb-3">
           <label for="dateStart" class="form-label">Date de début</label>
-          <input type="date" class="form-control" id="dateStart" required>
+          <input type="date" class="form-control" id="dateStart" required disabled >
         </div>
         <div class="mb-3">
           <label for="dateEnd" class="form-label">Date prévu de fin</label>
-          <input type="date" class="form-control" id="dateEnd" required>
+          <input type="date" class="form-control" id="dateEnd" required disabled >
         </div>
         <div class="mb-3">
-          <label for="titre" class="form-label">Description</label>
-          <input type="text" class="form-control" id="titre" required>
+          <label for="titre" class="form-label">Titre</label>
+          <input type="text" class="form-control" id="titre" required disabled >
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <input type="textarea" class="form-control" id="description" required disabled >
         </div>
         <div class="mb-3">
           <label for="factureId" class="form-label">Facture</label>
-          <select name="factureId" class="form-control" id="factureId">
+          <select name="factureId" class="form-control" id="factureId" disabled >
               <option value="">Choisir la chantier associé</option>
           </select>
         </div>
         <input type="hidden" id="clientIdHidden" name="client_id">
+        <button type="button" id="editBtn" class="btn btn-warning">Modifier</button>
+        <button type="submit" id="saveBtn" class="btn btn-success" style="display: none;">Enregistrer</button>
         <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
       </form>
     </div>
   </div>
 </div>
 </div>
-
-
-
-
-
-
-
-
 
 
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -85,9 +84,14 @@
       const rawEvents = await window.api.getPlanning();
       const events = rawEvents.map(e => ({
           id: e.id,
-          title: e.description, // ou autre champ pertinent
+          title: e.title, // ou autre champ pertinent
           start: e.start_date,
-          end: e.end_date
+          end: e.end_date,
+          extendedProps: {
+            clients_id: e.clients_id,
+            facture_id: e.facture_id,
+            description: e.description
+          },
         }));
       console.log(events)
 
@@ -117,7 +121,18 @@
             openAddEventModal(info.dateStr); // passe la date sélectionnée
         },
         eventClick: function(info) {
-          openShowModal(info)
+          const event = info.event;
+          showEventInModal(event)
+          // Accès aux propriétés principales
+            console.log('ID:', event.id);
+            console.log('Titre:', event.title);
+            console.log('Début:', event.startStr);
+            console.log('Fin:', event.endStr);
+
+            // Accès aux propriétés personnalisées (extendedProps)
+            console.log('Client ID:', event.extendedProps.clients_id);
+            console.log('Facture ID:', event.extendedProps.facture_id);
+            console.log('Description:', event.extendedProps.description);
           info.el.style.borderColor = 'red';
         }
       });
