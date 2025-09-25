@@ -14,9 +14,10 @@
     <div class="d-flex">
       <!-- Sidebar -->
       <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
+        
         <h4 class="mb-4 text-center">Tableau de bord</h4>
         <ul class="nav flex-column">
-          <li class="nav-item"><a class="nav-link text-white" href="index.html"><i class="bi bi-house-fill"></i> Accueil</a></li>
+          <li class="nav-item"><a class="nav-link text-white " href="index.html"><i class="bi bi-house-fill"></i> Accueil</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="devis.html"><i class="bi bi-receipt-cutoff"></i> Devis</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="clients.html"><i class="bi bi-people-fill"></i> Clients</a></li>
           <li class="nav-item"><a class="nav-link text-white" href="prestations.html"><i class="bi bi-tools"></i> Prestations</a></li>
@@ -80,8 +81,16 @@
       <!-- Graphique -->
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Chiffre d'affaires mensuel</h5>
+          <h3 class="card-title m-4">Chiffre d'affaires mensuel</h3>
             <canvas id="chartCA" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- Calendrier -->
+      <div class="card mt-2">
+        <div class="card-body">
+          <h3 class="card-title m-4">Mon calendrier</h3>
+            <div id="calendar"></div>
         </div>
       </div>
   </div>
@@ -91,6 +100,61 @@
   </body>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/chart.js/dist/chart.umd.min.js"></script>
+  <script src="../assets/fullcalendar/core.min.js" ></script>
+  <script src="../assets/fullcalendar/daygrid.min.js" ></script>
+  <script src="../assets/fullcalendar/interaction.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        const FC = window.FullCalendar;
+      // résolution "défensive" des plugins (selon la version / build)
+        // on récupère les plugins directement depuis FullCalendar
+        const dayGridPlugin = FullCalendar.DayGrid.default;
+        const interactionPlugin = FullCalendar.Interaction.default;
+
+      const plugins = [];
+      if (dayGridPlugin) plugins.push(dayGridPlugin);
+      if (interactionPlugin) plugins.push(interactionPlugin);
+
+      const rawEvents = await window.api.getPlanning();
+      const events = rawEvents.map(e => ({
+          id: e.id,
+          title: e.title, // ou autre champ pertinent
+          start: e.start_date,
+          end: e.end_date,
+          extendedProps: {
+            clients_id: e.clients_id,
+            facture_id: e.facture_id,
+            description: e.description
+          },
+        }));
+
+      const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        plugins: plugins,
+        initialView: 'dayGridMonth',
+        locale: 'fr',
+        firstDay: 1,
+        buttonText: {
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour',
+            list: 'Liste'
+        },
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,dayGridWeek'
+        },
+        weekNumbers: true,
+        weekNumberFormat: { 
+          week: 'numeric' 
+        },
+        events: events,
+      });
+      calendar.render();
+    });
+  </script>
   <script src="./renderer.js"></script>
   <script src="./index.js"></script>
 </html>

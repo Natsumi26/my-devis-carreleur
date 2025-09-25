@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Mon Calendrier</title>
-  <!-- <link rel="stylesheet" type="text/css" href="./index.css"> -->
+  <link rel="stylesheet" type="text/css" href="./index.css">
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
 
@@ -15,7 +15,10 @@
 <body>
   <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a>
   <h1 class="text-center mb-2">📅 Mon Calendrier</h1>
-  <div id="calendar"></div>
+  <section class="bg-light">
+    <div class="p-4" id="calendar"></div>
+  </section>
+  
 
 <!-- Modal de création d'event au click sur le planning -->
 <div id="addEventModal" class="modal" aria-labelledby="addEventModalLabel" aria-hidden="true" tabindex="-1" style="display: none;">

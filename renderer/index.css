@@ -88,4 +88,11 @@
   display: table;
   width: 100%;
 }
+/*-------effect lien slidebar-----*/
+.nav-link {
+  transition: transform 0.2s ease;
+}
 
+.nav-link:hover {
+  transform: scale(1.05);
+}
