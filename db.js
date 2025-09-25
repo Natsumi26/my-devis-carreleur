@@ -81,10 +81,12 @@ function initDatabase() {
     db.run(`CREATE TABLE IF NOT EXISTS planning (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       start_date DATE,
+      start_hour TIME,
       end_date DATE,
+      end_hour TIME,
       title TEXT,
       description TEXT,
-      clients_id INTERGER,
+      clients_id INTEGER,
       facture_id INTEGER,
       FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE,
       FOREIGN KEY(clients_id) REFERENCES clients(id) ON DELETE CASCADE

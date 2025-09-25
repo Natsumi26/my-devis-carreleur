@@ -2,6 +2,8 @@ function openAddEventModal(date = null) {
     enableFormFields()
     const modal = document.getElementById('addEventModal');
     modal.style.display = 'block';
+    const savebtn = document.getElementById('saveBtn');
+    savebtn.style.display = 'none';
     getFacture()
     if (date) {
         const inputDate = document.getElementById('dateStart');
@@ -47,12 +49,14 @@ async function addEvent(){
     const factureId  = document.getElementById('factureId').value;
     const client = document.getElementById('clientIdHidden').value;
     const dateStart = document.getElementById('dateStart').value;
+    const hourStart = document.getElementById('hourStart').value;
     const dateEnd = document.getElementById('dateEnd').value;
+    const hourEnd = document.getElementById('hourEnd').value;
     const titre = document.getElementById('titre').value;
     const description = document.getElementById('description').value;
         // INSERT
-        await window.api.eQuery("INSERT INTO planning (start_date, end_date, title, description, clients_id, facture_id) VALUES (?, ?, ?, ?, ?, ?)", 
-        [dateStart, dateEnd, titre, description, client, factureId ]);
+        await window.api.eQuery("INSERT INTO planning (start_date, start_hour, end_date,end_hour, title, description, clients_id, facture_id) VALUES (?,?,?, ?, ?, ?, ?, ?)", 
+        [dateStart,hourStart, dateEnd,hourEnd, titre, description, client, factureId ]);
         notifier("Planning créé avec succès pour la facture" + factureId, "Planning");
     document.getElementById('addEventForm').reset();
 
@@ -66,17 +70,22 @@ document.getElementById('addEventForm').addEventListener('submit', function () {
  
 //Fonction show
 function showEventInModal(event) {
+    const addEvent = document.getElementById('addEvent');
+    addEvent.style.display = 'none';
     console.log('getFacture() appelé');
     getFacture()
     const modalEl = document.getElementById('addEventModal');
     const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
   
     // Remplir les champs
+    const endDate = event.endStr || event.startStr;
     document.getElementById('eventIdHidden').value = event.id;
     document.getElementById('dateStart').value = event.startStr;
-    document.getElementById('dateEnd').value = event.endStr;
+    document.getElementById('hourStart').value = event.extendedProps.start_hour;
+    document.getElementById('dateEnd').value = endDate;
+    document.getElementById('hourEnd').value = event.extendedProps.end_hour;
     document.getElementById('titre').value = event.title;
-    document.getElementById('description').value = event.description;
+    document.getElementById('description').value = event.extendedProps.description;
     document.getElementById('factureId').value = event.extendedProps.facture_id || '';
     document.getElementById('clientIdHidden').value = event.extendedProps.clients_id || '';
   
@@ -116,13 +125,15 @@ async function updateEvent(){
     const factureId  = document.getElementById('factureId').value;
     const client = document.getElementById('clientIdHidden').value;
     const dateStart = document.getElementById('dateStart').value;
+    const hourStart = document.getElementById('hourStart').value;
     const dateEnd = document.getElementById('dateEnd').value;
+    const hourEnd = document.getElementById('hourEnd').value;
     const titre = document.getElementById('titre').value;
     const description = document.getElementById('description').value;
     // UPDATE
     await window.api.eQuery(
-        "UPDATE planning SET start_date = ?, end_date = ?,title=?, description = ?, clients_id = ?, facture_id = ? WHERE id = ?",
-        [dateStart, dateEnd, titre, description, client, factureId, id]
+        "UPDATE planning SET start_date = ?, start_hour=?, end_date = ?, end_hour=?, title=?, description = ?, clients_id = ?, facture_id = ? WHERE id = ?",
+        [dateStart,hourStart, dateEnd,hourEnd, titre, description, client, factureId, id]
     );
     notifier("Événement mis à jour", "Planning");
 
