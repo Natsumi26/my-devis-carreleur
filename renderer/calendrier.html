@@ -7,71 +7,98 @@
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
 
-  <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    #calendar { max-width: 900px; margin: auto; }
-  </style>
+
 </head>
 <body>
-  <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a>
-  <h1 class="text-center mb-2">📅 Mon Calendrier</h1>
-  <section class="bg-light">
-    <div class="p-4" id="calendar"></div>
-  </section>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
+      
+      <h4 class="mb-4 text-center">Tableau de bord</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link text-white " href="index.html"><i class="bi bi-house-fill"></i> Accueil</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="devis.html"><i class="bi bi-receipt-cutoff"></i> Devis</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="clients.html"><i class="bi bi-people-fill"></i> Clients</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="prestations.html"><i class="bi bi-tools"></i> Prestations</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="factures.html"><i class="bi bi-cash-stack"></i> Factures</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="calendrier.html"><i class="bi bi-calendar3-week-fill"></i> Calendrier</a></li>
+        <li class="nav-item">
+          <!-- Default dropend button -->
+          <div class="btn-group dropend w-25">
+            <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="bi bi-gear-wide-connected"></i> Paramètres</a>
+            
+            <ul class="dropdown-menu bg-dark ">
+              <!-- Dropdown menu links -->
+              <li class="text-center"><button class="btn btn-outline-light btn-sm mx-2" type="button" id="darkMode">Dark mode</button></li>
+              <li class="text-center mt-3"><a class="btn btn-outline-light btn-sm mx-2" href="entreprise.html">Coordonnées</a></li>
+              <li class="text-center mt-3"><button class="btn btn-outline-danger btn-sm mx-2" onclick="resetBase()">Réinitialiser la base</button></li>
+              <li class="text-center mt-3"><button class="btn btn-outline-success btn-sm mx-2" onclick="saveBase()">Sauvegarder la base</button></li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Contenu -->
+  <div class="flex-grow-1 p-4 container mt-4">
+    <!-- <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a> -->
+    <h1 class="mb-5">Mon Calendrier</h1>
+      <div class="p-4 bg-light" id="calendar"></div>
   
 
 <!-- Modal de création d'event au click sur le planning -->
-<div id="addEventModal" class="modal" aria-labelledby="addEventModalLabel" aria-hidden="true" tabindex="-1" style="display: none;">
-  <div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-    <h2 class="modal-title" id="addEventModalLabel">Ajouter un événement</h2>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer" onclick="closeAddEventModal()"></button>
+    <div id="addEventModal" class="modal" aria-labelledby="addEventModalLabel" aria-hidden="true" tabindex="-1" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="addEventModalLabel">Ajouter un événement</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer" onclick="closeAddEventModal()"></button>
 
-  </div>
-    <div class="modal-body">
-      <form id="addEventForm">
-        <input type="hidden" id="eventIdHidden" name="eventIdHidden" />
-        <div class="mb-3">
-          <label for="dateStart" class="form-label">Date de début</label>
-          <input type="date" class="form-control" id="dateStart" required disabled >
+          </div>
+          <div class="modal-body">
+            <form id="addEventForm">
+              <input type="hidden" id="eventIdHidden" name="eventIdHidden" />
+              <div class="mb-3">
+                <label for="dateStart" class="form-label">Date de début</label>
+                <input type="date" class="form-control" id="dateStart" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="hourStart" class="form-label">Heure de début</label>
+                <input type="time" class="form-control" id="hourStart" value="00:01" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="dateEnd" class="form-label">Date prévu de fin</label>
+                <input type="date" class="form-control" id="dateEnd" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="hourEnd" class="form-label">Heure de fin</label>
+                <input type="time" class="form-control" id="hourEnd" value="23:59" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="titre" class="form-label">Titre</label>
+                <input type="text" class="form-control" id="titre" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="textarea" class="form-control" id="description" required disabled >
+              </div>
+              <div class="mb-3">
+                <label for="factureId" class="form-label">Facture</label>
+                <select name="factureId" class="form-control" id="factureId" disabled >
+                    <option value="">Choisir la chantier associé</option>
+                </select>
+              </div>
+              <input type="hidden" id="clientIdHidden" name="client_id">
+              <button type="button" id="editBtn" class="btn btn-warning">Modifier</button>
+              <button type="submit" id="saveBtn" class="btn btn-success">Enregistrer</button>
+              <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
+            </form>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="hourStart" class="form-label">Heure de début</label>
-          <input type="time" class="form-control" id="hourStart" value="00:01" required disabled >
-        </div>
-        <div class="mb-3">
-          <label for="dateEnd" class="form-label">Date prévu de fin</label>
-          <input type="date" class="form-control" id="dateEnd" required disabled >
-        </div>
-        <div class="mb-3">
-          <label for="hourEnd" class="form-label">Heure de fin</label>
-          <input type="time" class="form-control" id="hourEnd" value="23:59" required disabled >
-        </div>
-        <div class="mb-3">
-          <label for="titre" class="form-label">Titre</label>
-          <input type="text" class="form-control" id="titre" required disabled >
-        </div>
-        <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <input type="textarea" class="form-control" id="description" required disabled >
-        </div>
-        <div class="mb-3">
-          <label for="factureId" class="form-label">Facture</label>
-          <select name="factureId" class="form-control" id="factureId" disabled >
-              <option value="">Choisir la chantier associé</option>
-          </select>
-        </div>
-        <input type="hidden" id="clientIdHidden" name="client_id">
-        <button type="button" id="editBtn" class="btn btn-warning">Modifier</button>
-        <button type="submit" id="saveBtn" class="btn btn-success">Enregistrer</button>
-        <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
-      </form>
+      </div>
     </div>
   </div>
 </div>
-</div>
-
 
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   

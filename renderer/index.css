@@ -9,6 +9,10 @@
   @media (prefers-color-scheme: light) {
     body { background: #ddd !important; color: black !important; }
   }
+  #calendar { 
+    max-width: 900px; 
+    margin: auto; 
+  }
   /*-----------taille-------------*/
   .w-05{
     width: 5%;

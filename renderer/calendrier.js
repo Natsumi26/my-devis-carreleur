@@ -21,7 +21,6 @@ async function getFacture(){
     console.log(factures)
     const inputClient = document.getElementById('clientIdHidden')
     const selectFacture = document.getElementById('factureId')
-    selectFacture.innerHTML='';
     factures.forEach(facture => {
         const date = new Date(facture.date_facture);
         const dateFr = new Intl.DateTimeFormat('fr-FR', {
