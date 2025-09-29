@@ -4,7 +4,9 @@ const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
 const { getDb, resetDatabase, saveDatabase } = require('./db');
 const ExcelJS = require('exceljs');
+const nodemailer = require('nodemailer');
 const fs = require('fs');
+require('dotenv').config();
 let win;
 
 // function fetch planning
@@ -69,6 +71,19 @@ ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
   return { success: true, path: filePath };
 });
 
+//-----function generate devis path pour envoi par mail
+ipcMain.handle('generate-devis-path', async (event, devisData) => {
+  try {
+    const tempPath = path.join(app.getPath('temp'), `${devisData.devis.number}.pdf`);
+    await generateDevis(devisData, tempPath);
+    console.log('PDF généré à :', tempPath)
+    return tempPath;
+  } catch (error) {
+    console.error('Erreur génération PDF:', error);
+    throw new Error('Erreur génération PDF');
+  }
+});
+
 //Generer la factures en pdf----------------------------------
 ipcMain.handle('generate-facture', async (event, factureData, defaultFileName) => {
   // Ouvre une boîte de dialogue pour choisir où sauvegarder
@@ -84,6 +99,19 @@ ipcMain.handle('generate-facture', async (event, factureData, defaultFileName) =
   generateFacture(factureData, filePath);
 
   return { success: true, path: filePath };
+});
+
+//-----function generate facture path pour envoi par mail
+ipcMain.handle('generate-facture-path', async (event, factureData) => {
+  try {
+    const tempPath = path.join(app.getPath('temp'), `${factureData.facture.number}.pdf`);
+    await generateFacture(factureData, tempPath);
+    console.log('PDF généré à :', tempPath)
+    return tempPath;
+  } catch (error) {
+    console.error('Erreur génération PDF:', error);
+    throw new Error('Erreur génération PDF');
+  }
 });
 
 //Previsualisation de la facture pdf
@@ -269,7 +297,7 @@ ipcMain.handle('dark-mode:system', () => {
   return nativeTheme.shouldUseDarkColors
 })
 
-//-----------Function copis dossier model-------------------------
+//-----------Function copie dossier model-------------------------
 function copyFolderRecursiveSync(source, target) {
   if (!fs.existsSync(source)) return;
 
@@ -453,4 +481,31 @@ app.on('web-contents-created', (event, contents) => {
     childWin.loadURL(url);
     return { action: 'deny' }; // ← empêche la fenêtre par défaut
   });
+});
+
+// Fonction d'envoi d'email
+ipcMain.handle('send-email', async (event, { to, subject, message, pdfPath }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS // Utilise un mot de passe d'application
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text: message,
+      attachments: pdfPath ? [{ path: pdfPath }] : []
+    };
+    console.log('Envoi en cours...')
+    await transporter.sendMail(mailOptions);
+    return { success: true };
+  } catch (error) {
+    console.error('Erreur envoi email:', error);
+    return { success: false, error: error.message };
+  }
 });

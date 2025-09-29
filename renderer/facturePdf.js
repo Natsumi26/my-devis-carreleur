@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require('path');
 const { app } = require('electron');
 
-function generateFacture(factureData, outputPath= null) {
+async function generateFacture(factureData, outputPath= null) {
     const logoFileName = factureData.entreprise[0].logo_path;
     const logoPath = path.join(app.getPath('userData'), 'logo_entreprise', logoFileName);
   return new Promise((resolve, reject) => {
@@ -12,7 +12,10 @@ function generateFacture(factureData, outputPath= null) {
 
     // Si outputPath est fourni, on écrit dans un fichier
     if (outputPath) {
-      doc.pipe(fs.createWriteStream(outputPath));
+      const stream = fs.createWriteStream(outputPath);
+      doc.pipe(stream);
+      stream.on('finish', () => resolve(outputPath)); // ← résout la promesse
+      stream.on('error', reject);
     } else {
       doc.on('data', chunk => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));

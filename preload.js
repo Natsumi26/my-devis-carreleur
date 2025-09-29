@@ -39,6 +39,8 @@ contextBridge.exposeInMainWorld('api', {
     resetDatabase: () => ipcRenderer.invoke('reset-database'),
     saveDatabase: () => ipcRenderer.invoke('save-database'),
     getPlanning: () => ipcRenderer.invoke('get-planning-events'),
+    //envoi de mail
+    sendEmail: async (data) => await ipcRenderer.invoke('send-email', data)
   });
 
 //export function
@@ -49,15 +51,18 @@ contextBridge.exposeInMainWorld('api', {
 
 //function pour visualiser la facture
 contextBridge.exposeInMainWorld('factureAPI', {
+  generateFacturePath: async (factureData) => await ipcRenderer.invoke('generate-facture-path', factureData),
   previewFacture: (factureData) => ipcRenderer.invoke('preview-facture', factureData),
   onPreview: (callback) => ipcRenderer.on('preview-facture', (event, base64) => callback(base64))
 });
 
 //function pour visualiser le devis
 contextBridge.exposeInMainWorld('devisAPI', {
+  generateDevisPath: async (devisData) => await ipcRenderer.invoke('generate-devis-path', devisData),
   previewDevis: (devisData) => ipcRenderer.invoke('preview-devis', devisData),
   onPreview: (callback) => ipcRenderer.on('preview-devis', (event, base64) => callback(base64))
 });
+
 
 //function pour la gestion des excel (import et export)
 contextBridge.exposeInMainWorld('excelAPI', {

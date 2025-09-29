@@ -170,6 +170,7 @@
     <!-- Menu contextuel -->
     <div class="bg-light text-dark rounded d-none position-absolute" id="contextmenu">
       <ul id="listMenu" class="list-unstyled m-2">
+        <li><button class="btn btn-primary" data-action="envoyer" id="sendByEmailBtn">📧 Envoyer par email</button></li>
         <li><button class="btn btn-sm btn-outline-warning mb-2 w-100" id="voir" data-action="voir"><i class="bi bi-eye"></i> Voir le devis</button></li>
         <li><button class="btn btn-sm btn-outline-secondary mb-2 w-100" data-bs-toggle="modal" data-action="modalEvent" data-bs-target="#addEventModal" id="EventModal"><i class="bi bi-plus-lg"></i> Ajouter au planning</button></li>        
         <li><button class="btn btn-sm btn-outline-info mb-2 w-100" data-action="accepter" id="accepter"><i class="bi bi-check2"></i> Accepter</button></li>
@@ -186,10 +187,32 @@
             <span class="close-btn" onclick="closeModal()">×</span>
             <button class="btn btn-success " onclick="downloadPDF()">Télécharger</button>
         </div>
-      
       <iframe id="pdfPreview" style="width:100%; height:80vh;"></iframe>
     </div>
   </div>
+
+<!-- Modal pour l'envoie de mail -->
+<div class="modal" id="emailModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Personnaliser l'email</h5>
+                <button type="button" class="btn-close" onclick="closeEmailModal()"></button>
+            </div>
+            <div class="modal-body">
+                <label for="emailSubject">Objet :</label>
+                <input type="text" id="emailSubject" class="form-control" />
+
+                <label for="emailMessage" class="mt-3">Message :</label>
+                <textarea id="emailMessage" class="form-control" rows="6"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEmailModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="sendCustomEmailDevis()">Envoyer</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

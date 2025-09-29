@@ -105,7 +105,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 clients: {
                     nom: result[0].nom,
                     adresse: result[0].adresse,
-                    telephone: result[0].telephone
+                    telephone: result[0].telephone,
+                    email: result[0].email
                 },
                 devis_prestation: result
                 .filter(r => r.dp_id !== null)
@@ -127,7 +128,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 //Recuperation des données pour la génération des PDF
 
         async function getDataDevis(id) {
-            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statut, devis.client_id as client, clients.nom, clients.adresse, clients.telephone,prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity, prestation.pu, devis_prestation.unite, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
+            const result = await window.api.fetchAll('SELECT devis.id, devis.number, devis.date_devis, devis.total_HT, devis.total_TTC, devis.taux_tva, devis.statut, devis.client_id as client, clients.nom, clients.email, clients.adresse, clients.telephone, prestation.pu ,prestation.name,prestation.id AS prestation_id, devis_prestation.id AS dp_id, devis_prestation.quantity, prestation.pu, devis_prestation.unite, devis_prestation.sous_total FROM `devis` LEFT JOIN clients ON (clients.id=devis.client_id) LEFT JOIN devis_prestation ON (devis.id=devis_prestation.devis_id) LEFT JOIN prestation ON (prestation.id=devis_prestation.prestation_id) WHERE devis.id= ?', [id]);
             return result;
         }
 
@@ -412,6 +413,51 @@ function createPrestaLine() {
                     currentDevisNumber = devisData.devis.number;
                 window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
             }
+            //Bouton envoi mail
+            let currentDevisId = null;
+
+            async function openEmailModal(id, devisData) {
+                currentDevisId = id;
+                document.getElementById('emailSubject').value = `Votre devis n°${devisData.devis.number}`;
+                document.getElementById('emailMessage').value =
+                    `Bonjour ${devisData.clients.nom},\n\nVeuillez trouver ci-joint votre devis.\n\nCordialement,\n${devisData.entreprise[0].name}\n${devisData.entreprise[0].telephone}\n${devisData.entreprise[0].adresse}`;
+    
+                document.getElementById('emailModal').style.display = 'block';
+            }
+    
+            window.closeEmailModal = function () {
+                document.getElementById('emailModal').style.display = 'none';
+            }
+
+            window.sendCustomEmailDevis = async function(){
+
+                const subject = document.getElementById('emailSubject').value;
+                const message = document.getElementById('emailMessage').value;
+
+                const result = await getDataDevis(currentDevisId);
+                const entrepriseData = await getEntrepriseData();
+                const devisData = await buildDevisData(result);
+                devisData.entreprise = entrepriseData;
+                
+                const devisDataJson = JSON.parse(JSON.stringify(devisData));
+                const pdfPath = await window.devisAPI.generateDevisPath(devisDataJson); // ← génère le PDF et retourne le chemin
+                const clientEmail = devisData.clients.email; // ← récupère l’email du client
+
+                const resultEmail = await window.api.sendEmail({
+                    to: clientEmail,
+                    subject,
+                    message,
+                    pdfPath
+                });
+
+                if (resultEmail.success) {
+                    notifier('Email envoyé avec succès !', 'email');
+                    closeEmailModal();
+                } else {
+                    notifier('Erreur : ' + resultEmail.error, 'email');
+                }
+              }
+
 //Click bouton
     document.addEventListener('click',async function(e) {
         const btn = e.target.closest('button[data-action]');
@@ -429,6 +475,13 @@ function createPrestaLine() {
             break;
         case 'accepter':
             await AcceptDevis(id)
+            break;
+        case 'envoyer':
+            const result = await getDataDevis(id);
+            const entrepriseData = await getEntrepriseData();
+            const devisData = await buildDevisData(result);
+            devisData.entreprise = entrepriseData;
+            await openEmailModal(id, devisData);
             break;
         }
     

@@ -106,7 +106,8 @@ function openModalWithPDF(base64) {
                 clients: {
                     nom: facture[0].nom,
                     adresse: facture[0].adresse,
-                    telephone: facture[0].telephone
+                    telephone: facture[0].telephone,
+                    email: facture[0].email
                 },
                 facture_prestation: prestations
                 .map(fp => ({
@@ -133,7 +134,7 @@ function openModalWithPDF(base64) {
 //Recuperation des données pour la génération des PDF
 
     async function getDataFactures(id) {
-        const facture = await window.api.fetchAll('SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.total_TTC, factures.taux_tva,devis.number AS devis_number, factures.client_id AS client, clients.nom, clients.adresse, clients.telephone FROM `factures` LEFT JOIN clients ON (clients.id=factures.client_id) LEFT JOIN devis ON (devis.id=factures.devis_id) WHERE factures.id= ?', [id]);
+        const facture = await window.api.fetchAll('SELECT factures.id, factures.number, factures.date_facture, factures.total_HT, factures.total_TTC, factures.taux_tva,devis.number AS devis_number, factures.client_id AS client, clients.nom,clients.email, clients.adresse, clients.telephone FROM `factures` LEFT JOIN clients ON (clients.id=factures.client_id) LEFT JOIN devis ON (devis.id=factures.devis_id) WHERE factures.id= ?', [id]);
         const prestations = await window.api.fetchAll('SELECT fp.id AS fp_id, fp.prestation_id, p.pu, p.name, fp.quantity, fp.unite, fp.sous_total FROM facture_prestation fp LEFT JOIN prestation p ON fp.prestation_id = p.id WHERE fp.facture_id = ?', [id])
         const acomptes = await window.api.fetchAll('SELECT * FROM acomptes WHERE facture_id = ?', [id])
         console.log(facture)
@@ -199,6 +200,54 @@ getFactures();
             currentFactureNumber = factureData.facture.number;
           window.factureAPI.previewFacture(factureDataJson); // Envoie au main process
         };
+        //Bouton envoi mail
+
+        let currentFactureId = null;
+
+        async function openEmailModal(id, factureData) {
+            currentFactureId = id;
+            document.getElementById('emailSubject').value = `Votre facture n°${factureData.facture.number}`;
+            document.getElementById('emailMessage').value =
+              `Bonjour ${factureData.clients.nom},\n\nVeuillez trouver ci-joint votre facture.\n\nCordialement,\n${factureData.entreprise[0].name}\n${factureData.entreprise[0].telephone}\n${factureData.entreprise[0].adresse}`;
+
+            document.getElementById('emailModal').style.display = 'block';
+          }
+
+          window.closeEmailModal = function () {
+            document.getElementById('emailModal').style.display = 'none';
+          }
+
+        window.sendCustomEmailFacture = async function(){
+
+              const subject = document.getElementById('emailSubject').value;
+              const message = document.getElementById('emailMessage').value;
+
+              const result = await getDataFactures(currentFactureId);
+              const entrepriseData = await getEntrepriseData();
+              const factureData = await buildFactureData(result);
+              factureData.entreprise = entrepriseData;
+              console.log(factureData)
+              
+                const factureDataJson = JSON.parse(JSON.stringify(factureData));
+                console.log(factureDataJson)
+                const pdfPath = await window.factureAPI.generateFacturePath(factureDataJson); // ← génère le PDF et retourne le chemin
+                console.log('PDF généré à :', pdfPath);
+                const clientEmail = factureData.clients.email; // ← récupère l’email du client
+
+                const resultEmail = await window.api.sendEmail({
+                    to: clientEmail,
+                    subject,
+                    message,
+                    pdfPath
+                });
+
+                if (resultEmail.success) {
+                    notifier('Email envoyé avec succès !', 'email');
+                    closeEmailModal();
+                } else {
+                    notifier('Erreur : ' + resultEmail.error, 'email');
+                }
+              }
 
 //Click bouton
 document.addEventListener('click',async function(e) {
@@ -214,6 +263,13 @@ document.addEventListener('click',async function(e) {
       break;
     case 'telecharger':
       await generateFacturesFromId(id)
+      break;
+    case 'envoyer':
+      const result = await getDataFactures(id);
+      const entrepriseData = await getEntrepriseData();
+      const factureData = await buildFactureData(result);
+      factureData.entreprise = entrepriseData;
+      await openEmailModal(id, factureData);
       break;
   }
 

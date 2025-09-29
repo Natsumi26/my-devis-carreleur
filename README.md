@@ -9,3 +9,7 @@ Toutes les npm install:
   npm install exceljs
   npm install electron-builder
   npm install fullcalendar
+  npm install nodemailer
+  npm install dotenv
+
+
