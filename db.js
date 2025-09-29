@@ -78,7 +78,7 @@ function initDatabase() {
       FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS planning (
+    db.run(`CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       start_date DATE,
       start_hour TIME,
@@ -86,10 +86,8 @@ function initDatabase() {
       end_hour TIME,
       title TEXT,
       description TEXT,
-      clients_id INTEGER,
-      facture_id INTEGER,
-      FOREIGN KEY(facture_id) REFERENCES factures(id) ON DELETE CASCADE,
-      FOREIGN KEY(clients_id) REFERENCES clients(id) ON DELETE CASCADE
+      devis_id INTEGER NULL,
+      FOREIGN KEY(devis_id) REFERENCES devis(id) ON DELETE CASCADE
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS facture_prestation (

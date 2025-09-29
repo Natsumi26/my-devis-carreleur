@@ -43,6 +43,9 @@
   <div class="flex-grow-1 p-4 container mt-4">
     <!-- <a class="btn btn-outline-info btn-sm mx-2" href="index.html">Retour acceuil</a> -->
     <h1 class="mb-5">Mon Calendrier</h1>
+    <a href="https://calendar.google.com/calendar/u/0/r" target="_blank" class="btn btn-outline-secondary">
+      Voir mon Google Agenda
+    </a>
       <div class="p-4 bg-light" id="calendar"></div>
   
 
@@ -83,14 +86,17 @@
                 <input type="textarea" class="form-control" id="description" required disabled >
               </div>
               <div class="mb-3">
-                <label for="factureId" class="form-label">Facture</label>
-                <select name="factureId" class="form-control" id="factureId" disabled >
+                <label for="devisId" class="form-label">Devis</label>
+                <select name="devisId" class="form-control" id="devisId" disabled >
                     <option value="">Choisir la chantier associé</option>
                 </select>
               </div>
-              <input type="hidden" id="clientIdHidden" name="client_id">
               <button type="button" id="editBtn" class="btn btn-warning">Modifier</button>
+              <a id="googleCalendarLink" href="#" target="_blank" class="btn btn-outline-primary mt-2">
+                📆 Ajouter à Google Agenda
+              </a>              
               <button type="submit" id="saveBtn" class="btn btn-success">Enregistrer</button>
+              <button type="button" id="deleteBtn" class="btn btn-danger">Supprimer</button>
               <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
             </form>
           </div>
@@ -123,13 +129,10 @@
       const events = rawEvents.map(e => ({
           id: e.id,
           title: e.title, // ou autre champ pertinent
-          start: e.start_date,
-          end: e.end_date,
+          start: `${e.start_date}T${e.start_hour}`,
+          end: `${e.end_date}T${e.end_hour}`,
           extendedProps: {
-            start_hour: e.start_hour,
-            end_hour: e.end_hour,
-            clients_id: e.clients_id,
-            facture_id: e.facture_id,
+            devis_id: e.devis_id,
             description: e.description
           },
         }));
@@ -170,10 +173,7 @@
             console.log('Fin:', event.endStr);
 
             // Accès aux propriétés personnalisées (extendedProps)
-            console.log('start_hour:', event.extendedProps.start_hour);
-            console.log('end_hour:', event.extendedProps.end_hour);
-            console.log('Client ID:', event.extendedProps.clients_id);
-            console.log('Facture ID:', event.extendedProps.facture_id);
+            console.log('Devis ID:', event.extendedProps.devis_id);
             console.log('Description:', event.extendedProps.description);
         }
       });

@@ -66,43 +66,13 @@
     <div class="bg-light text-dark rounded d-none position-absolute" id="contextmenu">
       <ul id="listMenu" class="list-unstyled m-2">
         <li><button class="btn btn-sm btn-outline-info mb-2 w-100" data-bs-toggle="modal" data-action="modalAcompte" data-bs-target="#addAcompteModal" id="AcompteModal"><i class="bi bi-plus-lg"></i> Ajouter un acompte</button></li>
-        <li><button class="btn btn-sm btn-outline-primary mb-2 w-100" data-bs-toggle="modal" data-action="modalEvent" data-bs-target="#addEventModal" id="EventModal"><i class="bi bi-plus-lg"></i> Ajouter au planning</button></li>        
         <li><button class="btn btn-sm btn-outline-warning mb-2 w-100" data-action="voir" id="voir"><i class="bi bi-eye"></i> Voir la facture</button></li>
         <li><button class="btn btn-sm btn-outline-success mb-2 w-100" data-action="telecharger" id="telecharger"><i class="bi bi-download"></i> Télécharger</button></li>
         <li><button class="btn btn-sm btn-outline-danger w-100" onclick="deleteFacture(selectedId)"><i class="bi bi-trash3"></i> Supprimer</button></li>
       </ul>
     </div>
 </div>
-<!-----Modal ajout au planning---------->
-    <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="addEventModalLabel">Ajouter un planning</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-              <form id="addEventForm">
-                <div class="mb-3">
-                  <label for="dateStart" class="form-label">Date de début</label>
-                  <input type="date" class="form-control" id="dateStart" required>
-                </div>
-                <div class="mb-3">
-                  <label for="dateEnd" class="form-label">Date prévu de fin</label>
-                  <input type="date" class="form-control" id="dateEnd" required>
-                </div>
-                <div class="mb-3">
-                  <label for="titre" class="form-label">Description</label>
-                  <input type="text" class="form-control" id="titre" required>
-                </div>
-                <input type="hidden" id="factureId" name="factureId">
-                <input type="hidden" id="clientIdHidden" name="client_id">
-                <button type="submit" id="addEvent" data-action="addEvent" class="btn btn-success">Ajouter</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+
 <!-----Modal ajout d'un acompte---------->
     <div class="modal fade" id="addAcompteModal" tabindex="-1" aria-labelledby="addAcompteModalLabel" aria-hidden="true">
         <div class="modal-dialog">

@@ -232,50 +232,6 @@ window.factureAPI.onPreview((base64) => {
     openModalWithPDF(base64);
 });
 
-//------------function addEvent ---------------
-
-document.getElementById('addEventModal').addEventListener('show.bs.modal', async function (event) {
-  const trigger = event.relatedTarget;
-  const id = trigger.getAttribute('data-id');
-  const result = await window.api.fetchOne(`SELECT client_id FROM factures WHERE id=?`, [id])
-  const client = result[0].client_id;
-  document.getElementById('factureId').value = id;
-  document.getElementById('clientIdHidden').value = client;
-
-});
-
-
-// Function addEvent
-async function addEvent(){
-  const id = document.getElementById('factureId').value;
-  const client = document.getElementById('clientIdHidden').value;
-  const dateStart = document.getElementById('dateStart').value;
-  const dateEnd = document.getElementById('dateEnd').value;
-  const titre = document.getElementById('titre').value;
-
-
-  await window.api.eQuery("INSERT INTO planning (start_date, end_date, description, clients_id, facture_id) VALUES (?, ?, ?, ?, ?)", 
-    [dateStart, dateEnd, titre, client, id]);
-    notifier("Planning créé avec succès pour la facture" + id, "Planning");
-
-  // Réinitialiser le formulaire
-  document.getElementById('addEventForm').reset();
-
-  // Fermer la modal
-  const modalEl = document.getElementById('addEventModal');
-  const modalInstance = bootstrap.Modal.getInstance(modalEl);
-  modalInstance.hide();
-}
-document.getElementById('addEventForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  addEvent();
-});
-
-//-------------get Planning------------
-const resultPlanning = window.api.fetchAll(`SELECT * FROM planning`)
-    console.log(resultPlanning)
-
-
 //------------function addAcompte ---------------
 
 document.getElementById('addAcompteModal').addEventListener('show.bs.modal', function (event) {

@@ -664,5 +664,49 @@ window.devisAPI.onPreview((base64) => {
     openModalWithPDF(base64);
 });
 
+//------------function addEvent ---------------
+
+document.getElementById('addEventModal').addEventListener('show.bs.modal', async function (event) {
+  const trigger = event.relatedTarget;
+  const id = trigger.getAttribute('data-id');
+  document.getElementById('devisId').value = id;
+
+});
+
+
+// Function addEvent
+async function addEvent(){
+  const id = document.getElementById('devisId').value;
+  const dateStart = document.getElementById('dateStart').value;
+  const hourStart = document.getElementById('hourStart').value;
+  const dateEnd = document.getElementById('dateEnd').value;
+  const hourEnd = document.getElementById('hourEnd').value;
+  const titre = document.getElementById('titre').value;
+  const description = document.getElementById('description').value;
+
+
+  await window.api.eQuery("INSERT INTO events (start_date, start_hour, end_date, end_hour, title, description, devis_id) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+    [dateStart, hourStart, dateEnd, hourEnd, titre, description, id]);
+    notifier("Event créé avec succès pour la facture" + id, "Events");
+
+  // Réinitialiser le formulaire
+  document.getElementById('addEventForm').reset();
+
+  // Fermer la modal
+  const modalEl = document.getElementById('addEventModal');
+  const modalInstance = bootstrap.Modal.getInstance(modalEl);
+  modalInstance.hide();
+}
+document.getElementById('addEventForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  addEvent();
+});
+
+//-------------get Planning------------
+const resultPlanning = window.api.fetchAll(`SELECT * FROM events`)
+    console.log(resultPlanning)
+
+
+
 });
 

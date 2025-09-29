@@ -11,18 +11,12 @@ let win;
 ipcMain.handle('get-planning-events', async () => {
   const db = getDb();
   return await new Promise((resolve, reject) => {
-    db.all("SELECT * FROM planning", (err, rows) => {
+    db.all("SELECT * FROM events", (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
     });
   });
 });
-
-
-//builder windows
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
 
 //Chemin de la bdd
 ipcMain.handle('get-user-data-path', () => {

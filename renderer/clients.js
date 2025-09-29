@@ -178,6 +178,7 @@ window.deleteClient = async function(id) {
     notifier("Client supprimé avec succès", "Clients");
     getClients();
 }
+
 //Modifier un clients
 window.updateClient = async function(id) {
     document.getElementById('typeForm').value = "update"; 
