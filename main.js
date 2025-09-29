@@ -100,7 +100,7 @@ ipcMain.handle('preview-devis', async (event, devisData) => {
   event.sender.send('preview-devis', base64); // envoie au renderer
 });
 
-
+//-----------------------Creation de fenetre appli-------------------------------------
 const createWindow = () => {
     win = new BrowserWindow({
     width: 1500,
@@ -118,7 +118,7 @@ const createWindow = () => {
   //-------
   win.loadFile('./renderer/index.html')
 }
-//Import Excel
+//-------------------------------Import Excel
 ipcMain.handle('import-excel', async (_, { table, keyColumn }) => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
@@ -203,10 +203,7 @@ ipcMain.handle('import-excel', async (_, { table, keyColumn }) => {
   };
 });
 
-
-
-
-//Export Excel
+//Export Excel-------------------------------------------
 ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
   const { canceled, filePath } = await dialog.showSaveDialog({
     defaultPath: `${table}.xlsx`,
@@ -244,7 +241,7 @@ ipcMain.handle('export-excel', async (_, { table, templateRelativePath}) => {
     // ➕ Calculer où se trouve le footer après insertion
 const footerRowIndex = startRow + lignes.length;
 
-// Modifier le texte dans la cellule A du footer déplacé
+// Modifier le texte dans la cellule A du footer déplacé-
 const footerCell = sheet.getCell(`A${footerRowIndex}`);
 const currentValue = footerCell.value || '';
 footerCell.value = `${currentValue} ${rows.length}`;
@@ -257,7 +254,7 @@ footerCell.font = { bold: true, color: { argb: 'FFFFFFFF' }  };
   return true;
   });
 
-//dark mode-------------
+//dark mode--------------------------------------------------
 ipcMain.handle('dark-mode:toggle', () => {
   if (nativeTheme.shouldUseDarkColors) {
     nativeTheme.themeSource = 'light'
@@ -271,6 +268,7 @@ ipcMain.handle('dark-mode:system', () => {
   nativeTheme.themeSource = 'system'
   return nativeTheme.shouldUseDarkColors
 })
+
 //-----------Function copis dossier model-------------------------
 function copyFolderRecursiveSync(source, target) {
   if (!fs.existsSync(source)) return;
@@ -409,11 +407,7 @@ app.whenReady().then(() => {
   });
 
 
-
-  // Définir le chemin de la base (synchronique)
-  const db = require('./db');
-
-  // SELECT
+  // SELECT------------------------------------
   ipcMain.handle('fetchAll', (event, query, values = []) => {
     const db = getDb();
     return new Promise((resolve, reject) => {
@@ -423,7 +417,7 @@ app.whenReady().then(() => {
       });
     });
   });
-  //SELECT un seul
+  //SELECT un seul------------------------------------------
   ipcMain.handle('fetchOne', (event, query, values = []) => {
     const db = getDb();
     return new Promise((resolve, reject) => {
@@ -434,7 +428,7 @@ app.whenReady().then(() => {
     });
   });
   
-  // INSERT / UPDATE / DELETE
+  // INSERT / UPDATE / DELETE-------------------------------
   ipcMain.handle('executeQuery', (event, query, values = []) => {
     const db = getDb();
     return new Promise((resolve, reject) => {
@@ -444,3 +438,19 @@ app.whenReady().then(() => {
       });
     });
   });
+
+//Misa a jour de l'icon pour toute nouvelle fenetre créer-----------------
+app.on('web-contents-created', (event, contents) => {
+  contents.setWindowOpenHandler(({ url }) => {
+    const childWin = new BrowserWindow({
+      width: 600,
+      height: 400,
+      icon: path.join(__dirname, 'assets/build/icons/icon.png'),
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
+    });
+    childWin.loadURL(url);
+    return { action: 'deny' }; // ← empêche la fenêtre par défaut
+  });
+});

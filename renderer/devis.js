@@ -83,10 +83,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         link.click();
         notifier("Devis sauvegardé avec succès", "Devis");
       };
+
 //Fermer la modal
       window.closeModal = function () {
         document.getElementById('ShowDevisModal').style.display = 'none';
       };
+
 // construction des données pour le pdf
  async function buildDevisData(result){
       // Construction des données
@@ -133,6 +135,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             const result = await window.api.fetchAll('SELECT * FROM entreprise');
             return result;
         }
+
 //Generation des PDF pour le telechargement 
         async function generateDevisFromId(id) {
             const result = await getDataDevis(id);
@@ -244,9 +247,11 @@ async function createFactureFromDevis(devis_id) {
         document.getElementById('typeForm').value = 'add';
         // date du jour pour le devis
         document.getElementById('date').value = new Date().toISOString().split('T')[0];;
+        document.getElementById('prestationsContainer').innerHTML = ''; // reset
+        createPrestaLine(); // ← ajoute une ligne automatiquement
     })
 
-    //Creation du NUMERO de devis
+//Creation du NUMERO de devis
     async function generateDevisNumber() {
         // On récupère le dernier numéro de devis
         const lastDevis = await window.api.fetchAll("SELECT number FROM devis ORDER BY id DESC LIMIT 1");
@@ -266,7 +271,7 @@ async function createFactureFromDevis(devis_id) {
         document.getElementById('number').value = newNumber;
     }
 
-    //Calcul du TOTAL HT DEVIS
+//Calcul du TOTAL HT DEVIS
     function calculateTotal() {
         let total_HT = 0;
         const lines = document.querySelectorAll('#prestationsContainer .presta-line');
@@ -291,7 +296,7 @@ async function createFactureFromDevis(devis_id) {
     document.getElementById('prestationsContainer').addEventListener('input', calculateTotal);
     document.getElementById('prestationsContainer').addEventListener('change', calculateTotal);
 
-    //Calcul du TOTAl TTC devis
+//Calcul du TOTAl TTC devis
     function calculateTotalTTC(total_HT) {
         const taux_tva = document.getElementById('tva').value ;
         const tva = total_HT * (taux_tva/100) ;
@@ -299,53 +304,54 @@ async function createFactureFromDevis(devis_id) {
         document.getElementById('totalTTC').value = total_TTC.toFixed(2);
     }
 
-//AJOUTER des inputs pour les PRESTATIONS 
-    document.getElementById("addPrestaLine").addEventListener("click", () => {
-        
-        const container = document.getElementById('prestationsContainer');
-        const line = document.createElement('div');
-        line.classList.add('presta-line');
-        line.innerHTML = `
-            <hr>
-            <select class="prestationsListe form-select mb-3" >
-            <option value=''>Choisir la prestation</option>
-                ${document.getElementById('prestationsListeTemplate').innerHTML}
-            </select>
-            <div class="mb-3">
-                <input type="number" class="form-control quantity" placeholder="Quantité">
-            </div>
-            <div class="mb-3">
-                <label for="unite">Unité de mesure</label>
-                <select type="text" class="form-control unite">
-                    <option value="">Choisir l'unité de mesure</option>
-                    <option value="m²">m²</option>
-                    <option value="mètre linéaire">Mètre linéaire</option>
-                    <option value="heure">Heure</option>
-                    <option value="jour">Jour</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <input type="number" class="form-control pu"  placeholder="Prix unitaire" disabled> 
-            </div>
-            <div class="mb-3">
-                <input type="number" class="form-control sousTotal"  placeholder="Sous-Total" value='0' disabled> 
-            </div>
-            <button type="button" class="removeLine btn btn-danger mb-2" ><i class="bi bi-trash3"></i></button>
-        `;
-        container.appendChild(line);
-        //Recupere et update le pu de chaque prestation
-        const select = line.querySelector('.prestationsListe');
-        select.addEventListener('change', () => {
-            const pu = select.options[select.selectedIndex].dataset.pu;
-            line.querySelector('.pu').value = pu;
-            calculateTotal();
-        });
+//Fonction d'ajout de prestaline
+function createPrestaLine() {
+  const container = document.getElementById('prestationsContainer');
+  const line = document.createElement('div');
+  line.classList.add('presta-line');
+  line.innerHTML = `
+    <hr>
+    <select class="prestationsListe form-select mb-3">
+      <option value=''>Choisir la prestation</option>
+      ${document.getElementById('prestationsListeTemplate').innerHTML}
+    </select>
+    <div class="mb-3">
+      <input type="number" class="form-control quantity" placeholder="Quantité">
+    </div>
+    <div class="mb-3">
+      <label for="unite">Unité de mesure</label>
+      <select type="text" class="form-control unite">
+        <option value="">Choisir l'unité de mesure</option>
+        <option value="m²">m²</option>
+        <option value="mètre linéaire">Mètre linéaire</option>
+        <option value="heure">Heure</option>
+        <option value="jour">Jour</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <input type="number" class="form-control pu" placeholder="Prix unitaire" disabled>
+    </div>
+    <div class="mb-3">
+      <input type="number" class="form-control sousTotal" placeholder="Sous-Total" value='0' disabled>
+    </div>
+    <button type="button" class="removeLine btn btn-danger mb-2"><i class="bi bi-trash3"></i></button>
+  `;
+  container.appendChild(line);
 
-        // Supprimer la ligne
-        line.querySelector('.removeLine').addEventListener('click', () => {
-            container.removeChild(line);
-        });
-    })
+  const select = line.querySelector('.prestationsListe');
+  select.addEventListener('change', () => {
+    const pu = select.options[select.selectedIndex].dataset.pu;
+    line.querySelector('.pu').value = pu;
+    calculateTotal();
+  });
+
+  line.querySelector('.removeLine').addEventListener('click', () => {
+    container.removeChild(line);
+    calculateTotal();
+  });
+}
+//AJOUTER des inputs pour les PRESTATIONS 
+    document.getElementById("addPrestaLine").addEventListener("click", createPrestaLine)
 
 
 
@@ -366,27 +372,11 @@ async function createFactureFromDevis(devis_id) {
                     <td class="w-20">${d.number}</td>
                     <td class="w-20">${dateFr}</td>
                     <td class="w-15">${d.total_TTC} €</td>
-                    <td class="w-10">${d.statut}</td>
+                    <td class="w-15">${d.statut}</td>
                     <td class="w-20">${d.client_nom}</td>
-                    <td class="w-5"> 
-                        <div class="d-flex ">
-                        <button class="btn btn-sm btn-outline-info me-3" id="accepter-${d.id}"  data-id="${d.id}"><i class="bi bi-check2"></i></button>
-                        </div>
-                    </td>
             `;
             // Ajout de la ligne au tableau
             tbody.appendChild(row);
-           
-                // Display le bouton valider si statut accepter
-            if(d.statut === 'Accepté'){
-                document.getElementById(`accepter-${d.id}`).style.display = 'none';
-            } 
-
-            // Ajouter l'événement au bouton
-            const btn = document.getElementById(`accepter-${d.id}`);
-            btn.addEventListener('click', async () => {
-            await AcceptDevis(d.id);
-            });
             
         });
     }
@@ -422,7 +412,7 @@ async function createFactureFromDevis(devis_id) {
                     currentDevisNumber = devisData.devis.number;
                 window.devisAPI.previewDevis(devisDataJson); // Envoie au main process
             }
-    //Click bouton
+//Click bouton
     document.addEventListener('click',async function(e) {
         const btn = e.target.closest('button[data-action]');
         if (!btn) return;
@@ -445,7 +435,7 @@ async function createFactureFromDevis(devis_id) {
         contextMenu.classList.add('d-none'); // Masquer le menu après action
     });
 
-    //AJOUTER un DEVIS -------------------------
+//AJOUTER un DEVIS -------------------------
 async function addDevis() {
         const devis = {
             number: document.getElementById('number').value,

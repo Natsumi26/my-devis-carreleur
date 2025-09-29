@@ -7,7 +7,5 @@ Toutes les npm install:
   npm install -g electron-icon-builder
   npm install chart.js
   npm install exceljs
-  npm install --save-dev @electron-forge/cli
   npm install electron-builder
-  npm install electron-forge-maker-nsis
   npm install fullcalendar
