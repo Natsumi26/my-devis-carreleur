@@ -106,9 +106,19 @@ function initDatabase() {
       logo_path TEXT,
       name TEXT NOT NULL,
       telephone TEXT,
-      adresse TEXT
+      adresse TEXT,
+      siret NUMBER 
     )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS parametres (
+      cle TEXT PRIMARY KEY,
+      valeur TEXT
+    )`);
+    db.run(`INSERT OR REPLACE INTO parametres (cle, valeur) VALUES ('smtp_host', 'smtp.gmail.com')`);
+    db.run(`INSERT OR REPLACE INTO parametres (cle, valeur) VALUES ('smtp_port', '465')`);
+    db.run(`INSERT OR REPLACE INTO parametres (cle, valeur) VALUES ('smtp_secure', 'true')`);
     });
+    
   }
 
   // Supprimer l’ancienne base si elle existe

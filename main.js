@@ -6,7 +6,6 @@ const { getDb, resetDatabase, saveDatabase } = require('./db');
 const ExcelJS = require('exceljs');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
-require('dotenv').config();
 let win;
 
 // function fetch planning
@@ -483,19 +482,45 @@ app.on('web-contents-created', (event, contents) => {
   });
 });
 
+
+//----Fonction pour recuperer les parametres
+async function getParametresEmail() {
+  const db = getDb();
+
+  return await new Promise((resolve, reject) => {
+    db.all(`SELECT cle, valeur FROM parametres`, (err, rows) => {
+      if (err) {
+        console.error('Erreur SQL :', err);
+        reject(err);
+      } else {
+        const params = {};
+        rows.forEach(row => {
+          params[row.cle] = row.valeur;
+        });
+        resolve(params);
+      }
+    });
+  });
+}
+
 // Fonction d'envoi d'email
 ipcMain.handle('send-email', async (event, { to, subject, message, pdfPath }) => {
   try {
+    
+    const params = await getParametresEmail();
+    console.log('Paramètres SMTP utilisés :', params);
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: params.smtp_host || 'smtp.gmail.com',
+      port: parseInt(params.smtp_port) || 465,
+      secure: params.smtp_secure === 'true',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS // Utilise un mot de passe d'application
+        user: params.email_smtp,
+        pass: params.pass_smtp
       }
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: params.email_smtp,
       to,
       subject,
       text: message,
