@@ -361,21 +361,18 @@ app.whenReady().then(() => {
         submenu: [
           {
             label: 'Accueil',
-            accelerator: 'CmdOrCtrl+H',
             click: async () => {
               await win.loadFile('./renderer/index.html');
             }
           },
           {
             label: 'Les clients',
-            accelerator: 'CmdOrCtrl+C',
             click: async () => {
               await win.loadFile('./renderer/clients.html');
             }
           },
           {
             label: 'Les prestations',
-            accelerator: 'CmdOrCtrl+P',
             click: async () => {
               await win.loadFile('./renderer/prestations.html');
             }
@@ -386,15 +383,24 @@ app.whenReady().then(() => {
               await win.loadFile('./renderer/devis.html');
             }
           },
+          {
+            label: 'Les factures',
+            click: async () => {
+              await win.loadFile('./renderer/factures.html');
+            }
+          },
+          {
+            label: 'Calendrier',
+            click: async () => {
+              await win.loadFile('./renderer/calendrier.html');
+            }
+          },
           process.platform === 'darwin' ? { role: 'close', label: "Quitter" } : { role: 'quit' , label: "Quitter" }
         ]
       },
       {
         label: 'Edition',
         submenu: [
-          { role: 'undo', label: "Annuler" },
-          { role: 'redo', label: "Rétablir" },
-          { type: 'separator' },
           { role: 'cut', label: "Couper",accelerator: 'CmdOrCtrl+X' },
           { role: 'copy', label: "Copier", accelerator: 'CmdOrCtrl+C' },
           { role: 'paste', label: "Coller", accelerator: 'CmdOrCtrl+V' },
@@ -418,6 +424,12 @@ app.whenReady().then(() => {
         role: 'help',
         label: 'Aide',
         submenu: [
+          {
+            label: "Tutoriel d'utilisation",
+            click: async () => {
+              await win.loadFile('./renderer/tutorial.html');
+            }
+          },
           {
             label: 'Documentation Electron',
             click: async () => {

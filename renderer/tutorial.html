@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriel d'utilisation</title>
+    <link rel="stylesheet" type="text/css" href="./index.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body">
+<div class="d-flex">
+  <!-- Sidebar -->
+  <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
+    <h4 class="mb-4 text-center">Tableau de bord</h4>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link text-white " href="index.html"><i class="bi bi-house-fill"></i> Accueil</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="clients.html"><i class="bi bi-people-fill"></i> Clients</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="prestations.html"><i class="bi bi-tools"></i> Prestations</a></li>                    
+          <li class="nav-item"><a class="nav-link text-white" href="devis.html"><i class="bi bi-receipt-cutoff"></i> Devis</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="factures.html"><i class="bi bi-cash-stack"></i> Factures</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="calendrier.html"><i class="bi bi-calendar3-week-fill"></i> Calendrier</a></li>
+          <li class="nav-item">
+        <!-- Default dropend button -->
+        <div class="btn-group dropend w-25">
+          <a class="nav-link text-white dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="bi bi-gear-wide-connected"></i> Paramètres</a>
+          
+          <ul class="dropdown-menu bg-dark ">
+            <!-- Dropdown menu links -->
+            <li class="text-center"><button class="btn btn-outline-light btn-sm mx-2" type="button" id="darkMode">Dark mode</button></li>
+            <li class="text-center mt-3"><a class="btn btn-outline-light btn-sm mx-2" href="entreprise.html">Coordonnées</a></li>
+            <li class="text-center mt-3"><a class="btn btn-outline-light btn-sm mx-2" href="parametres.html">Paramètres d'email</a></li>
+            <li class="text-center mt-3"><button class="btn btn-outline-danger btn-sm mx-2" onclick="resetBase()">Réinitialiser la base</button></li>
+            <li class="text-center mt-3"><button class="btn btn-outline-success btn-sm mx-2" onclick="saveBase()">Sauvegarder la base</button></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenu -->
+    <div class="flex-grow-1 p-4 container my-5">
+            <h1 class="text-center mb-4">📖 Tutoriel d'utilisation</h1>
+          
+            <!-- Sommaire -->
+            <div class="container mb-4">
+                <div class="accordion" id="accordionSommaire">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                        Sommaire
+                      </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionSommaire">
+                      <div class="accordion-body bg-light rounded">
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item bg-light"><a href="#intro" class="text-dark text-decoration-none">📝 Introduction</a></li>
+                          <li class="list-group-item bg-light"><a href="#clientsGestion" class="text-dark text-decoration-none">👥 Gestion des clients</a></li>
+                          <li class="list-group-item bg-light"><a href="#prestationsGestion" class="text-dark text-decoration-none">🛠️ Gestion des prestations</a></li>
+                          <li class="list-group-item bg-light"><a href="#devisGestion" class="text-dark text-decoration-none">📄 Gestion des devis</a></li>
+                          <li class="list-group-item bg-light"><a href="#factureGestion" class="text-dark text-decoration-none">🧾 Gestion des factures</a></li>
+                          <li class="list-group-item bg-light"><a href="#planning" class="text-dark text-decoration-none">📅 Gestion du planning</a></li>
+                          <li class="list-group-item bg-light"><a href="#astuces" class="text-dark text-decoration-none">💡 Astuces</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          
+            <!-- Sections -->
+            <section id="intro" class="mb-5">
+                <h2>Introduction</h2>
+                <p>
+                    Bienvenue dans Mes DevisFactures ! Ce tutoriel vous guide pas à pas dans l'utilisation
+                    des principales fonctionnalités.
+                </p>
+            </section>
+            <section class="mb-5">
+                <h3>🎯 Objectif du logiciel</h3>
+                <p>
+                    Ce logiciel vous permet de gérer vos devis et factures de manière simple et rapide, avec génération automatique en PDF, envoi par email, et suivi des événements.
+                </p>
+            </section>
+
+            <section id="nav" class="mb-5">
+                <h2>🧭 Navigation générale</h2>
+                <div class="card shadow-sm p-3">
+                    <ul>
+                        <li><strong>Accueil</strong> : Vue d'ensemble de vos devis et factures.</li>
+                        <li><strong>Clients</strong> : Liste des clients enregistrés dans une base de données.</li>
+                        <li><strong>Prestations</strong> : Liste des prestations associés à leurs prix unitaire enregistrés dans une base de données.</li>
+                        <li><strong>Créer un devis / facture</strong>  : Formulaire intuitif pour saisir les informations client, prestations, et montants.</li>
+                        <li><strong>Planning</strong> : Visualisez vos rendez-vous et interventions.</li>
+                        <li><strong>Paramètres</strong> : Configurez vos informations d'entreprise, vos réglages SMTP pour l'envoi d'email et la gestion de la bdd.</li>
+                        <li><strong>Aide</strong> : Vous êtes ici 😊</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="clientsGestion" class="mb-5">
+                <h2> 👥 Gestion des clients</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                        La section clients vous permet de visualiser tous les clients de votre base de données.  
+                        Vous pouvez faire :
+                    </p>
+                    <ul>
+                        <li>Rechercher par nom de client dans la barre de recherche</li>
+                        <li>Trier sur la colonne code et nom du client</li>
+                        <li>Ajouter un nouveau client comme ci-dessous</li>
+                        <li>Exporter en excel la liste de vos clients</li>
+                        <li>Importer en excel une liste de clients</li>
+                        <li>Vous avez un menu contextuel avec le click droit sur une ligne de devis :
+                            <ol>
+                                <li><strong>Modifier</strong> : ouvre une modal qui permet de modifier les informations du client</li>
+                                <li><strong>Supprimer</strong> : permet de supprimer le client</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="clients" class="mb-5">
+                <h2>👥 Créer un client</h2>
+                <div class="card shadow-sm p-3">
+                    <p>  
+                        Comment faire :
+                    </p>
+                    <ol>
+                        <li>Cliquez sur <strong>"Ajouter un client"</strong> </li>
+                        <li>Remplir les champs</li>
+                        <li>A la fin, vous cliquez sur <strong>"Ajouter"</strong> pour créer le client</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="prestationsGestion" class="mb-5">
+                <h2>🛠️ Gestion des prestations</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                        La section prestations vous permet de visualiser tous les prestations de votre base de données.  
+                        Vous pouvez faire :
+                    </p>
+                    <ul>
+                        <li>Rechercher par nom dans la barre de recherche</li>
+                        <li>Trier sur la colonne code et nom</li>
+                        <li>Ajouter une nouvelle prestation comme ci-dessous</li>
+                        <li>Exporter en excel la liste de vos prestations</li>
+                        <li>Importer en excel une liste de prestations</li>
+                        <li>Vous avez un menu contextuel avec le click droit sur une ligne de devis :
+                            <ol>
+                                <li><strong>Modifier</strong> : ouvre une modal qui permet de modifier les informations de la prestation</li>
+                                <li><strong>Supprimer</strong> : permet de supprimer la prestation</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="prestations" class="mb-5">
+                <h2>🛠️ Créer une prestation</h2>
+                <div class="card shadow-sm p-3">
+                    <p>  
+                        Comment faire :
+                    </p>
+                    <ol>
+                        <li>Cliquez sur <strong>"Ajouter une prestation"</strong> </li>
+                        <li>Remplir les champs</li>
+                        <li>A la fin, vous cliquez sur <strong>"Ajouter"</strong> pour créer la prestation</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="devisGestion" class="mb-5">
+                <h2>📄 Gestion des devis</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                        La section devis vous permet de visualiser tous les devis de votre base de données.  
+                        Vous pouvez faire :
+                    </p>
+                    <ul>
+                        <li>Rechercher par nom de client dans la barre de recherche</li>
+                        <li>Trier sur la colonne date de devis</li>
+                        <li>Ajouter un nouveau devis comme ci-dessous</li>
+                        <li>Vous avez un menu contextuel avec le click droit sur une ligne de devis :
+                            <ol>
+                                <li><strong>Envoyer par mail</strong> : ouvre une modal avec un text par défaut modifiable pour envoyer le devis en pdf</li>
+                                <li><strong>Voir le devis</strong> : ouvre une modal pour visualiser le pdf du devis avec possibilité de le télécharger ou de l'imprimer</li>
+                                <li><strong>Ajouter au planning</strong> : permet d'ajouter le "chantier" à votre planning</li>
+                                <li><strong>Accepter</strong> : permet de changer le statut du devis en "Accepté"</li>
+                                <li><strong>Générer une facture</strong> : permet de créer une facture pour ce devis</li>
+                                <li><strong>Télécharger</strong> : permet de télécharger le devis en pdf</li>
+                                <li><strong>Modifier</strong> : ouvre une modal qui permet de modifier les informations du devis</li>
+                                <li><strong>Supprimer</strong> : permet de supprimer le devis</li>
+                            </ol>
+                        </li>
+    
+                    </ul>
+                </div>
+            </section>
+            
+            <section id="devis" class="mb-5">
+                <h2>📄 Créer un devis</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                        La création d'un devis doit faire suite à la création ou l'import de clients et de prestations.  
+                        Comment faire :
+                    </p>
+                    <ol>
+                        <li>Cliquez sur <strong>"Ajouter un devis"</strong> </li>
+                        <li>Les champs grisés ne sont pas modifiables</li>
+                        <li>Choisir un client</li>
+                        <li>Choisir un taux de TVA</li>
+                        <li>Le statut par defeut est "En attente" mais vous pouvez le modifier</li>
+                        <li>Ajouter les prestations, leurs quantités et l'unité de mesure</li>
+                        <li>Vous pouvez cliquer sur <strong>"Ajouter une prestation"</strong> pour en ajouter des supplémentaires</li>
+                        <li>Vous avez la corbeille pour supprimer la prestation</li>
+                        <li>Vérifiez le total et les taxes</li>
+                        <li>A la fin, vous cliquez sur <strong>"Ajouter"</strong> pour créer le devis</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="factureGestion" class="mb-5">
+                <h2>🧾 Gestion des factures</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                        La section factures vous permet de visualiser toutes les factures de votre base de données.  
+                        Vous pouvez faire :
+                    </p>
+                    <ul>
+                        <li>Rechercher par nom de client dans la barre de recherche</li>
+                        <li>Trier sur la colonne date de la facture</li>
+                        <li>Ajouter une nouvelle facture comme ci-dessous</li>
+                        <li>Vous avez un menu contextuel avec le click droit sur une ligne de facture :
+                            <ol>
+                                <li><strong>Envoyer par mail</strong> : ouvre une modal avec un text par défaut modifiable pour envoyer la facture en pdf</li>
+                                <li><strong>Ajouter un acompte</strong> : ouvre une modal pour ajouter un acompte versé pour cette facture (date, montant, et mode de payement)</li>
+                                <li><strong>Voir la facture</strong> : ouvre une modal pour visualiser le pdf de la facture avec possibilité de la télécharger ou de l'imprimer</li>
+                                <li><strong>Télécharger</strong> : permet de télécharger la facture en pdf</li>
+                                <li><strong>Supprimer</strong> : permet de supprimer la facture</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="planning" class="mb-5">
+                <h2> 📅 Gestion du planning/calendrier</h2>
+                <div class="card shadow-sm p-3">
+                    <p>
+                    Le planning est basé sur <strong>FullCalendar</strong>.  
+                    Vous pouvez :
+                    </p>
+                    <ul>
+                        <li>Vous connecter a votre Google Agenda vous visualisé votre agenda personnel.</li>
+                        <li>Visualiser les événements des devis.</li>
+                        <li>Créer un nouvel événement en cliquant sur une date (un évenement lié à une devis (professionnel) ou non (personnel)).</li>
+                        <li>Modifier un événement en le sélectionnant.</li>
+                        <li>Ajouter votre évenement à votre Google Agenda.</li>
+                        <li>Supprimer un événement depuis la fenêtre de détails.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="parametres" class="mb-5">
+                <h2>⚙️ Gestion des paramètres</h2>
+                <div class="card shadow-sm p-3">
+                    <p>  
+                    Vous pouvez :
+                    </p>
+                    <ul>
+                        <li>Passer en <strong>mode dark</strong> ou light.</li>
+                        <li>Enregistrer les données de votre <strong>entreprise</strong> </li>
+                        <li><strong>Paramétrer</strong> l'envoi d'email
+                            <ul>
+                                <li>Type de boite mail (la votre pour les envois)</li>
+                                <li>Port d'envoi (par défault 465)</li>
+                                <li>Activer la sécurité (true ou false)</li>
+                                <li>Votre adresse mail (si type de mail gmail alors une adresse mail gmail)</li>
+                                <li>Mot de passe d'application (il faut le créer dans les paramètres de sécurité de votre boite mail, souvent sous le format : xxxx xxxx xxxx xxxx)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Réinitialiser</strong> la base de données (⚠️ Cela supprime toutes les données de votre base, si vous n'etes pas sur sauvegarder votre base de données avant).</li>
+                        <li><strong>Sauvegarde</strong>  la base de données (fichier avec l'extension .sqlite qui contient toutes vos données).</li>
+                    </ul>
+                </div>
+            </section>
+        
+            <section id="astuces" class="mb-5">
+              <h2>💡 Astuces</h2>
+              <div class="alert alert-info">
+                <ul>
+                    <li>Vous pouvez utiliser la fonction de recherche pour retrouver rapidement un devis ou un client.</li>
+                    <li>Il faut supprimer la facture avant le devis.</li>
+                    <li>D'abord effectuer un export pour avoir le modèle excel et après modifier le fichier pour l'importer.</li>
+                    <li>Lors de la desinstallation du logiciel, la base de données est supprimer sans posibilité de la récupérer.</li>
+                </ul>
+              </div>
+            </section>
+            <button id="btnTop" class="btn btn-info position-fixed bottom-0 end-0 m-4 shadow rounded-pill">
+                <i class="bi bi-arrow-up-circle-fill"></i>
+              </button>
+    </div>
+</div>    
+</body>
+<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./renderer.js"></script>
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+    // Affiche le bouton après avoir scrollé
+    const btnTop = document.getElementById('btnTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    btnTop.classList.add('show');
+  } else {
+    btnTop.classList.remove('show');
+  }
+});
+// Scroll fluide vers le haut
+btnTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+  
+
+  </script>
+</html>
