@@ -92,7 +92,8 @@ async function afficherDevisMois() {
   
   afficherDevisMois();
 
-//chart.js
+
+//chart.js---------------------
 
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);

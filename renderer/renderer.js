@@ -73,3 +73,16 @@ async function saveBase() {
   const result = await window.api.saveDatabase();
   alert(result); // Affiche le chemin ou l’erreur
 }
+
+async function importBase() {
+  const { canceled, filePaths } = await window.api.openFileDialog();
+  if (!canceled && filePaths.length > 0) {
+    const result = await window.api.importDatabase(filePaths[0]);
+    if (result.success) {
+      alert('Base importée avec succès !');
+      location.reload();
+    } else {
+      alert('Erreur import : ' + result.error);
+    }
+  }
+}

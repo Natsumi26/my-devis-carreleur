@@ -3,13 +3,6 @@ const fs = require('fs/promises'); // pour utiliser les fonctions async comme wr
 const fsSync = require('fs'); 
 const path = require('path');
 
-
-contextBridge.exposeInMainWorld('versions', {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron
-  //Nous pouvons exposer des variables en plus des fonctions
-})
 //Gestion du dark
 contextBridge.exposeInMainWorld('darkMode', {
   toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
@@ -38,9 +31,12 @@ contextBridge.exposeInMainWorld('api', {
     //Gestion bdd
     resetDatabase: () => ipcRenderer.invoke('reset-database'),
     saveDatabase: () => ipcRenderer.invoke('save-database'),
+    importDatabase: (filePath) => ipcRenderer.invoke('import-db', filePath),
     getPlanning: () => ipcRenderer.invoke('get-planning-events'),
     //envoi de mail
-    sendEmail: async (data) => await ipcRenderer.invoke('send-email', data)
+    sendEmail: async (data) => await ipcRenderer.invoke('send-email', data),
+    // Ouvrir un fichier (pour importer une base)
+    openFileDialog: () => ipcRenderer.invoke('dialog:openFile'),
   });
 
 //export function

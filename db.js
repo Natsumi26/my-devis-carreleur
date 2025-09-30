@@ -150,6 +150,36 @@ function saveDatabase(destinationPath) {
   fs.copyFileSync(dbPath, destinationPath);
 }
 
+
+//Fonction pour importer la bdd
+function importDatabase(importedPath) {
+  db.close((err) => {
+    if (err) {
+      console.error('Erreur fermeture DB :', err.message);
+      return;
+    }
+    console.log('Connexion SQLite fermée.');
+
+    try {
+      // Supprimer l’ancienne base
+      if (fs.existsSync(dbPath)) {
+        fs.unlinkSync(dbPath);
+        console.log('Ancienne base supprimée.');
+      }
+
+      // Copier la nouvelle base
+      fs.copyFileSync(importedPath, dbPath);
+      console.log('Nouvelle base importée.');
+
+      // Réinitialiser la connexion
+      initDatabase();
+    } catch (e) {
+      console.error('Erreur import DB :', e.message);
+    }
+  });
+}
+
+
 initDatabase();
 
 function getDb() {
@@ -159,5 +189,6 @@ function getDb() {
 module.exports = {
   getDb,
   resetDatabase,
-  saveDatabase
+  saveDatabase,
+  importDatabase
 };

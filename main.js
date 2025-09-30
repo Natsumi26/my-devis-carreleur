@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain, nativeTheme, Menu, dialog } = require('elec
 const path = require('node:path')
 const { generateDevis } = require('./renderer/devisPdf.js');
 const { generateFacture } = require('./renderer/facturePdf.js');
-const { getDb, resetDatabase, saveDatabase } = require('./db');
+const { getDb, resetDatabase, saveDatabase, importDatabase } = require('./db');
 const ExcelJS = require('exceljs');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -51,6 +51,28 @@ ipcMain.handle('save-database', async () => {
     return 'Erreur : ' + err.message;
   }
 });
+
+//import bdd
+ipcMain.handle('import-db', async (event, filePath) => {
+  try {
+    importDatabase(filePath);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+// Ouvrir le sélecteur de fichier
+ipcMain.handle('dialog:openFile', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'SQLite', extensions: ['sqlite'] }]
+  });
+  return result;
+});
+
+
+
 
 //Generer le devis en pdf-------------------------------
 ipcMain.handle('generate-devis', async (event, devisData, defaultFileName) => {
