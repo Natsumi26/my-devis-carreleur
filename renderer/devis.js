@@ -391,7 +391,6 @@ function createPrestaLine() {
                     "UPDATE devis SET statut=? WHERE id=?",
                     ["Accepté", id]
                 );
-                await createFactureFromDevis(id);
                 await getDevis();
                 
             };
@@ -482,6 +481,9 @@ function createPrestaLine() {
             const devisData = await buildDevisData(result);
             devisData.entreprise = entrepriseData;
             await openEmailModal(id, devisData);
+            break;
+        case 'facture':
+            await createFactureFromDevis(id)
             break;
         }
     
@@ -656,9 +658,6 @@ async function updateDevisSubmit(id) {
             "UPDATE devis SET number=?, total_HT=?, taux_tva=?, total_TTC=?, date_devis=?, client_id=?, statut=? WHERE id=?",
             valuesDevis
         );
-        if (devis.statut === "Accepté") {
-            await createFactureFromDevis(devis.id);
-        }
         // Supprimer les anciennes prestations du devis
         await window.api.eQuery("DELETE FROM devis_prestation WHERE devis_id=?", [id]);
 
