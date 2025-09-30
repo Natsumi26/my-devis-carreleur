@@ -62,25 +62,17 @@
                         <input type="hidden" id="devisId">
                         <input type="hidden" id='typeForm' value="add">
                     <div class="mb-3">
-                        <label for="number" class="form-label">Numéro</label>
-                        <input type="text" class="form-control" id="number" disabled>
+                        <!-- Select clients -->
+                        <label for="clientListe" class="form-label">Client</label>
+                        <select name="clientListe" id="clientListe" class="form-select"></select>
                     </div>
-                    <div class="mb-3">
-                        <label for="total" class="form-label">Total HT</label>
-                        <input type="number" class="form-control" id="total" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tva" class="form-label">Taux TVA (%)</label>
-                        <select name="tva" class="form-control" id="tva">
-                            <option value="0">0</option>
-                            <option value="10">10%</option>
-                            <option value="20">20%</option>
-                        </select>
-                    </div>
-                    <input type="hidden" id="totalTTC" >
                     <div class="mb-3">
                         <label for="date" class="form-label">Date</label>
                         <input type="text" class="form-control" id="date" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="number" class="form-label">Numéro</label>
+                        <input type="text" class="form-control" id="number" disabled>
                     </div>
                     <div class="mb-3">
                         <label for="statut" class="form-label">Statut</label>
@@ -91,17 +83,24 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <!-- Select clients -->
-                        <label for="clientListe" class="form-label">Client</label>
-                        <select name="clientListe" id="clientListe" class="form-select"></select>
+                        <label for="tva" class="form-label">Taux TVA (%)</label>
+                        <select name="tva" class="form-control" id="tva">
+                            <option value="0">0</option>
+                            <option value="10">10%</option>
+                            <option value="20">20%</option>
+                        </select>
                     </div>
-
                     <div class="mb-3">
                         <!-- Template caché pour prestations -->
                         <select id="prestationsListeTemplate" class="form-select" style="display:none;"></select>
                         <!-- Container pour ajouter les prestations-->
                         <section id="prestationsContainer"></section>
                         <button class="btn btn-secondary" type="button" id="addPrestaLine">Ajouter un prestation</button>
+                    </div>
+                    <input type="hidden" id="totalTTC" >
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Total HT</label>
+                        <input type="number" class="form-control" id="total" disabled>
                     </div>
                         
                     <button type="submit" id="addDevis" class="btn btn-success">Ajouter</button>

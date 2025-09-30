@@ -66,6 +66,7 @@ document.addEventListener('click', function() {
 //Gestion bdd dans les parametres
 async function resetBase() {
   const result = await window.api.resetDatabase();
+  location.reload();
   alert(result); // Affiche le message de succès ou d’erreur
 }
 

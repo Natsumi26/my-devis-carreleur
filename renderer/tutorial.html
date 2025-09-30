@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
 </head>
-<body">
+<body>
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="bg-dark text-white p-3" style="width: 200px; min-height: 100vh;">
@@ -40,7 +40,7 @@
   </div>
 
   <!-- Contenu -->
-    <div class="flex-grow-1 p-4 container my-5">
+    <div id="page-tuto" class="flex-grow-1 p-4 container my-5">
             <h1 class="text-center mb-4">📖 Tutoriel d'utilisation</h1>
           
             <!-- Sommaire -->
@@ -52,17 +52,17 @@
                         Sommaire
                       </button>
                     </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionSommaire">
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionSommaire">
                       <div class="accordion-body bg-light rounded">
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item bg-light"><a href="#intro" class="text-dark text-decoration-none">📝 Introduction</a></li>
-                          <li class="list-group-item bg-light"><a href="#clientsGestion" class="text-dark text-decoration-none">👥 Gestion des clients</a></li>
-                          <li class="list-group-item bg-light"><a href="#prestationsGestion" class="text-dark text-decoration-none">🛠️ Gestion des prestations</a></li>
-                          <li class="list-group-item bg-light"><a href="#devisGestion" class="text-dark text-decoration-none">📄 Gestion des devis</a></li>
-                          <li class="list-group-item bg-light"><a href="#factureGestion" class="text-dark text-decoration-none">🧾 Gestion des factures</a></li>
-                          <li class="list-group-item bg-light"><a href="#planning" class="text-dark text-decoration-none">📅 Gestion du planning</a></li>
-                          <li class="list-group-item bg-light"><a href="#parametres" class="text-dark text-decoration-none">⚙️ Gestion des paramètres</a></li>
-                          <li class="list-group-item bg-light"><a href="#astuces" class="text-dark text-decoration-none">💡 Astuces</a></li>
+                          <li class="list-group-item bg-light"><a href="#intro" class="text-dark text-decoration-none">Introduction</a></li>
+                          <li class="list-group-item bg-light"><a href="#clientsGestion" class="text-dark text-decoration-none">Clients</a></li>
+                          <li class="list-group-item bg-light"><a href="#prestationsGestion" class="text-dark text-decoration-none">Prestations</a></li>
+                          <li class="list-group-item bg-light"><a href="#devisGestion" class="text-dark text-decoration-none">Devis</a></li>
+                          <li class="list-group-item bg-light"><a href="#factureGestion" class="text-dark text-decoration-none">Factures</a></li>
+                          <li class="list-group-item bg-light"><a href="#planning" class="text-dark text-decoration-none">Planning</a></li>
+                          <li class="list-group-item bg-light"><a href="#parametres" class="text-dark text-decoration-none">Paramètres</a></li>
+                          <li class="list-group-item bg-light"><a href="#astuces" class="text-dark text-decoration-none">Astuces</a></li>
                         </ul>
                       </div>
                     </div>
@@ -302,7 +302,7 @@
                 </ul>
               </div>
             </section>
-            <button id="btnTop" class="btn btn-info position-fixed bottom-0 end-0 m-4 shadow rounded-pill">
+            <button id="btnTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 shadow rounded-pill">
                 <i class="bi bi-arrow-up-circle-fill"></i>
               </button>
     </div>

@@ -113,4 +113,26 @@
   pointer-events: auto;
   transform: translateY(0);
 }
+/* Liens du sommaire */
+.accordion-body a {
+  transition: color 0.2s;
+}
+.accordion-body a:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
 
+/* Astuces */
+#astuces .alert-info {
+  background-color: #e9f5ff;
+  border-left: 4px solid #0d6efd;
+}
+#astuces li {
+  text-indent: 15px; /* petit effet alinéa */
+  margin-bottom: 6px;
+}
+
+#page-tuto .card {
+  border-left: 4px solid #0d6efd; /* bleu bootstrap */
+  margin-bottom: 15px;
+}

@@ -142,7 +142,6 @@ function resetDatabase() {
     }
 
     initDatabase();
-    window.location.reload();
   });
 }
 // function pour Sauvgarder la bdd
