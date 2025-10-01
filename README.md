@@ -37,19 +37,19 @@ Application Electron pour auto-entrepreneurs permettant de gérer les clients, p
 
 
 ```bash
-# Cloner le dépôt GitHub
+### Cloner le dépôt GitHub
 git clone https://github.com/ton-utilisateur/ton-repo.git
 
-# Se déplacer dans le dossier du projet
+### Se déplacer dans le dossier du projet
 cd ton-repo
 
-# Installer les dépendances
+### Installer les dépendances
 npm install
 
-# Lancer l'application en mode développement
+### Lancer l'application en mode développement
 npm run start
 
-# Générer le package (exécutable)
+### Générer le package (exécutable)
 npm run build
 ```
 ---
