@@ -56,6 +56,7 @@ npm run build
 
 ## Ces commandes installent toutes les dépendances nécessaires au bon fonctionnement de l'application. 
 
+```bash
 ### Installer Electron en mode développement 
 npm install electron --save-dev 
 
@@ -71,7 +72,7 @@ npm install nodemailer
 
 ### Installer l'outil global pour générer les icônes 
 npm install -g electron-icon-builder 
-
+```
 ---
 
 ## ⚙️ Configuration SMTP
