@@ -35,20 +35,32 @@ Application Electron pour auto-entrepreneurs permettant de gérer les clients, p
 
 ## 📦 Installation
 
-git clone https://github.com/ton-utilisateur/ton-repo.git
-cd ton-repo
-npm install
-npm run start
-npm run build <- pour le packaging
 
+```bash
+### Cloner le dépôt GitHub
+git clone https://github.com/ton-utilisateur/ton-repo.git
+
+### Se déplacer dans le dossier du projet
+cd ton-repo
+
+### Installer les dépendances
+npm install
+
+### Lancer l'application en mode développement
+npm run start
+
+### Générer le package (exécutable)
+npm run build
+```
 ---
 
 ## Ces commandes installent toutes les dépendances nécessaires au bon fonctionnement de l'application. 
 
-# Installer Electron en mode développement 
+```bash
+### Installer Electron en mode développement 
 npm install electron --save-dev 
 
-# Installer les dépendances principales 
+### Installer les dépendances principales 
 npm install sqlite3 
 npm i bootstrap@5.3.8 
 npm install fullcalendar 
@@ -58,9 +70,9 @@ npm install pdfkit
 npm install chart.js 
 npm install nodemailer 
 
-# Installer l'outil global pour générer les icônes 
+### Installer l'outil global pour générer les icônes 
 npm install -g electron-icon-builder 
-
+```
 ---
 
 ## ⚙️ Configuration SMTP
